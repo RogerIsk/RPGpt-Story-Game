@@ -11,7 +11,7 @@ from kivy.lang import Builder
 from kivy.animation import Animation
 from openai import OpenAI
 
-client = OpenAI(api_key="sk-None-kzdXoModusUaGuk3dH8FT3BlbkFJB0YQL1U64pH2tYRhIj9z")
+client = OpenAI(api_key="   (replace with your own ChatGPT API key)   "
 import sys
 import os
 import json
