@@ -11,6 +11,9 @@ from kivy.lang import Builder
 from kivy.animation import Animation
 from openai import OpenAI
 
+
+
+
 client = OpenAI(api_key="sk-p2mes6AzyJvfRTTs7rj-Dxo_fNPzgdodarOLvyYHk9T3BlbkFJH_jZqQQS16_WSORR6bjlteqteDRjqlRsKa3mC0RfgA")
 import sys
 import os
@@ -82,8 +85,8 @@ class HoverButton(Button):
     def __init__(self, **kwargs):
         super(HoverButton, self).__init__(**kwargs)
         Window.bind(mouse_pos=self.on_mouse_pos)
-        self.default_image = 'original.png'  # Default image path
-        self.hover_image = 'new.png'  # Hover image path
+        self.default_image = 'Program_Files/original.png'  # Default image path
+        self.hover_image = 'Program_Files/new.png'  # Hover image path
 
     def on_mouse_pos(self, *args):
         if not self.get_root_window():
@@ -120,7 +123,7 @@ class ChatScreen(Screen):
             self.bind(pos=self.update_bg, size=self.update_bg)
 
         self.label = Label(size_hint=(1, 0.8), font_size=(16), color=(1, 1, 1, 1), outline_width=(0), outline_color=(0, 0, 0, 0), text_size=(1280, 960), padding=(20, 710, 20, 20), valign='top')  # Updated valign to 'top'
-        self.input = TextInput(size_hint=(1, 0.045), font_size=(30), font_name='black', background_color=(1, 1, 1, 1), multiline=False, padding=(10, 10, 10, 10))
+        self.input = TextInput(size_hint=(1, 0.045), font_size=(30), font_name='Program_Files/medieval_font_file.ttf', background_color=(1, 1, 1, 1), multiline=False, padding=(10, 10, 10, 10))
         self.input.bind(on_text_validate=self.on_text_enter)
 
         self.layout.add_widget(self.label)

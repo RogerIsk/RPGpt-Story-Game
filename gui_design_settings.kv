@@ -15,36 +15,36 @@ ScreenManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'main_menu_background.jpg'  # Path to your background image
+                source: 'Program_Files/main_menu_background.jpg'  # Path to your background image
 
         HoverButton:
             text: 'New'
-            font_name: 'ring_bearer'  # Path to your font
+            font_name: 'Program_Files/medieval_font_file_2.ttf'  # Path to your font
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.38}
-            default_image: 'original.png'  # Path to your default image for 'New' button
-            hover_image: 'new.png'  # Path to your hover image for 'New' button
+            default_image: 'Program_Files/original_button_image.png'  # Path to your default image for 'New' button
+            hover_image: 'Program_Files/new_game_button.png'  # Path to your hover image for 'New' button
             on_press: root.change_to_chat()
 
         HoverButton:
             text: 'Load'
-            font_name: 'ring_bearer'  # Path to your font
+            font_name: 'Program_Files/medieval_font_file_2.ttf'  # Path to your font
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.62}
             default_image: 'original.png'  # Path to your default image for 'Load' button
-            hover_image: 'load.png'  # Path to your hover image for 'Load' button
+            hover_image: 'Program_Files/load_game_button.png'  # Path to your hover image for 'Load' button
             on_press: app.stop()
 
         HoverButton:
             text: 'Die'
             font_size: 70 
-            font_name: 'ring_bearer'  # Path to your font
+            font_name: 'Program_Files/medieval_font_file_2.ttf'  # Path to your font
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.49}
             default_image: 'original.png'  # Path to your default image for 'Die' button
-            hover_image: 'die.png'  # Path to your hover image for 'Die' button
+            hover_image: 'Program_Files/exit_game_button.png'  # Path to your hover image for 'Die' button
             on_press: app.stop()
 
 <HoverButton@Button>:
