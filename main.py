@@ -93,8 +93,8 @@ class HoverButton(Button):
     def __init__(self, **kwargs):
         super(HoverButton, self).__init__(**kwargs)
         Window.bind(mouse_pos=self.on_mouse_pos)
-        self.default_image = 'Program_Files/original.png'  # Default image path
-        self.hover_image = 'Program_Files/new.png'  # Hover image path
+        self.default_image = 'Program_Files/original_button_image.png'   # Default image path
+        self.hover_image = 'Program_Files/new_game_button.png'           # Hover image path
 
     def on_mouse_pos(self, *args):
         if not self.get_root_window():
@@ -127,7 +127,7 @@ class ChatScreen(Screen):
         # Add canvas instructions for background image
         with self.canvas.before:
             Color(1, 1, 1, 0.9)  # Ensure full opacity
-            self.bg_rect = Rectangle(source='1.png', pos=self.pos, size=self.size)
+            self.bg_rect = Rectangle(source='Program_Files/in-game_background.png', pos=self.pos, size=self.size)
             self.bind(pos=self.update_bg, size=self.update_bg)
 
         self.label = Label(size_hint=(1, 0.8), font_size=(16), color=(1, 1, 1, 1), outline_width=(0), outline_color=(0, 0, 0, 0), text_size=(1280, 960), padding=(20, 710, 20, 20), valign='top')  # Updated valign to 'top'
