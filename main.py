@@ -11,10 +11,6 @@ from kivy.lang import Builder
 from kivy.animation import Animation
 from openai import OpenAI
 
-
-
-
-client = OpenAI(api_key="sk-p2mes6AzyJvfRTTs7rj-Dxo_fNPzgdodarOLvyYHk9T3BlbkFJH_jZqQQS16_WSORR6bjlteqteDRjqlRsKa3mC0RfgA")
 import sys
 import os
 import json
@@ -22,6 +18,17 @@ from stringcolor import *
 
 # Replace with your actual API key
 model = "gpt-4"
+
+def read_json_file(file_path):
+    '''Read the data from a json file'''
+    # we use this to import the api key
+    with open(file_path, 'r') as file:
+        return json.load(file)
+
+# import the api key and create a client using it
+key_data = read_json_file("key.json")    
+api_key = key_data["api_key"]
+client = OpenAI(api_key = api_key)
 
 # GETTING A RESPONSE FROM OPENAI GPT
 def get_response(messages):
