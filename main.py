@@ -1,20 +1,21 @@
-import kivy
-from kivy.app import App
-from kivy.core.window import Window
-from kivy.uix.button import Button
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Rectangle, Color
-from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.lang import Builder
 from kivy.animation import Animation
+from kivy.core.window import Window
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.lang import Builder
 from openai import OpenAI
-
+from stringcolor import *
+from kivy.app import App
+import kivy
+import json
 import sys
 import os
-import json
-from stringcolor import *
+
+
 
 # Replace with your actual API key
 model = "gpt-4"
