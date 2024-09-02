@@ -185,13 +185,7 @@ class RPGApp(App):
     def build(self):
         Window.size = (1280, 960)
         Window.resizable = False
-
-        sm = Builder.load_file('rpgapp.kv')
-
-        # Create the fade-in animation
-        fade_in = Animation(opacity=1, duration=2)
-        fade_in.start(sm)
-
+        sm = Builder.load_file('gui_design_settings.kv')
         return sm
 
 if __name__ == '__main__':
