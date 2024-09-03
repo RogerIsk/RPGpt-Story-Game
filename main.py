@@ -1,21 +1,20 @@
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.graphics import Rectangle, Color
-from kivy.uix.textinput import TextInput
-from kivy.uix.boxlayout import BoxLayout
-from kivy.animation import Animation
+import kivy
+from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.button import Button
+from kivy.graphics import Rectangle, Color
 from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
+from kivy.animation import Animation
 from openai import OpenAI
-from stringcolor import *
-from kivy.app import App
-import kivy
-import json
+
 import sys
 import os
-
-
+import json
+from stringcolor import *
 
 # Replace with your actual API key
 model = "gpt-4"
@@ -27,8 +26,9 @@ def read_json_file(file_path):
         return json.load(file)
 
 # import the api key and create a client using it
-key_data = read_json_file("Program_Files/key.json")    
+key_data = read_json_file("key.json")    
 api_key = key_data["api_key"]
+input(api_key)
 client = OpenAI(api_key = api_key)
 
 # GETTING A RESPONSE FROM OPENAI GPT
@@ -93,8 +93,8 @@ class HoverButton(Button):
     def __init__(self, **kwargs):
         super(HoverButton, self).__init__(**kwargs)
         Window.bind(mouse_pos=self.on_mouse_pos)
-        self.default_image = 'Program_Files/original_button_image.png'   # Default image path
-        self.hover_image = 'Program_Files/new_game_button.png'           # Hover image path
+        self.default_image = 'original.png'  # Default image path
+        self.hover_image = 'new.png'  # Hover image path
 
     def on_mouse_pos(self, *args):
         if not self.get_root_window():
@@ -127,11 +127,11 @@ class ChatScreen(Screen):
         # Add canvas instructions for background image
         with self.canvas.before:
             Color(1, 1, 1, 0.9)  # Ensure full opacity
-            self.bg_rect = Rectangle(source='Program_Files/in-game_background.png', pos=self.pos, size=self.size)
+            self.bg_rect = Rectangle(source='1.png', pos=self.pos, size=self.size)
             self.bind(pos=self.update_bg, size=self.update_bg)
 
         self.label = Label(size_hint=(1, 0.8), font_size=(16), color=(1, 1, 1, 1), outline_width=(0), outline_color=(0, 0, 0, 0), text_size=(1280, 960), padding=(20, 710, 20, 20), valign='top')  # Updated valign to 'top'
-        self.input = TextInput(size_hint=(1, 0.045), font_size=(30), font_name='Program_Files/medieval_font_file.ttf', background_color=(1, 1, 1, 1), multiline=False, padding=(10, 10, 10, 10))
+        self.input = TextInput(size_hint=(1, 0.045), font_size=(30), font_name='black', background_color=(1, 1, 1, 1), multiline=False, padding=(10, 10, 10, 10))
         self.input.bind(on_text_validate=self.on_text_enter)
 
         self.layout.add_widget(self.label)
