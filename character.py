@@ -7,17 +7,8 @@ class Character:
     '''Character class to store the character's data'''
     # This class is used for every character, PC and NPCs
 
-    def __init__(self, sheet_path):
-        '''Initialise the class with character's data from read_char_sheet'''
-        self.char_sheet = read_json_file(sheet_path)
-        # Get character data from the character sheet by calling the read_char_sheet() method
-        self._read_char_sheet()
-
     def _read_char_sheet(self):
         '''Read the data and get character's stats from the character sheet'''
-        # access the dictionary with the character's data
-        # for npcs: only fetches the 1st npc in the list for now
-        self.char_dictionary = self.char_sheet[0]
         
         # unpack the stats dictionary to get all the character's data
         self.name = self.char_dictionary['name']
@@ -73,8 +64,8 @@ class PC(Character):
     def __init__(self, sheet_path):
         '''Initialise the class with character's data from read_char_sheet'''
         # This class will be used only for the playable character and add specific stats
-        # Inherit the init method from the parent class Character
-        super().__init__(sheet_path)
+        # use the entire json file as the character dictionary
+        self.char_dictionary = read_json_file(sheet_path)
         # Call read_char_sheet method to get both general and PC specific character's attributes
         self._read_char_sheet()
 
@@ -95,3 +86,16 @@ class PC(Character):
         super().attack(target)
 
         input(press_enter)
+
+
+class NPC(Character):
+    '''NPC class for player's character's specific data and actions'''
+    # For now it's only used to fetch the character's stats in a different way
+    def __init__(self, sheet_path, npc_id):
+        '''Initialise the class with character's data from read_char_sheet'''
+        # Read the whole json file
+        char_sheet = read_json_file(sheet_path)
+        # Get the dictionary with the stats of the selected npc
+        self.char_dictionary = char_sheet.get(npc_id, {})
+        # read the dictionary to assign stats asthe character's object attributes
+        self._read_char_sheet()

@@ -1,12 +1,10 @@
-[
-    {
-        "name": "Brombur",
-        "race": "Dwarf",
-        "char_class": "Warrior",
-        "level": 1,
-        "hp": 14,
-        "armor": 13,
-        "atk": 5,
-        "xp": 0
-    }
-]
+{
+    "name": "Brombur",
+    "race": "Dwarf",
+    "char_class": "Warrior",
+    "level": 1,
+    "hp": 14,
+    "armor": 13,
+    "atk": 5,
+    "xp": 0
+}
