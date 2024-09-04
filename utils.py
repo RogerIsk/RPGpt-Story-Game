@@ -17,3 +17,4 @@ def roll_dice(bonus=0):
     # If no bonus, return only base_result
     else:
         return base_result
+    

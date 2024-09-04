@@ -1,5 +1,6 @@
+from random import randint
 from time import sleep
-from utils import read_json_file, roll_dice
+from utils import read_json_file
 
 press_enter = 'Press ENTER to continue...\n'
 
@@ -17,30 +18,33 @@ class Character:
         self.atk = self.char_dictionary['atk']
         self.xp = self.char_dictionary['xp']
 
-    def attack(self, target, result):
-        '''attack opponent'''
-        # if target is hit, apply damage
-        # target is hit if the attack roll is higher than target's armor
-        if result >= target.armor:
-            print(f'{self.name} hits {target.name}!\n')
-            sleep(1)
-            # apply damage to oponent (damage points = attacker's attack points)
-            target.take_damage(self.atk)
-        # if target is missed, stop the character's turn without dealing damage
-        else:
-            print(f'{self.name} misses\n')
-            sleep(1.5)
+    def calc_dmg(self):
+        '''randomize the attack damage by applying a percentage modifier to character's atk stat'''
+        # roll for random percentage
+        dmg_modifier = randint(75, 125) / 100
+        # apply percentage to attack stat
+        dmg = self.atk * dmg_modifier
+        # Round and convert to integer
+        dmg = int(round(dmg))
+        return dmg
 
-    def take_damage(self, damage):
+    def take_damage(self, dmg):
         '''Apply damage to PC when hit'''
-        # remove the number of damage points from the hit character's HP
-        self.hp -= damage
+        # substract armor stat from the damge received
+        final_dmg = dmg - (dmg * self.armor / 100)
+        # Round and convert to integer
+        final_dmg = int(round(final_dmg))
+        # remove the number of dmg points from the hit character's HP
+        self.hp -= final_dmg
+        print(f'{self.name} takes {final_dmg} damage')
         # if character has 0 HP, pronounce them DEAD!! (shouldn't have messed with opponent)
         if self.hp <= 0:
+            sleep(1)
             print(f'{self.name} is dead!\n')
             sleep(1)
         else:
-            print(f'{self.name} takes {damage} damage! {self.hp} HP remaining.\n')
+            print(f'and has {self.hp} HP remaining\n')
+            sleep(0.5)
     
 
 
@@ -68,22 +72,14 @@ class PC(Character):
     def attack(self, target):
         '''attack enemy'''
         input('Press ENTER to attack...\n')
-        # run the attack() method inherited from the Character class for the rest of the action
-        # rolls dice with character's attack points as bonus
-        # the roll will return the base result AND the final result
-        # base result = random d20 | result = base_result + character's attack points
-        base_result, result = roll_dice(self.atk)
+        # calculate damage using calc_dmg()
+        dmg = self.calc_dmg()
         sleep(1)
-        # print roll result
-        print(f'Base attack score = {base_result}')
-        sleep(1.5)
-        print(f'Total attack score = {base_result} + {self.atk} attack points = {result}')
-        sleep(3)
-        print(f'{target.name}\'s armor = {target.armor}')
-        sleep(2)
+        print(f'{self.name} hits {target.name}')
+        sleep(1)
 
-        # Inherit the rest of the attack process from the Character attack() method
-        super().attack(target, result)
+        # apply damage to target
+        target.take_damage(dmg)
 
 
 class NPC(Character):
@@ -101,19 +97,12 @@ class NPC(Character):
     def attack(self, target):
         '''attack enemy'''
         input(press_enter)
-        # roll dice with character's attack points as bonus
-        # the roll will return the base result AND the final result
-        # base result = random d20 | result = base_result + character's attack points
-        print(f'{self.name} attacks. Rolling for attack score.')
-        sleep(2)
-        base_result, result = roll_dice(self.atk)
+        # calculate damage using calc_dmg()
+        dmg = self.calc_dmg()
+        sleep(1)
         # print roll result
-        print(f'Base attack score = {base_result}')
+        print(f'You hit {target.name}')
         sleep(1.5)
-        print(f'Total attack score = {base_result} + {self.atk} attack points = {result}')
-        sleep(3)
-        print(f'{target.name}\'s armor = {target.armor}')
-        sleep(2)
 
-        # Inherit the rest of the attack process from the Character attack() method
-        super().attack(target, result)
+        # apply damage to target
+        target.take_damage(dmg)

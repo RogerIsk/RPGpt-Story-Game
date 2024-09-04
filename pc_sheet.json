@@ -3,8 +3,8 @@
     "race": "Dwarf",
     "char_class": "Warrior",
     "level": 1,
-    "hp": 14,
-    "armor": 13,
-    "atk": 5,
+    "hp": 55,
+    "armor": 16,
+    "atk": 9,
     "xp": 0
 }

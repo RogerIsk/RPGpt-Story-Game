@@ -2,9 +2,10 @@ from time import sleep
 from utils import roll_dice
 
 def combat (pc, npc):
-    '''combat system'''
+    '''combat structure'''
+    # the actual combat actions attack() and take_damage() are in character.py
     print('It\'s a fight!')
-    sleep(2)
+    sleep(1)
 
     # print every character's hp
     print(f'''
@@ -32,7 +33,7 @@ def combat (pc, npc):
         p1 = npc
         p2 = pc
     print(f'{p1.name} is starting\n')
-    sleep(1.5)
+    sleep(0.5)
 
     # start fighting turns until one of the characters is down to 0 hp
     while pc.hp > 0 and npc.hp > 0:

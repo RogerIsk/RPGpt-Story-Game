@@ -1,37 +1,49 @@
 {
     "goblin": {
         "name": "Goblin",
-        "hp": 7,
-        "armor": 15,
-        "atk": 4,
+        "hp": 15,
+        "armor": 5,
+        "atk": 20,
         "xp": 50
     },
-    "orc": {
-        "name": "Orc",
-        "hp": 15,
-        "armor": 13,
-        "atk": 6,
+
+    "archspore": {
+        "name": "Archspore",
+        "hp": 65,
+        "armor": 5,
+        "atk": 5,
         "xp": 200
     },    
-    "giant_spider": {
-        "name": "Giant Spider",
-        "hp": 26,
-        "armor": 14,
-        "atk": 6,
+    
+    "evil_mushroom": {
+        "name": "Evil Mushroom",
+        "hp": 40,
+        "armor": 0,
+        "atk": 15,
         "xp": 200
     },
+
+    "desert_serpent": {
+        "name": "Desert Serpent",
+        "hp": 20,
+        "armor": 20,
+        "atk": 15,
+        "xp": 200
+    },
+
     "mummy": {
         "name": "Mummy",
-        "hp": 58,
-        "armor": 11,
-        "atk": 7,
-        "xp": 700
+        "hp": 20,
+        "armor": 0,
+        "atk": 20,
+        "xp": 200
     },
+
     "centaur": {
         "name": "Centaur",
-        "hp": 45,
-        "armor": 12,
-        "atk": 7,
+        "hp": 40,
+        "armor": 15,
+        "atk": 15,
         "xp": 450
     }
 }
