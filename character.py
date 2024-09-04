@@ -17,22 +17,8 @@ class Character:
         self.atk = self.char_dictionary['atk']
         self.xp = self.char_dictionary['xp']
 
-    def attack(self, target):
+    def attack(self, target, result):
         '''attack opponent'''
-        # rolls dice with character's attack points as bonus
-        # the roll will return the base result AND the final result
-        # base result = random d20 | result = base_result + character's attack points
-        base_result, result = roll_dice(self.atk)
-        sleep(1)
-        # print roll result
-        print(f'{self.name} attacks. Rolling for attack score.')
-        sleep(2)
-        print(f'Base attack score = {base_result}')
-        sleep(1.5)
-        print(f'Total attack score = {base_result} + {self.atk} attack points = {result}')
-        sleep(3)
-        print(f'{target.name}\'s armor = {target.armor}')
-        sleep(2)
         # if target is hit, apply damage
         # target is hit if the attack roll is higher than target's armor
         if result >= target.armor:
@@ -83,9 +69,21 @@ class PC(Character):
         '''attack enemy'''
         input('Press ENTER to attack...\n')
         # run the attack() method inherited from the Character class for the rest of the action
-        super().attack(target)
+        # rolls dice with character's attack points as bonus
+        # the roll will return the base result AND the final result
+        # base result = random d20 | result = base_result + character's attack points
+        base_result, result = roll_dice(self.atk)
+        sleep(1)
+        # print roll result
+        print(f'Base attack score = {base_result}')
+        sleep(1.5)
+        print(f'Total attack score = {base_result} + {self.atk} attack points = {result}')
+        sleep(3)
+        print(f'{target.name}\'s armor = {target.armor}')
+        sleep(2)
 
-        input(press_enter)
+        # Inherit the rest of the attack process from the Character attack() method
+        super().attack(target, result)
 
 
 class NPC(Character):
@@ -99,3 +97,23 @@ class NPC(Character):
         self.char_dictionary = char_sheet.get(npc_id, {})
         # read the dictionary to assign stats asthe character's object attributes
         self._read_char_sheet()
+
+    def attack(self, target):
+        '''attack enemy'''
+        input(press_enter)
+        # roll dice with character's attack points as bonus
+        # the roll will return the base result AND the final result
+        # base result = random d20 | result = base_result + character's attack points
+        print(f'{self.name} attacks. Rolling for attack score.')
+        sleep(2)
+        base_result, result = roll_dice(self.atk)
+        # print roll result
+        print(f'Base attack score = {base_result}')
+        sleep(1.5)
+        print(f'Total attack score = {base_result} + {self.atk} attack points = {result}')
+        sleep(3)
+        print(f'{target.name}\'s armor = {target.armor}')
+        sleep(2)
+
+        # Inherit the rest of the attack process from the Character attack() method
+        super().attack(target, result)

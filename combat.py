@@ -18,7 +18,7 @@ def combat (pc, npc):
     input('Roll for initative. Press ENTER...')
     pc_init = roll_dice()
     sleep(1.5)
-    print(f'{pc.name} rolls {pc_init}...')
+    print(f'You roll {pc_init}...')
     npc_init = roll_dice()
     sleep(1.5)
     print(f'{npc.name} rolls {npc_init}...')
