@@ -75,7 +75,7 @@ class PC(Character):
         # calculate damage using calc_dmg()
         dmg = self.calc_dmg()
         sleep(1)
-        print(f'{self.name} hits {target.name}')
+        print(f'You hit {target.name}')
         sleep(1)
 
         # apply damage to target
@@ -101,7 +101,7 @@ class NPC(Character):
         dmg = self.calc_dmg()
         sleep(1)
         # print roll result
-        print(f'You hit {target.name}')
+        print(f'{self.name} hits {target.name}')
         sleep(1.5)
 
         # apply damage to target
