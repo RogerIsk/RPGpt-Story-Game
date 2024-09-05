@@ -10,22 +10,15 @@ from kivy.lang import Builder
 from openai import OpenAI
 from stringcolor import *
 from kivy.app import App
-import kivy
-import json
-import sys
-import os
+import re
+from combat import combat
+from character import PC, NPC
 from utils import read_json_file
 
 
 
 # Replace with your actual API key
 model = "gpt-4"
-
-def read_json_file(file_path):
-    '''Read the data from a json file'''
-    # we use this to import the api key
-    with open(file_path, 'r') as file:
-        return json.load(file)
 
 # import the api key and create a client using it
 key_data = read_json_file("Program_Files/key.json")    
@@ -34,8 +27,28 @@ client = OpenAI(api_key = api_key)
 pc_stats = read_json_file("pc_sheet.json")
 npc_stats = read_json_file("npcs.json")
 
+# Instantiate player character
+pc = PC("pc_sheet.json")
+
 # regex code to fetch from chatgpt to trigger python events
-start_combat = "STARTCOMBAT"
+start_combat = "START_COMBAT"
+
+
+def check_response(response_text):
+    '''Check for specific text strings in the response'''
+    # Define the regex pattern to match [START_COMBAT, enemy_name]
+    pattern = r'\[START_COMBAT, ([a-zA-Z0-9_]+)\]'
+    
+    # Search for the pattern in the response text
+    match = re.search(pattern, response_text)
+    
+    if match:
+        # Extract the enemy_name from the match
+        npc_id = match.group(1)
+        npc = NPC("npcs.json", npc_id)
+
+        # Start combat with the extracted npc
+        combat(pc, npc)
 
 
 # GETTING A RESPONSE FROM OPENAI GPT
@@ -47,6 +60,11 @@ def get_response(messages):
     max_tokens=150, 
     presence_penalty=0,
     frequency_penalty=0)
+
+    # extracts the content of the first choice from the response
+    response_text = response.choices[0].message.content
+    check_response(response_text)
+
     return response.choices[0].message.content
 
 def rpg_adventure(pitch, chat_screen):
