@@ -6,6 +6,9 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.uix.button import Button
+from kivy.uix.widget import Widget
+from kivy.uix.popup import Popup
+from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.lang import Builder
 from openai import OpenAI
@@ -15,6 +18,7 @@ import kivy
 import json
 import sys
 import os
+
 
 
 
@@ -100,7 +104,7 @@ ALSO the text has to be on as fewer lines as possible."""
 
 
 # kivy visual stuff ===========================================================================
-class HoverButtonRounded(Button):           # Special effects for in-game buttons
+class HoverButtonRounded(Button):
     def __init__(self, **kwargs):
         super(HoverButtonRounded, self).__init__(**kwargs)
         Window.bind(mouse_pos=self.on_mouse_pos)
@@ -113,6 +117,7 @@ class HoverButtonRounded(Button):           # Special effects for in-game button
             self.rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
 
         self.bind(pos=self.update_rect, size=self.update_rect)
+        self.stats_popup = None  # Placeholder for the stats popup
 
     def on_mouse_pos(self, *args):
         if not self.get_root_window():
@@ -120,8 +125,14 @@ class HoverButtonRounded(Button):           # Special effects for in-game button
         pos = args[1]
         if self.collide_point(*pos):
             self.on_enter()
+            # Show the popup only for the "Statistics" button
+            if self.text == 'Statistics' and not self.stats_popup:
+                self.show_stats_popup()
         else:
             self.on_leave()
+            if self.text == 'Statistics' and self.stats_popup:
+                self.stats_popup.dismiss()
+                self.stats_popup = None
 
     def on_enter(self):
         self.current_color = self.hover_color
@@ -136,6 +147,11 @@ class HoverButtonRounded(Button):           # Special effects for in-game button
         with self.canvas.before:
             Color(rgba=self.current_color)
             self.rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
+
+    def show_stats_popup(self):
+        # Create and show the stats popup
+        self.stats_popup = StatsPopup()
+        self.stats_popup.open()
 
 class HoverButton(Button):                  # Special effects for main menu buttons
     def __init__(self, **kwargs):
@@ -167,7 +183,17 @@ class MenuScreen(Screen):                   # this class lets us give functional
     def change_to_chat(self):
         self.manager.current = 'ingame'
 
-
+class StatsPopup(Popup):
+    def __init__(self, **kwargs):
+        super(StatsPopup, self).__init__(**kwargs)
+        self.title = ''
+        self.size_hint = (None, None)
+        self.size = (400, 300)  # Set the size of the popup window
+        self.background = ''    # Remove default popup background
+        self.background_color = (0, 0, 0, 0)  # Make the default background transparent
+        
+        # Add the image as the background of the popup
+        self.content = Image(source='Program_Files/statistics_background.png')  # Use your desired image path
 
 
 

@@ -63,7 +63,7 @@ ScreenManager:
             size_hint_y: None
             height: 40
             padding: 0
-            spacing: 20
+            spacing: 10  # Adjust spacing for better alignment
             pos_hint: {'top': 1}
 
             HoverButtonRounded:
@@ -76,6 +76,30 @@ ScreenManager:
                 on_release: root.go_back_to_menu(self)
 
             HoverButtonRounded:
+                text: 'Statistics'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_normal: ''
+                background_color: (0.4, 0.7, 0.7, 0)
+
+            HoverButtonRounded:
+                text: 'Save'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_normal: ''
+                background_color: (0.4, 0.7, 0.7, 0)
+
+            HoverButtonRounded:
+                text: 'Load'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_normal: ''
+                background_color: (0.4, 0.7, 0.7, 0)
+
+            HoverButtonRounded:
                 text: 'Exit'
                 size_hint: (None, None)
                 size: (120, 50)
@@ -83,7 +107,7 @@ ScreenManager:
                 background_normal: ''
                 background_color: (0.4, 0.7, 0.7, 0)
                 on_release: root.exit_app(self)
-                
+
         # Main content area
         BoxLayout:
             orientation: 'vertical'
