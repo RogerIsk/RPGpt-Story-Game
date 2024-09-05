@@ -176,7 +176,7 @@ class InGameScreen(Screen):
             text='Exit',
             size_hint=(None, None),
             size=(100, 50),
-            pos_hint={'x': 0.9115, 'top': 0.99},  # Adjusted to add padding between the buttons and from the left
+            pos_hint={'x': 0.9115, 'top': 0.988},  # Adjusted to add padding between the buttons and from the left
             background_normal='',
             background_color=(0, 0, 0, 0)
         )
