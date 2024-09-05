@@ -221,9 +221,28 @@ class InGameScreen(Screen):
         # Create the text output window which shows the replies of chatgpt
         self.label = Label(size_hint=(1, 0.8), font_size=16, color=(1, 1, 1, 1), outline_width=0, outline_color=(0, 0, 0, 0), text_size=(1280, 960), padding=(20, 710, 20, 20), valign='top')
 
+        # Add a rounded rectangle behind the text input to create a rounded effect
+        with self.layout.canvas.before:
+            Color(0.8, 0.8, 0.8, 1)  # Light gray color for the rounded background
+            self.input_bg = RoundedRectangle(
+                pos=(10, 10),  # Initial position, will be updated
+                size=(self.width - 20, 40),  # Initial size, will be updated
+                radius=[10]  # Adjust the radius to make the corners rounded
+            )
+
         # Create the text input line from which we interact with chatgpt
-        self.input = TextInput(size_hint=(1, 0.045), font_size=30, font_name='Program_Files/medieval_font_file.ttf', background_color=(1, 1, 1, 1), multiline=False, padding=(10, 10, 10, 10))
+        self.input = TextInput(
+            size_hint=(1, 0.045),
+            font_size=30,
+            font_name='Program_Files/medieval_font_file.ttf',
+            background_color=(1, 1, 1, 0),  # Set to transparent to blend with the background element
+            multiline=False,
+            padding=(15, 10, 15, 10)  # Reduced padding on the left and right to decrease width by 5 pixels each
+        )
         self.input.bind(on_text_validate=self.on_text_enter)
+
+        # Bind the position and size updates of the input field to update the rounded rectangle
+        self.input.bind(pos=self.update_input_bg, size=self.update_input_bg)
 
         # Add the text input and text output widgets to the in-game window
         self.layout.add_widget(self.label)
@@ -257,6 +276,11 @@ class InGameScreen(Screen):
     def update_bg(self, *args):
         self.bg_rect.pos = self.pos
         self.bg_rect.size = self.size
+
+    def update_input_bg(self, *args):
+        # Update the rounded rectangle position and size to stay behind the input field
+        self.input_bg.pos = (self.input.x - 5, self.input.y - 5)
+        self.input_bg.size = (self.input.width + 10, self.input.height + 10)
 
     def main_menu(self):
         self.label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
