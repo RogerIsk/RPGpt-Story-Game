@@ -85,7 +85,8 @@ For example, character's hit points should remain the same unless they get heale
 Your replies will never be over a maximum limit of 150 tokens and at the end of each reply you will show the number of turns passed which is a maximum of 250 turns.
 This is the first thing you say to the user: 'Welcome player!\nCreate your own character or leave blank for random\n' the random character will be create
 with one of each of these options: Name (random), Race (Human, Elf, Dwarf), Sex (Male, Female), class (Warrior, Ranger, Mage), after that create a good rpg adventure pitch. 
-It should be set in either a medieval fantasy world, a sci-fi world or a cyberpunk world. Its up to you to keep the story going."""
+It should be set in either a medieval fantasy world, a sci-fi world or a cyberpunk world. Its up to you to keep the story going, 
+ALSO the text has to be on as few lines as possible, do it."""
         }
     ]
 
@@ -219,7 +220,12 @@ class InGameScreen(Screen):
         self.exit_button.bind(pos=self.update_exit_rounded_rect, size=self.update_exit_rounded_rect)
 
         # Create the text output window which shows the replies of chatgpt
-        self.label = Label(size_hint=(1, 0.8), font_size=16, color=(1, 1, 1, 1), outline_width=0, outline_color=(0, 0, 0, 0), text_size=(1280, 960), padding=(20, 710, 20, 20), valign='top')
+        self.label = Label(size_hint=(1, 0.8), font_size=16, color=(1, 1, 1, 1),
+                        outline_width=0, outline_color=(0, 0, 0, 0),
+                        text_size=(self.width - 40, None),  # Ensure width matches the label's size
+                        padding=(0, 640, 0 ,0),  # Adjust padding to provide space around text
+                        valign='top', halign='left')  # Set vertical and horizontal alignment
+        self.label.bind(size=self.update_label_text_size)  # Bind size updates for responsive behavior
 
         # Add a rounded rectangle behind the text input to create a rounded effect
         with self.layout.canvas.before:
@@ -251,6 +257,9 @@ class InGameScreen(Screen):
 
         self.messages = []
 
+        # Bind window resize to dynamically update text layout
+        Window.bind(on_resize=self.update_label_text_size)
+
         self.main_menu()
 
     def on_enter(self, *args):
@@ -281,6 +290,11 @@ class InGameScreen(Screen):
         # Update the rounded rectangle position and size to stay behind the input field
         self.input_bg.pos = (self.input.x - 5, self.input.y - 5)
         self.input_bg.size = (self.input.width + 10, self.input.height + 10)
+
+    def update_label_text_size(self, *args):
+        # Update the label's text size dynamically based on the window size
+        self.label.text_size = (self.width - 40, None)  # 40 is for padding adjustments
+        self.label.texture_update()
 
     def main_menu(self):
         self.label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
