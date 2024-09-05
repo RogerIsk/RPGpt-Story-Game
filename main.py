@@ -32,23 +32,51 @@ pc = PC("pc_sheet.json")
 
 # regex code to fetch from chatgpt to trigger python events
 start_combat = "START_COMBAT"
+end_combat = "END_COMBAT"
+game_over = "GAME_OVER"
+
+# non-regex strings to display in game window
+enter_end = "PRESS ENTER TO EXIT THE GAME..."
 
 
-def check_response(response_text):
-    '''Check for specific text strings in the response'''
+def check_instructions(response_text):
+    '''Check for specific text strings in the response and trigger actions if program instructions are found'''
     # Define the regex pattern to match [START_COMBAT, enemy_name]
-    pattern = r'\[START_COMBAT, ([a-zA-Z0-9_]+)\]'
-    
+    start_combat_pattern = r'\[START_COMBAT, ([a-zA-Z0-9_]+)\]'
     # Search for the pattern in the response text
-    match = re.search(pattern, response_text)
-    
-    if match:
-        # Extract the enemy_name from the match
-        npc_id = match.group(1)
-        npc = NPC("npcs.json", npc_id)
+    start_combat_match = re.search(start_combat_pattern, response_text)
 
+    # Define the regex pattern to match [GAME_OVER]
+    game_over_pattern = r'\[GAME_OVER\]'
+    game_over_match = re.search(game_over_pattern, response_text)
+    
+    if start_combat_match:
+        # Extract the enemy_name from the match
+        npc_id = start_combat_match.group(1)
+        npc = NPC("npcs.json", npc_id)
         # Start combat with the extracted npc
-        combat(pc, npc)
+        combat_result = combat(pc, npc)
+        # When combat is over, send result to chatgpt
+        send_auto_instructions(combat_result)
+
+    elif game_over_match:
+        # exit the game when chatgpt returns game over
+        exit()
+
+
+def send_auto_instructions(message):
+    '''Send automated instructions to ChatGPT'''
+    messages = [
+        {
+            "role": "system",
+            "content": "Automated message based on game condition"
+        },
+        {
+            "role": "user",
+            "content": message
+        }
+    ]
+    get_response(messages)
 
 
 # GETTING A RESPONSE FROM OPENAI GPT
@@ -57,13 +85,13 @@ def get_response(messages):
     messages=messages,
     temperature=0.7,
     n=1,
-    max_tokens=150, 
+    max_tokens=4000, 
     presence_penalty=0,
     frequency_penalty=0)
 
     # extracts the content of the first choice from the response
     response_text = response.choices[0].message.content
-    check_response(response_text)
+    check_instructions(response_text)
 
     return response.choices[0].message.content
 
@@ -87,7 +115,8 @@ After that, you will tell the character the situation they start in and ask for 
 You will adapt the situation to the actions the player tells you they do and keep on the storytelling for a short time before asking the player for a new choice,
 and act just like a game master would in a tabletop RPG.
 You can invent specific locations for the story to take place, but it should always be among the following kind of areas:
-forest, mountain, swamp, prairie, desert, farming country.
+Outside: forest, mountain, swamp, prairie, desert, farming country.
+Inside: crypt, castle, inn or house
 Try to keep the chnge of environments plausible:
 for example, it will take some time for a character to leave a big forest or a large and rich cultivated farming land.
 You can refuse a character's action and give the same choice again, if the action seems impossible or unplausible for the world or the situation.
@@ -96,10 +125,19 @@ The storyline you develp should keep some continuity and internal coherence, eve
 For example, you should remember characters names and actions. And the player should be able to progress towards a same goal through several choices and answers.
 It means characters should be able to finish a quest/mission they take or are given throughout the game.
 Whenever the character will use quotes " or ' it means it's their character talking. You will treat it as such.
-The character might encounter different npcs from the following list: {npc_stats} You will inclue these encounters in the game.
-It can happen that the npcs and the PC are hostile to each other and engage in combat.
-If so, you will say so and add this with this exact formatting: [{start_combat}, enemy_name]
+The character might encounter different npcs, especially from the following list: {npc_stats} You will include these encounters in the game.
+DO NOT always show the same npc first. The npc should be coherent with the story and environment.
+It can happen that the npcs from this list and the PC are hostile to each other and engage in combat.
+Some npcs will attack the player on sight anyway, while some encounters might end up peacefully if the player tries to and succeeds.
+If a combat starts, you will say so and add this with this exact formatting: [{start_combat}, enemy_name]
 enemy_name will be replaced by the enemy name, without capitals and with a _ replacing all spaces in it.
+You will not simulate the combat, it will happen outside of your scope. But you will receive an input about the combat result.
+It will be formatted as such is the player has won: [{end_combat}, WON]
+And as such is the player has lost: [{end_combat}, LOST]
+If player won, you will continue the story accordingly.
+If player loses, you will announce their death in a lyric way, display a game over message and this message at the end: {enter_end}
+You will wait for the next user input and then WHATEVER THAT INPUT IS you will ALWAYS return ONLY this VERY specific text: [{game_over}]
+The program will then exit and the game with you stop. Thank you for your service, pal.
 Your basic scenario pitch is: {pitch}"""
         }
     ]
