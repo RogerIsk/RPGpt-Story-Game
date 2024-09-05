@@ -10,42 +10,106 @@ ScreenManager:
 <MenuScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: 100, 200, 100, 180  # Adjusted padding to bring buttons down
+        padding: 100, 200, 100, 180
         canvas.before:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'Program_Files/main_menu_background.jpg'  # Path to your background image
+                source: 'Program_Files/main_menu_background.jpg'
 
         HoverButton:
             text: 'New'
-            font_name: 'Program_Files/medieval_font_file_2.ttf'  # Path to your font
+            font_name: 'Program_Files/medieval_font_file_2.ttf'
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.38}
-            default_image: 'Program_Files/original_button_image.png'  # Path to your default image for 'New' button
-            hover_image: 'Program_Files/new_game_button.png'  # Path to your hover image for 'New' button
+            default_image: 'Program_Files/original_button_image.png'
+            hover_image: 'Program_Files/new_game_button.png'
             on_press: root.change_to_chat()
 
         HoverButton:
             text: 'Load'
-            font_name: 'Program_Files/medieval_font_file_2.ttf'  # Path to your font
+            font_name: 'Program_Files/medieval_font_file_2.ttf'
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.62}
-            default_image: 'Program_Files/original_button_image.png'  # Path to your default image for 'Load' button
-            hover_image: 'Program_Files/load_game_button.png'  # Path to your hover image for 'Load' button
+            default_image: 'Program_Files/original_button_image.png'
+            hover_image: 'Program_Files/load_game_button.png'
             on_press: app.stop()
 
         HoverButton:
             text: 'Die'
-            font_size: 70 
-            font_name: 'Program_Files/medieval_font_file_2.ttf'  # Path to your font
+            font_size: 70
+            font_name: 'Program_Files/medieval_font_file_2.ttf'
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.49}
-            default_image: 'Program_Files/original_button_image.png'  # Path to your default image for 'Die' button
-            hover_image: 'Program_Files/exit_game_button.png'  # Path to your hover image for 'Die' button
+            default_image: 'Program_Files/original_button_image.png'
+            hover_image: 'Program_Files/exit_game_button.png'
             on_press: app.stop()
+
+<InGameScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                source: 'Program_Files/in-game_background.png'
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: 40
+            padding: 0
+            spacing: 20
+            pos_hint: {'top': 1}
+
+            HoverButtonRounded:
+                text: 'Back'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_normal: ''
+                background_color: (0.4, 0.7, 0.7, 0)
+                on_release: root.go_back_to_menu(self)
+
+            HoverButtonRounded:
+                text: 'Exit'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_normal: ''
+                background_color: (0.4, 0.7, 0.7, 0)
+                on_release: root.exit_app(self)
+                
+        # Main content area
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (1, 0.9)
+
+            Label:
+                id: output_label
+                size_hint: (1, 0.8)
+                font_size: 16
+                color: (1, 1, 1, 1)
+                outline_width: 0
+                outline_color: (0, 0, 0, 0)
+                text_size: (self.width - 40, None)
+                padding: (0, 600, 0, 0)
+                valign: 'top'
+                halign: 'left'
+
+            TextInput:
+                id: input_text
+                size_hint: (1, 0.045)
+                font_size: 30
+                font_name: 'Program_Files/medieval_font_file.ttf'
+                background_color: (1, 1, 1, 1)
+                multiline: False
+                padding: (15, 10, 15, 10)
+                on_text_validate: root.on_text_enter(self)
 
 <HoverButton@Button>:
     background_color: 0, 0, 0, 0
@@ -53,4 +117,4 @@ ScreenManager:
         Rectangle:
             pos: self.pos
             size: self.size
-            source: self.default_image  # Use default image initially
+            source: self.default_image
