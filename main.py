@@ -152,7 +152,7 @@ class InGameScreen(Screen):
         super(InGameScreen, self).__init__(**kwargs)
         self.layout = BoxLayout(orientation='vertical', padding=(20, 20, 20, 20))
 
-        # Add a background image to the in-game window and give it instructions on how to behave
+        # Add a background image to the in-game window
         with self.canvas.before:
             Color(1, 1, 1, 1)
             self.bg_rect = Rectangle(source='Program_Files/in-game_background.png', pos=self.pos, size=self.size)
@@ -163,12 +163,11 @@ class InGameScreen(Screen):
             text='Back',
             size_hint=(None, None),
             size=(100, 50),
-            pos_hint={'x': 0.01, 'top': 0.99},  # Adjusted to add padding from the left
-            background_normal='',  # Disable default background
-            background_color=(0, 0, 0, 0)  # Transparent to show the rounded rectangle
-        )
+            pos_hint={'x': 0.01, 'top': 0.99},
+            background_normal='',  
+            background_color=(0, 0, 0, 0))  
         self.back_button.bind(on_release=self.go_back_to_menu)
-        Window.bind(mouse_pos=self.on_mouse_pos)  # Bind mouse position for hover detection
+        Window.bind(mouse_pos=self.on_mouse_pos)
         self.add_widget(self.back_button)
 
         # Create the Exit button
@@ -176,28 +175,25 @@ class InGameScreen(Screen):
             text='Exit',
             size_hint=(None, None),
             size=(100, 50),
-            pos_hint={'x': 0.9115, 'top': 0.988},  # Adjusted to add padding between the buttons and from the left
+            pos_hint={'x': 0.9115, 'top': 0.988},
             background_normal='',
-            background_color=(0, 0, 0, 0)
-        )
+            background_color=(0, 0, 0, 0))
         self.exit_button.bind(on_release=self.exit_app)
         self.add_widget(self.exit_button)
 
         # Draw the shadow and rounded rectangle for the Back button
         with self.back_button.canvas.before:
-            self.shadow_color = Color(0, 0, 0, 0.2)  # Shadow color with transparency
+            self.shadow_color = Color(0, 0, 0, 0.2)  
             self.shadow_rect = RoundedRectangle(
                 pos=(self.back_button.x + 2, self.back_button.y - 2),
                 size=self.back_button.size,
-                radius=[15]  # Set the radius here to adjust roundness
-            )
+                radius=[15])
 
             self.bg_color = Color(0.2, 0.3, 0.3, 1)  # Default button color
             self.rounded_rect = RoundedRectangle(
                 pos=self.back_button.pos,
                 size=self.back_button.size,
-                radius=[15]  # Set the radius here to adjust roundness
-            )
+                radius=[15])
 
         # Draw the shadow and rounded rectangle for the Exit button
         with self.exit_button.canvas.before:
