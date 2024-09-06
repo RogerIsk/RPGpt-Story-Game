@@ -4,6 +4,8 @@
 ScreenManager:
     MenuScreen:
         name: 'menu'
+    CharacterCreation:
+        name: 'character_creation'
     InGameScreen:
         name: 'ingame'
 
@@ -46,6 +48,109 @@ ScreenManager:
             default_image: 'Program_Files/original_button_image.png'
             hover_image: 'Program_Files/exit_game_button.png'
             on_press: app.stop()
+
+<CharacterCreation>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: 'Program_Files/background_image.png'  # Ensure this image is in your folder
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, 0.3)
+            spacing: 20
+            padding: [50, 0, 50, 0]
+            
+            Button:
+                id: male_button
+                background_normal: 'Program_Files/male_image.png'
+                background_down: 'Program_Files/male_image_selected.png'
+                on_press: app.root.current_screen.ids.male_button.state = 'down'
+                on_release: root.select_gender('male')
+            
+            Button:
+                id: female_button
+                background_normal: 'Program_Files/female_image.png'
+                background_down: 'Program_Files/female_image_selected.png'
+                on_press: app.root.current_screen.ids.female_button.state = 'down'
+                on_release: root.select_gender('female')
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, 0.3)
+            spacing: 20
+            padding: [50, 0, 50, 0]
+
+            Button:
+                id: human_button
+                background_normal: 'Program_Files/human_image.png'
+                background_down: 'Program_Files/human_image_selected.png'
+                on_press: app.root.current_screen.ids.human_button.state = 'down'
+                on_release: root.select_species('human')
+
+            Button:
+                id: elf_button
+                background_normal: 'Program_Files/elf_image.png'
+                background_down: 'Program_Files/elf_image_selected.png'
+                on_press: app.root.current_screen.ids.elf_button.state = 'down'
+                on_release: root.select_species('elf')
+
+            Button:
+                id: dwarf_button
+                background_normal: 'Program_Files/dwarf_image.png'
+                background_down: 'Program_Files/dwarf_image_selected.png'
+                on_press: app.root.current_screen.ids.dwarf_button.state = 'down'
+                on_release: root.select_species('dwarf')
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, 0.3)
+            spacing: 20
+            padding: [50, 0, 50, 0]
+
+            Button:
+                id: warrior_button
+                background_normal: 'Program_Files/warrior_image.png'
+                background_down: 'Program_Files/warrior_image_selected.png'
+                on_press: app.root.current_screen.ids.warrior_button.state = 'down'
+                on_release: root.select_class('warrior')
+
+            Button:
+                id: ranger_button
+                background_normal: 'Program_Files/ranger_image.png'
+                background_down: 'Program_Files/ranger_image_selected.png'
+                on_press: app.root.current_screen.ids.ranger_button.state = 'down'
+                on_release: root.select_class('ranger')
+
+            Button:
+                id: mage_button
+                background_normal: 'Program_Files/mage_image.png'
+                background_down: 'Program_Files/mage_image_selected.png'
+                on_press: app.root.current_screen.ids.mage_button.state = 'down'
+                on_release: root.select_class('mage')
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, 0.1)
+            padding: [50, 20, 50, 20]
+            spacing: 20
+            
+            Button:
+                text: 'Back'
+                on_release: app.root.current = 'menu'
+
+            Button:
+                text: 'Create'
+                on_release: app.root.current = 'ingame'
+
+
+
+
+
+
 
 <InGameScreen>:
     BoxLayout:

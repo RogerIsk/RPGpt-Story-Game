@@ -94,7 +94,7 @@ ALSO the text has to be on as fewer lines as possible."""
         }
     ]
 
-    bot_response = get_response(messages)
+    bot_response = get_response(messages) 
     messages.append({"role": "assistant", "content": bot_response})
 
     # Correct the label reference
@@ -181,20 +181,11 @@ class HoverButton(Button):                  # Special effects for main menu butt
 
 class MenuScreen(Screen):                   # this class lets us give functionality to our widgets in the main menu
     def change_to_chat(self):
-        self.manager.current = 'ingame'
+        self.manager.current = 'character_creation'
 
-class StatsPopup(Popup):
-    def __init__(self, **kwargs):
-        super(StatsPopup, self).__init__(**kwargs)
-        self.title = ''
-        self.size_hint = (None, None)
-        self.size = (400, 300)  # Set the size of the popup window
-        self.background = ''    # Remove default popup background
-        self.background_color = (0, 0, 0, 0)  # Make the default background transparent
-        
-        # Add the image as the background of the popup
-        self.content = Image(source='Program_Files/statistics_background.png')  # Use your desired image path
 
+class CharacterCreation(Screen):
+    pass
 
 
 # This is the only thing you need to work with - Anton, Dennis and Morgane
@@ -250,6 +241,16 @@ class InGameScreen(Screen):                 # this class lets us give functional
 
     def exit_app(self, instance):           # 'Exit' button functionality
         App.get_running_app().stop()
+
+class StatsPopup(Popup):                    # 'Statistics' button visual part - what you see after you hover your mouse on 'Statistics'
+    def __init__(self, **kwargs):
+        super(StatsPopup, self).__init__(**kwargs)
+        self.title = ''
+        self.size_hint = (None, None)
+        self.size = (400, 300)              # Set the size of the popup window
+        self.background = ''                # Remove default popup background
+        self.background_color = (0, 0, 0, 0)  # Make the default background transparent
+        self.content = Image(source='Program_Files/statistics_background.png')  # background image for the stats window
 
 class RPGApp(App):                          # General GUI options
     def build(self):
