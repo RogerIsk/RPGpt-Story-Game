@@ -69,16 +69,26 @@ ScreenManager:
             size_hint: (1, 0.3)
             spacing: 20
             padding: [50, 0, 50, 0]
-            
+
+            RelativeLayout:
+                Image:
+                    id: male_gif
+                    source: 'Program_Files/character_creation_pics/test_gif.gif'
+                    anim_delay: 0.1  # Controls the animation speed of the GIF
+                    allow_stretch: True
+                    keep_ratio: True
+
+                Button:
+                    id: male_button  # Correctly defining the id
+                    background_color: (0, 0, 0, 0)  # Make the button invisible
+                    background_normal: ''
+                    on_press:
+                        root.select_gender('male')
+                        male_gif.source = 'Program_Files/character_creation_pics/unselected_male.gif'  # Change GIF when pressed
+                        male_gif.anim_delay = 0.1  # Set anim_delay to control the animation speed of the new GIF
+
             ToggleButton:
-                id: male_button
-                group: 'gender'
-                background_normal: 'Program_Files/character_creation_pics/male_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/male_symbol_v3.png'
-                on_press: root.select_gender('male')
-            
-            ToggleButton:
-                id: female_button
+                id: female_button  # Correctly defining the id
                 group: 'gender'
                 background_normal: 'Program_Files/character_creation_pics/female_symbol_v2.png'
                 background_down: 'Program_Files/character_creation_pics/female_symbol_v3.png'
@@ -161,8 +171,9 @@ ScreenManager:
                 text: 'Create'
                 disabled: True
                 on_release: root.validate_selection()
-                background_color: [0, 0, 0, 0]
+                background_color: [0.5, 0.5, 0.5, 0]  # Default grey when disabled
                 background_normal: ''
+        
 
 
 <InGameScreen>:

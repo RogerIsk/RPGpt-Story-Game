@@ -160,27 +160,34 @@ class CharacterCreation(Screen):
         self.selected_class = None
 
     def select_gender(self, gender):
-        self.selected_gender = gender
-        print(f"Selected gender: {gender}")
+        # Ensure the gender is selected correctly and handle the button states
+        male_button_state = self.ids.male_button.state
+        female_button_state = self.ids.female_button.state
+
+        # Set selected gender based on which button is pressed
+        self.selected_gender = gender if male_button_state == 'down' or female_button_state == 'down' else None
+
+        # Update the GIF and anim_delay when the male button is pressed
+        if gender == 'male' and male_button_state == 'down':
+            self.ids.male_gif.source = 'Program_Files/character_creation_pics/unselected_male.gif'  # Change GIF when pressed
+            self.ids.male_gif.anim_delay = 0.1  # Set anim_delay to control the animation speed of the new GIF
+        
+        # Call to update the state of the create button based on the current selection
         self.update_create_button_state()
 
     def select_species(self, species):
-        self.selected_species = species
-        print(f"Selected species: {species}")
+        self.selected_species = species if self.ids.human_button.state == 'down' or self.ids.elf_button.state == 'down' or self.ids.dwarf_button.state == 'down' else None
         self.update_create_button_state()
 
     def select_class(self, char_class):
-        self.selected_class = char_class
-        print(f"Selected class: {char_class}")
+        self.selected_class = char_class if self.ids.warrior_button.state == 'down' or self.ids.ranger_button.state == 'down' or self.ids.mage_button.state == 'down' else None
         self.update_create_button_state()
 
     def update_create_button_state(self):
         # Ensure that all selections are made before enabling the button
         if self.selected_gender and self.selected_species and self.selected_class:
-            print("All selections made. Enabling the 'Create' button.")
             self.ids.create_button.disabled = False
         else:
-            print("Selections incomplete. Disabling the 'Create' button.")
             self.ids.create_button.disabled = True
 
     def validate_selection(self):
