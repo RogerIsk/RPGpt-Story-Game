@@ -36,9 +36,68 @@ key_data = read_json_file("Program_Files/key.json")
 api_key = key_data["api_key"]
 client = OpenAI(api_key = api_key)
 
+# regex code to fetch from chatgpt to trigger python events
+start_combat = "START_COMBAT"
+end_combat = "END_COMBAT"
+game_over = "GAME_OVER"
+
+
+
+# non-regex strings to display in game window
+enter_end = "PRESS ENTER TO EXIT THE GAME..."
 
 
 # Communicating with ChatGPT ===========================================================================
+
+# THE FOLLOWING METHODS ARE CURRENTLY NOT WORKING AND COMMENTED OUT
+# THIS WAS MY IDEA AT USING REGEX TO FEED AND FETCH PROGRAM INSTRUCTIONS WITH CHATGPT
+# I DONT MANAGE TO RUN THEM AT THE RIGHT MOMENT IN THE CODE WITHOUT FUCKING UP THE CHATGPT INTERACTION THOUGH
+# TO REMOVE IF USELESS
+
+# def check_instructions(response_text):
+#     # THIS FUNCTION IS CURRENTLY NOT WORKING - MG
+#     '''Check for specific text strings in the response and trigger actions if program instructions are found'''
+#     # Define the regex pattern to match [START_COMBAT, enemy_name]
+#     start_combat_pattern = r'\[START_COMBAT, ([a-zA-Z0-9_]+)\]'
+#     # Search for the pattern in the response text
+#     start_combat_match = re.search(start_combat_pattern, response_text)
+
+#     # Define the regex pattern to match [GAME_OVER]
+#     game_over_pattern = r'\[GAME_OVER\]'
+#     game_over_match = re.search(game_over_pattern, response_text)
+    
+#     if start_combat_match:
+#         # Extract the enemy_name from the match
+#         npc_id = start_combat_match.group(1)
+#         npc = npc_data_from_database
+#         # Start combat with the extracted npc
+#         # Will have to import the combat method from the file where it is
+#         combat_result = combat(pc, npc)
+#         # When combat is over, send result to chatgpt
+#         send_auto_instructions(combat_result)
+
+#     elif game_over_match:
+#         # exit the game when chatgpt returns game over
+#         exit()
+
+
+# def send_auto_instructions(message):
+#     # THIS FUNCTION IS CURRENTLY NOT WORKING - MG
+#     '''Send automated instructions to ChatGPT'''
+#     messages = [
+#         {
+#             "role": "system",
+#             "content": "Automated message based on game condition"
+#         },
+#         {
+#             "role": "user",
+#             "content": message
+#         }
+#     ]
+#     get_response(messages)
+
+
+# NOW BACK TO WORKING CODE
 def get_response(messages):
     response = client.chat.completions.create(model=model,
     messages=messages,

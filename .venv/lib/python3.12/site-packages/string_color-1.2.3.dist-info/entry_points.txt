@@ -1,0 +1,3 @@
+[console_scripts]
+string-color = stringcolor.main:main
+
