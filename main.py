@@ -25,6 +25,7 @@ import os
 # Replace with your actual API key ===========================================================================
 model = "gpt-4"
 
+
 def read_json_file(file_path):
     '''Read the data from a json file'''
     # we use this to import the api key
@@ -36,9 +37,68 @@ key_data = read_json_file("Program_Files/key.json")
 api_key = key_data["api_key"]
 client = OpenAI(api_key = api_key)
 
+# regex code to fetch from chatgpt to trigger python events
+start_combat = "START_COMBAT"
+end_combat = "END_COMBAT"
+game_over = "GAME_OVER"
+
+
+
+# non-regex strings to display in game window
+enter_end = "PRESS ENTER TO EXIT THE GAME..."
 
 
 # Communicating with ChatGPT ===========================================================================
+
+# THE FOLLOWING METHODS ARE CURRENTLY NOT WORKING AND COMMENTED OUT
+# THIS WAS MY IDEA AT USING REGEX TO FEED AND FETCH PROGRAM INSTRUCTIONS WITH CHATGPT
+# I DONT MANAGE TO RUN THEM AT THE RIGHT MOMENT IN THE CODE WITHOUT FUCKING UP THE CHATGPT INTERACTION THOUGH
+# TO REMOVE IF USELESS
+
+# def check_instructions(response_text):
+#     # THIS FUNCTION IS CURRENTLY NOT WORKING - MG
+#     '''Check for specific text strings in the response and trigger actions if program instructions are found'''
+#     # Define the regex pattern to match [START_COMBAT, enemy_name]
+#     start_combat_pattern = r'\[START_COMBAT, ([a-zA-Z0-9_]+)\]'
+#     # Search for the pattern in the response text
+#     start_combat_match = re.search(start_combat_pattern, response_text)
+
+#     # Define the regex pattern to match [GAME_OVER]
+#     game_over_pattern = r'\[GAME_OVER\]'
+#     game_over_match = re.search(game_over_pattern, response_text)
+    
+#     if start_combat_match:
+#         # Extract the enemy_name from the match
+#         npc_id = start_combat_match.group(1)
+#         npc = npc_data_from_database
+#         # Start combat with the extracted npc
+#         # Will have to import the combat method from the file where it is
+#         combat_result = combat(pc, npc)
+#         # When combat is over, send result to chatgpt
+#         send_auto_instructions(combat_result)
+
+#     elif game_over_match:
+#         # exit the game when chatgpt returns game over
+#         exit()
+
+
+# def send_auto_instructions(message):
+#     # THIS FUNCTION IS CURRENTLY NOT WORKING - MG
+#     '''Send automated instructions to ChatGPT'''
+#     messages = [
+#         {
+#             "role": "system",
+#             "content": "Automated message based on game condition"
+#         },
+#         {
+#             "role": "user",
+#             "content": message
+#         }
+#     ]
+#     get_response(messages)
+
+
+# NOW BACK TO WORKING CODE
 def get_response(messages):
     response = client.chat.completions.create(model=model,
     messages=messages,
@@ -67,30 +127,42 @@ for which we didnt ask you will simply ignore it.
 After that, you will tell the character the situation they start in and ask for an open input of what they do. The rest of the game will be played similarly:
 You will adapt the situation to the actions the player tells you they do and keep on the storytelling for a short time before asking the player for a new choice,
 and act just like a game master would in a tabletop RPG.
+
+You can invent specific locations for the story to take place, but it should always be among the following kind of areas:
+Outside: forest, mountain, swamp, prairie, desert, farming country.
+Inside: crypt, castle, inn or house
+Try to keep the chnge of environments plausible:
+for example, it will take some time for a character to leave a big forest or a large and rich cultivated farming land.
+
 You can refuse a character's action and give the same choice again, if the action seems impossible or unplausible for the world or the situation.
 But the player can take any action their character could physically take, even if it would be risky or illogical for the character.
 The storyline you develp should keep some continuity and internal coherence, even when adapting to the player's actions.
 For example, you should remember characters' names and actions. And the player should be able to progress towards a same goal through several choices and answers.
 It means characters should be able to finish a quest/mission they take or are given throughout the game.
 Whenever the character will use quotes " or ' it means it's their character talking. You will treat it as such.
-The game will use a simple version of the DnD 5e rules. It means the main character and NPCs will have characteristics that you'll generate whenever is needed.
-(When the player will interact with or fight a NPC mostly) Once created, a character's characteristics shall remain consequent throughout the game.
-The player will start as a level one character with characteristics fitting the introduction they gave and the DnD 5e rules.
-Enemies and challenges should be more or less scaled to the character's level.
-NPCs should also have characteristics fitting them and the 5e NPC characteristics.
-The player should be able to interact with the environment and NPCs and fight NPCs, using simplified Dnd 5e combat and skills rules.
-This means that whenever a challenge presents for the player, they'll do a dice roll for the fitting skill/ability and get a result.
-If the result fits a given DC for the task, it will pass.
-Similarly, dice rolls will be used and displayed in combat, consistently with the character's characteristics and the DND 5e rules.
-You will always ask the player to press enter to do the dice roll.
-Numbers and characteristics will remain consistent during combat and throughout the game.
-For example, character's hit points should remain the same unless they get healed, rest or get hurt. Same for AC, abilities or weapon damage.
-(only using abilities, ability bonuses, skills and combat stats such as weapons, AC and HP)
+
+
+The character might encounter different npcs, especially from the following list: <INSERT THE NPC LIST FROM THE DATABASE> You will include these encounters in the game.
+DO NOT always show the same npc first. The npc should be coherent with the story and environment.
+It can happen that the npcs from this list and the PC are hostile to each other and engage in combat.
+Some npcs will attack the player on sight anyway, while some encounters might end up peacefully if the player tries to and succeeds.
+If a combat starts, you will say so and add this with this exact formatting: [{start_combat}, enemy_name]
+enemy_name will be replaced by the enemy name, without capitals and with a _ replacing all spaces in it.
+
+You will not simulate the combat, it will happen outside of your scope. But you will receive an input about the combat result.
+It will be formatted as such is the player has won: [{end_combat}, WON]
+And as such is the player has lost: [{end_combat}, LOST]
+If player won, you will continue the story accordingly.
+If player loses, you will announce their death in a lyric way, display a game over message and this message at the end: {enter_end}
+You will wait for the next user input and then WHATEVER THAT INPUT IS you will ALWAYS return ONLY this VERY specific text: [{game_over}]
+The program will then exit and the game with you stop. Thank you for your service, pal.
+
 Your replies will never be over a maximum limit of 150 tokens and at the end of each reply you will show the number of turns passed which is a maximum of 250 turns.
 This is the first thing you say to the user: 'Welcome player!\nCreate your own character or leave blank for random\n' the random character will be create
 with one of each of these options: Name (random), Race (Human, Elf, Dwarf), Sex (Male, Female), class (Warrior, Ranger, Mage), after that create a good rpg adventure pitch. 
-It should be set in either a medieval fantasy world, a sci-fi world or a cyberpunk world. Its up to you to keep the story going, 
-ALSO the text has to be on as fewer lines as possible."""
+It should be set in a medieval fantasy world. Its up to you to keep the story going, 
+ALSO the text has to be on as fewer lines as possible.
+"""
         }
     ]
 
