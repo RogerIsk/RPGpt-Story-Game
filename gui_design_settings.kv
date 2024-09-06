@@ -56,7 +56,7 @@ ScreenManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'Program_Files/background_image.png'  # Ensure this image is in your folder
+                source: 'Program_Files/character_creation/background_image.png'  # Ensure this image is in your folder
         
         BoxLayout:
             orientation: 'horizontal'
@@ -64,19 +64,19 @@ ScreenManager:
             spacing: 20
             padding: [50, 0, 50, 0]
             
-            Button:
+            ToggleButton:
                 id: male_button
-                background_normal: 'Program_Files/male_image.png'
-                background_down: 'Program_Files/male_image_selected.png'
-                on_press: app.root.current_screen.ids.male_button.state = 'down'
-                on_release: root.select_gender('male')
+                group: 'gender'
+                background_normal: 'Program_Files/character_creation_pics/male_symbol_v2.png'
+                background_down: 'Program_Files/character_creation_pics/male_symbol_v3.png'
+                on_press: root.select_gender('male')
             
-            Button:
+            ToggleButton:
                 id: female_button
-                background_normal: 'Program_Files/female_image.png'
-                background_down: 'Program_Files/female_image_selected.png'
-                on_press: app.root.current_screen.ids.female_button.state = 'down'
-                on_release: root.select_gender('female')
+                group: 'gender'
+                background_normal: 'Program_Files/character_creation_pics/female_symbol_v2.png'
+                background_down: 'Program_Files/character_creation_pics/female_symbol_v3.png'
+                on_press: root.select_gender('female')
 
         BoxLayout:
             orientation: 'horizontal'
@@ -84,26 +84,26 @@ ScreenManager:
             spacing: 20
             padding: [50, 0, 50, 0]
 
-            Button:
+            ToggleButton:
                 id: human_button
-                background_normal: 'Program_Files/human_image.png'
-                background_down: 'Program_Files/human_image_selected.png'
-                on_press: app.root.current_screen.ids.human_button.state = 'down'
-                on_release: root.select_species('human')
+                group: 'species'
+                background_normal: 'Program_Files/character_creation_pics/1class_warrior_symbol_v2.png'
+                background_down: 'Program_Files/character_creation_pics/1class_warrior_symbol_v3.png'
+                on_press: root.select_species('human')
 
-            Button:
+            ToggleButton:
                 id: elf_button
-                background_normal: 'Program_Files/elf_image.png'
-                background_down: 'Program_Files/elf_image_selected.png'
-                on_press: app.root.current_screen.ids.elf_button.state = 'down'
-                on_release: root.select_species('elf')
+                group: 'species'
+                background_normal: 'Program_Files/character_creation_pics/1class_warrior_symbol_v2.png'
+                background_down: 'Program_Files/character_creation_pics/1class_warrior_symbol_v3.png'
+                on_press: root.select_species('elf')
 
-            Button:
+            ToggleButton:
                 id: dwarf_button
-                background_normal: 'Program_Files/dwarf_image.png'
-                background_down: 'Program_Files/dwarf_image_selected.png'
-                on_press: app.root.current_screen.ids.dwarf_button.state = 'down'
-                on_release: root.select_species('dwarf')
+                group: 'species'
+                background_normal: 'Program_Files/character_creation_pics/1class_warrior_symbol_v2.png'
+                background_down: 'Program_Files/character_creation_pics/1class_warrior_symbol_v3.png'
+                on_press: root.select_species('dwarf')
 
         BoxLayout:
             orientation: 'horizontal'
@@ -111,26 +111,26 @@ ScreenManager:
             spacing: 20
             padding: [50, 0, 50, 0]
 
-            Button:
+            ToggleButton:
                 id: warrior_button
-                background_normal: 'Program_Files/warrior_image.png'
-                background_down: 'Program_Files/warrior_image_selected.png'
-                on_press: app.root.current_screen.ids.warrior_button.state = 'down'
-                on_release: root.select_class('warrior')
+                group: 'class'
+                background_normal: 'Program_Files/character_creation_pics/1class_warrior_symbol_v2.png'
+                background_down: 'Program_Files/character_creation_pics/1class_warrior_symbol_v3.png'
+                on_press: root.select_class('warrior')
 
-            Button:
+            ToggleButton:
                 id: ranger_button
-                background_normal: 'Program_Files/ranger_image.png'
-                background_down: 'Program_Files/ranger_image_selected.png'
-                on_press: app.root.current_screen.ids.ranger_button.state = 'down'
-                on_release: root.select_class('ranger')
+                group: 'class'
+                background_normal: 'Program_Files/character_creation_pics/2class_ranger_symbol_v2.png'
+                background_down: 'Program_Files/character_creation_pics/2class_ranger_symbol_v3.png'
+                on_press: root.select_class('ranger')
 
-            Button:
+            ToggleButton:
                 id: mage_button
-                background_normal: 'Program_Files/mage_image.png'
-                background_down: 'Program_Files/mage_image_selected.png'
-                on_press: app.root.current_screen.ids.mage_button.state = 'down'
-                on_release: root.select_class('mage')
+                group: 'class'
+                background_normal: 'Program_Files/character_creation_pics/3class_mage_symbol_v2.png'
+                background_down: 'Program_Files/character_creation_pics/3class_mage_symbol_v3.png'
+                on_press: root.select_class('mage')
 
         BoxLayout:
             orientation: 'horizontal'
@@ -143,8 +143,10 @@ ScreenManager:
                 on_release: app.root.current = 'menu'
 
             Button:
+                id: create_button
                 text: 'Create'
-                on_release: app.root.current = 'ingame'
+                disabled: True
+                on_release: root.validate_selection()
 
 
 
@@ -182,6 +184,14 @@ ScreenManager:
 
             HoverButtonRounded:
                 text: 'Statistics'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_normal: ''
+                background_color: (0.4, 0.7, 0.7, 0)
+
+            HoverButtonRounded:
+                text: 'Inventory'
                 size_hint: (None, None)
                 size: (120, 50)
                 font_size: 20
@@ -239,6 +249,7 @@ ScreenManager:
                 multiline: False
                 padding: (15, 10, 15, 10)
                 on_text_validate: root.on_text_enter(self)
+
 
 <HoverButton@Button>:
     background_color: 0, 0, 0, 0
