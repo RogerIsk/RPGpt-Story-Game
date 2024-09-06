@@ -1,0 +1,16 @@
+from stringcolor import cs, underline, bold
+
+print(cs("hello world", "red"))
+print(cs("here we go", "orchid"))
+print(cs("away to space!", "DeepPink3"))
+print(cs("final fantasy", "#ffff87"))
+print()
+print(cs("# bold and underline", "grey"))
+print(bold(cs("purple number 4, bold", "purple4")))
+print(underline(cs("blue, underlined", "blue")))
+print(bold(underline(cs("bold AND underlined!", "gold"))))
+print()
+print(cs("# background colors", "grey"))
+print(cs("warning!", "yellow", "#ff0000"))
+print()
+print(cs("string", "green").bold())
