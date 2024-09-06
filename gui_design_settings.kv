@@ -27,6 +27,8 @@ ScreenManager:
             pos_hint: {'center_x': 0.38}
             default_image: 'Program_Files/original_button_image.png'
             hover_image: 'Program_Files/new_game_button.png'
+            background_color: [0, 0, 0, 0]
+            background_normal: ''
             on_press: root.change_to_chat()
 
         HoverButton:
@@ -37,6 +39,8 @@ ScreenManager:
             pos_hint: {'center_x': 0.62}
             default_image: 'Program_Files/original_button_image.png'
             hover_image: 'Program_Files/load_game_button.png'
+            background_color: [0, 0, 0, 0]
+            background_normal: ''
             on_press: app.stop()
 
         HoverButton:
@@ -47,6 +51,8 @@ ScreenManager:
             pos_hint: {'center_x': 0.49}
             default_image: 'Program_Files/original_button_image.png'
             hover_image: 'Program_Files/exit_game_button.png'
+            background_color: [0, 0, 0, 0]
+            background_normal: ''
             on_press: app.stop()
 
 <CharacterCreation>:
@@ -56,8 +62,8 @@ ScreenManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'Program_Files/character_creation/background_image.png'  # Ensure this image is in your folder
-        
+                source: 'Program_Files/character_creation/background_image.png'
+    
         BoxLayout:
             orientation: 'horizontal'
             size_hint: (1, 0.3)
@@ -138,20 +144,25 @@ ScreenManager:
             padding: [50, 20, 50, 20]
             spacing: 20
             
-            Button:
+            HoverButtonRounded:
                 text: 'Back'
                 on_release: app.root.current = 'menu'
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
 
-            Button:
+            HoverButtonRounded:
+                text: 'Random'
+                on_release: app.root.current = 'menu'
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
+
+            HoverButtonRounded:
                 id: create_button
                 text: 'Create'
                 disabled: True
                 on_release: root.validate_selection()
-
-
-
-
-
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
 
 
 <InGameScreen>:
@@ -159,8 +170,6 @@ ScreenManager:
         orientation: 'vertical'
         padding: 20
         canvas.before:
-            Color:
-                rgba: 1, 1, 1, 1
             Rectangle:
                 source: 'Program_Files/in-game_background.png'
                 pos: self.pos
@@ -170,7 +179,7 @@ ScreenManager:
             size_hint_y: None
             height: 40
             padding: 0
-            spacing: 10  # Adjust spacing for better alignment
+            spacing: 10
             pos_hint: {'top': 1}
 
             HoverButtonRounded:
@@ -178,8 +187,8 @@ ScreenManager:
                 size_hint: (None, None)
                 size: (120, 50)
                 font_size: 20
+                background_color: [0, 0, 0, 0]
                 background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
                 on_release: root.go_back_to_menu(self)
 
             HoverButtonRounded:
@@ -187,51 +196,50 @@ ScreenManager:
                 size_hint: (None, None)
                 size: (120, 50)
                 font_size: 20
+                background_color: [0, 0, 0, 0]
                 background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
 
             HoverButtonRounded:
                 text: 'Inventory'
                 size_hint: (None, None)
                 size: (120, 50)
                 font_size: 20
+                background_color: [0, 0, 0, 0]
                 background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
 
             HoverButtonRounded:
                 text: 'History'
                 size_hint: (None, None)
                 size: (120, 50)
                 font_size: 20
+                background_color: [0, 0, 0, 0]
                 background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
 
             HoverButtonRounded:
                 text: 'Load'
                 size_hint: (None, None)
                 size: (120, 50)
                 font_size: 20
+                background_color: [0, 0, 0, 0]
                 background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
 
             HoverButtonRounded:
                 text: 'Save'
                 size_hint: (None, None)
                 size: (120, 50)
                 font_size: 20
+                background_color: [0, 0, 0, 0]
                 background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
 
             HoverButtonRounded:
                 text: 'Exit'
                 size_hint: (None, None)
                 size: (120, 50)
                 font_size: 20
+                background_color: [0, 0, 0, 0]
                 background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
                 on_release: root.exit_app(self)
 
-        # Main content area
         BoxLayout:
             orientation: 'vertical'
             size_hint: (1, 0.9)
@@ -241,10 +249,6 @@ ScreenManager:
                 size_hint: (1, 0.8)
                 font_size: 16
                 color: (1, 1, 1, 1)
-                outline_width: 0
-                outline_color: (0, 0, 0, 0)
-                text_size: (self.width - 40, None)
-                padding: (0, 600, 0, 0)
                 valign: 'top'
                 halign: 'left'
 
@@ -252,17 +256,6 @@ ScreenManager:
                 id: input_text
                 size_hint: (1, 0.045)
                 font_size: 30
-                font_name: 'Program_Files/medieval_font_file.ttf'
-                background_color: (1, 1, 1, 1)
                 multiline: False
                 padding: (15, 10, 15, 10)
                 on_text_validate: root.on_text_enter(self)
-
-
-<HoverButton@Button>:
-    background_color: 0, 0, 0, 0
-    canvas.before:
-        Rectangle:
-            pos: self.pos
-            size: self.size
-            source: self.default_image

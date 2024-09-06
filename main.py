@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, RoundedRectangle
-from kivy.graphics import Rectangle, Color
+from kivy.graphics import Rectangle
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.animation import Animation
@@ -19,9 +19,6 @@ import json
 import sys
 import os
 
-
-
-
 # Replace with your actual API key ===========================================================================
 model = "gpt-4o"
 
@@ -34,70 +31,12 @@ def read_json_file(file_path):
 # import the api key and create a client using it
 key_data = read_json_file("Program_Files/key.json")    
 api_key = key_data["api_key"]
-client = OpenAI(api_key = api_key)
-
-# regex code to fetch from chatgpt to trigger python events
-start_combat = "START_COMBAT"
-end_combat = "END_COMBAT"
-game_over = "GAME_OVER"
-
-
+client = OpenAI(api_key=api_key)
 
 # non-regex strings to display in game window
 enter_end = "PRESS ENTER TO EXIT THE GAME..."
 
-
 # Communicating with ChatGPT ===========================================================================
-
-# THE FOLLOWING METHODS ARE CURRENTLY NOT WORKING AND COMMENTED OUT
-# THIS WAS MY IDEA AT USING REGEX TO FEED AND FETCH PROGRAM INSTRUCTIONS WITH CHATGPT
-# I DONT MANAGE TO RUN THEM AT THE RIGHT MOMENT IN THE CODE WITHOUT FUCKING UP THE CHATGPT INTERACTION THOUGH
-# TO REMOVE IF USELESS
-
-# def check_instructions(response_text):
-#     # THIS FUNCTION IS CURRENTLY NOT WORKING - MG
-#     '''Check for specific text strings in the response and trigger actions if program instructions are found'''
-#     # Define the regex pattern to match [START_COMBAT, enemy_name]
-#     start_combat_pattern = r'\[START_COMBAT, ([a-zA-Z0-9_]+)\]'
-#     # Search for the pattern in the response text
-#     start_combat_match = re.search(start_combat_pattern, response_text)
-
-#     # Define the regex pattern to match [GAME_OVER]
-#     game_over_pattern = r'\[GAME_OVER\]'
-#     game_over_match = re.search(game_over_pattern, response_text)
-    
-#     if start_combat_match:
-#         # Extract the enemy_name from the match
-#         npc_id = start_combat_match.group(1)
-#         npc = npc_data_from_database
-#         # Start combat with the extracted npc
-#         # Will have to import the combat method from the file where it is
-#         combat_result = combat(pc, npc)
-#         # When combat is over, send result to chatgpt
-#         send_auto_instructions(combat_result)
-
-#     elif game_over_match:
-#         # exit the game when chatgpt returns game over
-#         exit()
-
-
-# def send_auto_instructions(message):
-#     # THIS FUNCTION IS CURRENTLY NOT WORKING - MG
-#     '''Send automated instructions to ChatGPT'''
-#     messages = [
-#         {
-#             "role": "system",
-#             "content": "Automated message based on game condition"
-#         },
-#         {
-#             "role": "user",
-#             "content": message
-#         }
-#     ]
-#     get_response(messages)
-
-
-# NOW BACK TO WORKING CODE
 def get_response(messages):
     response = client.chat.completions.create(model=model,
     messages=messages,
@@ -145,15 +84,13 @@ If random is chosen, generate a character with random values for Name, Race, Sex
     chat_screen.ids.output_label.text = f"Assistant: {bot_response}"
     chat_screen.messages = messages
 
-
-
 # kivy visual stuff ===========================================================================
-class HoverButtonRounded(Button): # this lets our buttons show a window with info 
-    def __init__(self, **kwargs): # when mouse is over them (InGameScreen class)
+class HoverButtonRounded(Button):  # This lets our buttons show a window with info when mouse is over them (InGameScreen class)
+    def __init__(self, **kwargs):
         super(HoverButtonRounded, self).__init__(**kwargs)
         Window.bind(mouse_pos=self.on_mouse_pos)
         self.normal_color = (0.4, 0.7, 0.7, 1)  # Default color
-        self.hover_color = (0.2, 0.35, 0.35, 1)   # Color when hovered
+        self.hover_color = (0.2, 0.35, 0.35, 1)  # Color when hovered
         self.current_color = self.normal_color
         self.canvas.before.clear()
         with self.canvas.before:
@@ -161,7 +98,6 @@ class HoverButtonRounded(Button): # this lets our buttons show a window with inf
             self.rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
 
         self.bind(pos=self.update_rect, size=self.update_rect)
-        self.stats_popup = None  # Placeholder for the stats popup
 
     def on_mouse_pos(self, *args):
         if not self.get_root_window():
@@ -169,14 +105,8 @@ class HoverButtonRounded(Button): # this lets our buttons show a window with inf
         pos = args[1]
         if self.collide_point(*pos):
             self.on_enter()
-            # Show the popup only for the "History" button
-            if self.text == 'History' and not self.stats_popup:
-                self.show_stats_popup()
         else:
             self.on_leave()
-            if self.text == 'History' and self.stats_popup:
-                self.stats_popup.dismiss()
-                self.stats_popup = None
 
     def on_enter(self):
         self.current_color = self.hover_color
@@ -192,17 +122,12 @@ class HoverButtonRounded(Button): # this lets our buttons show a window with inf
             Color(rgba=self.current_color)
             self.rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
 
-    def show_stats_popup(self):
-        # Create and show the stats popup
-        self.stats_popup = StatsPopup()
-        self.stats_popup.open()
-
-class HoverButton(Button):                  # Special effects for main menu buttons
+class HoverButton(Button):  # Handles button images for normal and hover states
     def __init__(self, **kwargs):
         super(HoverButton, self).__init__(**kwargs)
         Window.bind(mouse_pos=self.on_mouse_pos)
-        self.default_image = 'Program_Files/original_button_image.png'   # Default image path
-        self.hover_image = 'Program_Files/new_game_button.png'           # Hover image path
+        self.default_image = kwargs.get('default_image', 'Program_Files/original_button_image.png')  # Default image path
+        self.hover_image = kwargs.get('hover_image', 'Program_Files/hover_button_image.png')  # Hover image path
 
     def on_mouse_pos(self, *args):
         if not self.get_root_window():
@@ -223,7 +148,7 @@ class HoverButton(Button):                  # Special effects for main menu butt
         with self.canvas.before:
             Rectangle(source=self.default_image, pos=self.pos, size=self.size)
 
-class MenuScreen(Screen):                   # this class lets us give functionality to our widgets in the main menu
+class MenuScreen(Screen):  # This class lets us give functionality to our widgets in the main menu
     def change_to_chat(self):
         self.manager.current = 'character_creation'
 
@@ -262,19 +187,18 @@ class CharacterCreation(Screen):
         # Ensure validation is called correctly
         print("Creating character with the selected options...")
         self.manager.current = 'ingame'
-        
 
-# This is the only thing you need to work with - Anton, Dennis and Morgane
-class InGameScreen(Screen):                 # this class lets us give functionality to our widgets in game
+# This is the only thing you need to work with - Anton, Dennis, and Morgane
+class InGameScreen(Screen):  # This class lets us give functionality to our widgets in the game
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
 
-    def on_enter(self, *args):              # this shows up on the output text bar right after we enter the page
+    def on_enter(self, *args):  # This shows up on the output text bar right after we enter the page
         self.ids.output_label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         self.messages = []  
 
-    def on_text_enter(self, instance):      # functionality of the output text bar
+    def on_text_enter(self, instance):  # Functionality of the output text bar
         user_input = self.ids.input_text.text
         self.ids.input_text.text = ''
         self.ids.output_label.text += f"\nYou: {user_input}"
@@ -295,7 +219,7 @@ class InGameScreen(Screen):                 # this class lets us give functional
             self.messages.append({"role": "assistant", "content": response})
             self.ids.output_label.text = f"Assistant: {response}"
     
-    def on_pitch_enter(self, instance):     # functionality of the input text bar
+    def on_pitch_enter(self, instance):  # Functionality of the input text bar
         pitch = self.ids.input_text.text
         self.ids.input_text.text = ''
         self.ids.output_label.text = ""
@@ -303,35 +227,25 @@ class InGameScreen(Screen):                 # this class lets us give functional
         rpg_adventure(pitch, self)
         self.ids.input_text.bind(on_text_validate=self.on_text_enter)
 
-    def go_back_to_menu(self, instance):    # functionality of the 'back' button
+    def go_back_to_menu(self, instance):  # Functionality of the 'back' button
         self.manager.current = 'menu'
 
-    def show_inventory():                   # 'Inventory' button functionality
+    def show_inventory(self):  # 'Inventory' button functionality
         pass
 
-    def show_character_stats():             # 'Statistics' button functionality
+    def show_character_stats(self):  # 'Statistics' button functionality
         pass
 
-    def save_character_info_in_database():  # 'Save Game' buttons' functionality
+    def save_character_info_in_database(self):  # 'Save Game' button functionality
         pass
 
-    def load_character_info_from_database():# 'Load Game' button functionality
+    def load_character_info_from_database(self):  # 'Load Game' button functionality
         pass 
 
-    def exit_app(self, instance):           # 'Exit' button functionality
+    def exit_app(self, instance):  # 'Exit' button functionality
         App.get_running_app().stop()
 
-class StatsPopup(Popup):                    # 'Statistics' button visual part - what you see after you hover your mouse on 'Statistics'
-    def __init__(self, **kwargs):
-        super(StatsPopup, self).__init__(**kwargs)
-        self.title = ''
-        self.size_hint = (None, None)
-        self.size = (400, 300)              # Set the size of the popup window
-        self.background = ''                # Remove default popup background
-        self.background_color = (0, 0, 0, 0)  # Make the default background transparent
-        self.content = Image(source='Program_Files/statistics_background.png')  # background image for the stats window
-
-class RPGApp(App):                          # General GUI options
+class RPGApp(App):  # General GUI options
     def build(self):
         Window.size = (1280, 960)
         Window.resizable = False
