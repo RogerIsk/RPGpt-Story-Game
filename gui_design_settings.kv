@@ -280,7 +280,7 @@ ScreenManager:
             id: backpack
             size_hint: (0.34, 0.66)
             pos_hint: {'right': 0.982, 'top': 0.98}
-            orientation: 'vertical'
+            orientation: 'horizontal'
             padding: 10
             canvas.before:
                 Color:
@@ -295,6 +295,21 @@ ScreenManager:
                 text: 'Backpack'
                 color: (1, 1, 1, 1)
                 font_size: 20
+
+            # Item buttons
+            Button:
+                text: 'Item 1'
+                size_hint: None, None
+                size: 96, 96
+
+            Button:
+                text: 'Item 2'
+                size_hint: None, None
+                size: 96, 96
+            Button:
+                text: 'Item 3'
+                size_hint: None, None
+                size: 96, 96
 
 
 <HoverButton@Button>:
