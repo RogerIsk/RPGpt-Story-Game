@@ -274,13 +274,13 @@ ScreenManager:
                 color: (1, 1, 1, 1)
                 font_size: 20
             
-                
+      
         # Backpack panel (initially hidden)
-        BoxLayout:
+        FloatLayout:  
             id: backpack
             size_hint: (0.34, 0.66)
             pos_hint: {'right': 0.982, 'top': 0.98}
-            orientation: 'horizontal'
+            orientation: 'vertical'
             padding: 10
             canvas.before:
                 Color:
@@ -291,25 +291,40 @@ ScreenManager:
             opacity: 0  # Initially hidden
             disabled: True  # Initially disabled
 
-            Label:
-                text: 'Backpack'
-                color: (1, 1, 1, 1)
-                font_size: 20
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: self.minimum_size
+                pos_hint: {'x': 0, 'top': 1}  # Align to top left
 
-            # Item buttons
-            Button:
-                text: 'Item 1'
-                size_hint: None, None
-                size: 96, 96
+                Label:
+                    text: 'Backpack'
+                    color: (1, 1, 1, 1)
+                    font_size: 20
+                    size_hint: None, None
+                    size: self.texture_size
 
-            Button:
-                text: 'Item 2'
-                size_hint: None, None
-                size: 96, 96
-            Button:
-                text: 'Item 3'
-                size_hint: None, None
-                size: 96, 96
+                # Horizontal BoxLayout for item buttons
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint: None, None
+                    size: self.minimum_size
+
+                    # Item buttons
+                    Button:
+                        text: 'Item 1'
+                        size_hint: None, None
+                        size: 96, 96
+
+                    Button:
+                        text: 'Item 2'
+                        size_hint: None, None
+                        size: 96, 96
+
+                    Button:
+                        text: 'Item 3'
+                        size_hint: None, None
+                        size: 96, 96
 
 
 <HoverButton@Button>:
