@@ -1,10 +1,11 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, RoundedRectangle
-from kivy.graphics import Rectangle
+from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.animation import Animation
 from kivy.core.window import Window
+from kivy.graphics import Rectangle
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 from kivy.uix.popup import Popup
@@ -18,6 +19,8 @@ import kivy
 import json
 import sys
 import os
+
+
 
 # Replace with your actual API key ===========================================================================
 model = "gpt-4o"
@@ -160,27 +163,165 @@ class CharacterCreation(Screen):
         self.selected_class = None
 
     def select_gender(self, gender):
-        # Ensure the gender is selected correctly and handle the button states
-        male_button_state = self.ids.male_button.state
-        female_button_state = self.ids.female_button.state
+        male_button = self.ids.male_button
+        female_button = self.ids.female_button
+        male_gif = self.ids.male_gif
+        female_gif = self.ids.female_gif
 
-        # Set selected gender based on which button is pressed
-        self.selected_gender = gender if male_button_state == 'down' or female_button_state == 'down' else None
+        if gender == 'male':
+            if male_button.state == 'down':
+                male_gif.source = 'Program_Files/character_creation_images/2_active_male.gif'
+                male_gif.anim_delay = 0.1
+                female_button.state = 'normal'
+                female_gif.source = 'Program_Files/character_creation_images/1_inactive_female.gif'
+                female_gif.anim_delay = 0.1
+                female_gif.reload()
+                self.selected_gender = 'male'
+            else:
+                male_gif.source = 'Program_Files/character_creation_images/2_inactive_male.gif'
+                male_gif.anim_delay = 0.1
+                male_gif.reload()
+                self.selected_gender = None
 
-        # Update the GIF and anim_delay when the male button is pressed
-        if gender == 'male' and male_button_state == 'down':
-            self.ids.male_gif.source = 'Program_Files/character_creation_pics/unselected_male.gif'  # Change GIF when pressed
-            self.ids.male_gif.anim_delay = 0.1  # Set anim_delay to control the animation speed of the new GIF
-        
-        # Call to update the state of the create button based on the current selection
+        elif gender == 'female':
+            if female_button.state == 'down':
+                female_gif.source = 'Program_Files/character_creation_images/1_active_female.gif'
+                female_gif.anim_delay = 0.1
+                male_button.state = 'normal'
+                male_gif.source = 'Program_Files/character_creation_images/2_inactive_male.gif'
+                male_gif.anim_delay = 0.1
+                male_gif.reload()
+                self.selected_gender = 'female'
+            else:
+                female_gif.source = 'Program_Files/character_creation_images/1_inactive_female.gif'
+                female_gif.anim_delay = 0.1
+                female_gif.reload()
+                self.selected_gender = None
+
         self.update_create_button_state()
 
     def select_species(self, species):
-        self.selected_species = species if self.ids.human_button.state == 'down' or self.ids.elf_button.state == 'down' or self.ids.dwarf_button.state == 'down' else None
+        # Get references to species buttons and GIFs
+        human_button = self.ids.human_button
+        elf_button = self.ids.elf_button
+        dwarf_button = self.ids.dwarf_button
+        human_gif = self.ids.human_gif
+        elf_gif = self.ids.elf_gif
+        dwarf_gif = self.ids.dwarf_gif
+
+        if species == 'human':
+            if human_button.state == 'down':
+                human_gif.source = 'Program_Files/character_creation_images/3_active_human.gif'
+                human_gif.anim_delay = 0.1
+                elf_button.state = 'normal'
+                dwarf_button.state = 'normal'
+                elf_gif.source = 'Program_Files/character_creation_images/4_inactive_elf.gif'
+                dwarf_gif.source = 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                elf_gif.reload()
+                dwarf_gif.reload()
+                self.selected_species = 'human'
+            else:
+                human_gif.source = 'Program_Files/character_creation_images/3_inactive_human.gif'
+                human_gif.anim_delay = 0.1
+                human_gif.reload()
+                self.selected_species = None
+
+        elif species == 'elf':
+            if elf_button.state == 'down':
+                elf_gif.source = 'Program_Files/character_creation_images/4_active_elf.gif'
+                elf_gif.anim_delay = 0.1
+                human_button.state = 'normal'
+                dwarf_button.state = 'normal'
+                human_gif.source = 'Program_Files/character_creation_images/3_inactive_human.gif'
+                dwarf_gif.source = 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                human_gif.reload()
+                dwarf_gif.reload()
+                self.selected_species = 'elf'
+            else:
+                elf_gif.source = 'Program_Files/character_creation_images/4_inactive_elf.gif'
+                elf_gif.anim_delay = 0.1
+                elf_gif.reload()
+                self.selected_species = None
+
+        elif species == 'dwarf':
+            if dwarf_button.state == 'down':
+                dwarf_gif.source = 'Program_Files/character_creation_images/5_active_dwarf.gif'
+                dwarf_gif.anim_delay = 0.1
+                human_button.state = 'normal'
+                elf_button.state = 'normal'
+                human_gif.source = 'Program_Files/character_creation_images/3_inactive_human.gif'
+                elf_gif.source = 'Program_Files/character_creation_images/4_inactive_elf.gif'
+                human_gif.reload()
+                elf_gif.reload()
+                self.selected_species = 'dwarf'
+            else:
+                dwarf_gif.source = 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                dwarf_gif.anim_delay = 0.1
+                dwarf_gif.reload()
+                self.selected_species = None
+
         self.update_create_button_state()
 
     def select_class(self, char_class):
-        self.selected_class = char_class if self.ids.warrior_button.state == 'down' or self.ids.ranger_button.state == 'down' or self.ids.mage_button.state == 'down' else None
+        # Get references to class buttons and GIFs
+        warrior_button = self.ids.warrior_button
+        ranger_button = self.ids.ranger_button
+        mage_button = self.ids.mage_button
+        warrior_gif = self.ids.warrior_gif
+        ranger_gif = self.ids.ranger_gif
+        mage_gif = self.ids.mage_gif
+
+        if char_class == 'warrior':
+            if warrior_button.state == 'down':
+                warrior_gif.source = 'Program_Files/character_creation_images/6_active_warrior.gif'
+                warrior_gif.anim_delay = 0.1
+                ranger_button.state = 'normal'
+                mage_button.state = 'normal'
+                ranger_gif.source = 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+                mage_gif.source = 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                ranger_gif.reload()
+                mage_gif.reload()
+                self.selected_class = 'warrior'
+            else:
+                warrior_gif.source = 'Program_Files/character_creation_images/6_inactive_warrior.gif'
+                warrior_gif.anim_delay = 0.1
+                warrior_gif.reload()
+                self.selected_class = None
+
+        elif char_class == 'ranger':
+            if ranger_button.state == 'down':
+                ranger_gif.source = 'Program_Files/character_creation_images/7_active_ranger.gif'
+                ranger_gif.anim_delay = 0.1
+                warrior_button.state = 'normal'
+                mage_button.state = 'normal'
+                warrior_gif.source = 'Program_Files/character_creation_images/6_inactive_warrior.gif'
+                mage_gif.source = 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                warrior_gif.reload()
+                mage_gif.reload()
+                self.selected_class = 'ranger'
+            else:
+                ranger_gif.source = 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+                ranger_gif.anim_delay = 0.1
+                ranger_gif.reload()
+                self.selected_class = None
+
+        elif char_class == 'mage':
+            if mage_button.state == 'down':
+                mage_gif.source = 'Program_Files/character_creation_images/8_active_mage.gif'
+                mage_gif.anim_delay = 0.1
+                warrior_button.state = 'normal'
+                ranger_button.state = 'normal'
+                warrior_gif.source = 'Program_Files/character_creation_images/6_inactive_warrior.gif'
+                ranger_gif.source = 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+                warrior_gif.reload()
+                ranger_gif.reload()
+                self.selected_class = 'mage'
+            else:
+                mage_gif.source = 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                mage_gif.anim_delay = 0.1
+                mage_gif.reload()
+                self.selected_class = None
+
         self.update_create_button_state()
 
     def update_create_button_state(self):
@@ -254,7 +395,7 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
 
 class RPGApp(App):  # General GUI options
     def build(self):
-        Window.size = (1280, 960)
+        Window.size = (1366, 960)
         Window.resizable = False
         sm = Builder.load_file('gui_design_settings.kv')
         return sm
