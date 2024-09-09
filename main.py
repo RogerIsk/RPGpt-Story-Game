@@ -15,6 +15,7 @@ from kivy.lang import Builder
 from openai import OpenAI
 from stringcolor import *
 from kivy.app import App
+import random
 import kivy
 import json
 import sys
@@ -201,7 +202,6 @@ class CharacterCreation(Screen):
         self.update_create_button_state()
 
     def select_species(self, species):
-        # Get references to species buttons and GIFs
         human_button = self.ids.human_button
         elf_button = self.ids.elf_button
         dwarf_button = self.ids.dwarf_button
@@ -263,7 +263,6 @@ class CharacterCreation(Screen):
         self.update_create_button_state()
 
     def select_class(self, char_class):
-        # Get references to class buttons and GIFs
         warrior_button = self.ids.warrior_button
         ranger_button = self.ids.ranger_button
         mage_button = self.ids.mage_button
@@ -335,6 +334,45 @@ class CharacterCreation(Screen):
         # Ensure validation is called correctly
         print("Creating character with the selected options...")
         self.manager.current = 'ingame'
+
+    def random_selection(self):
+        # Randomly select one option from each category
+
+        # Randomly choose and select a gender
+        gender_choice = random.choice(['male', 'female'])
+        if gender_choice == 'male':
+            self.ids.male_button.state = 'down'
+            self.select_gender('male')
+        else:
+            self.ids.female_button.state = 'down'
+            self.select_gender('female')
+
+        # Randomly choose and select a species
+        species_choice = random.choice(['human', 'elf', 'dwarf'])
+        if species_choice == 'human':
+            self.ids.human_button.state = 'down'
+            self.select_species('human')
+        elif species_choice == 'elf':
+            self.ids.elf_button.state = 'down'
+            self.select_species('elf')
+        else:
+            self.ids.dwarf_button.state = 'down'
+            self.select_species('dwarf')
+
+        # Randomly choose and select a class
+        class_choice = random.choice(['warrior', 'ranger', 'mage'])
+        if class_choice == 'warrior':
+            self.ids.warrior_button.state = 'down'
+            self.select_class('warrior')
+        elif class_choice == 'ranger':
+            self.ids.ranger_button.state = 'down'
+            self.select_class('ranger')
+        else:
+            self.ids.mage_button.state = 'down'
+            self.select_class('mage')
+
+        # Ensure the create button is enabled after selection
+        self.update_create_button_state()
 
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
 class InGameScreen(Screen):  # This class lets us give functionality to our widgets in the game

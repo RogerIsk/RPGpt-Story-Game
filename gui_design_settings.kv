@@ -216,7 +216,7 @@ ScreenManager:
 
             HoverButtonRounded:
                 text: 'Random'
-                on_release: app.root.current = 'menu'
+                on_release: root.random_selection()  # Calls the new random selection method
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
 
