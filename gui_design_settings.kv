@@ -59,7 +59,7 @@ ScreenManager:
     FloatLayout:
         # Background Image with animation enabled
         Image:
-            source: 'Program_Files/character_creation_images/es.gif'
+            source: 'Program_Files/character_creation_images/character_creation_backgorund.gif'
             allow_stretch: True
             keep_ratio: False
             anim_delay: 0.01
@@ -79,7 +79,7 @@ ScreenManager:
             Image:
                 source: 'Program_Files/character_creation_images/character_creation_title.png'  # Replace with your image path
                 allow_stretch: True
-                keep_ratio: False
+                keep_ratio: True
 
         BoxLayout:
             orientation: 'vertical'
@@ -257,7 +257,7 @@ ScreenManager:
             spacing: 15
 
             HoverButtonRounded:
-                text: 'Back'
+                text: 'Main Menu'
                 font_name: 'Program_Files/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
@@ -269,7 +269,7 @@ ScreenManager:
                 background_normal: ''
 
             HoverButtonRounded:
-                text: 'Random'
+                text: 'Choose Random'
                 font_name: 'Program_Files/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
@@ -280,7 +280,7 @@ ScreenManager:
 
             HoverButtonRounded:
                 id: create_button
-                text: 'Create'
+                text: 'Continue'
                 font_name: 'Program_Files/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
