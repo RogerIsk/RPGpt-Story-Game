@@ -20,7 +20,7 @@ import sys
 import os
 import re
 from combat import combat
-from character import PC, NPC
+from character import Hero, Enemy
 from utils import read_json_file
 
 
@@ -173,7 +173,7 @@ class HoverButtonRounded(Button): # this class is specifically made for only 1 b
             self.rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
 
         self.bind(pos=self.update_rect, size=self.update_rect)
-        self.stats_popup = None  # Placeholder for the stats popup
+        # self.stats_popup = None  # Placeholder for the stats popup
 
     def on_mouse_pos(self, *args):
         if not self.get_root_window():
@@ -182,13 +182,13 @@ class HoverButtonRounded(Button): # this class is specifically made for only 1 b
         if self.collide_point(*pos):
             self.on_enter()
             # Show the popup only for the "Statistics" button
-            if self.text == 'Statistics' and not self.stats_popup:
-                self.show_stats_popup()
-        else:
+        #     if self.text == 'Statistics' and not self.stats_popup:
+        #         self.show_stats_popup()
+        # else:
             self.on_leave()
-            if self.text == 'Statistics' and self.stats_popup:
-                self.stats_popup.dismiss()
-                self.stats_popup = None
+            # if self.text == 'Statistics' and self.stats_popup:
+            #     self.stats_popup.dismiss()
+            #     self.stats_popup = None
 
     def on_enter(self):
         self.current_color = self.hover_color
@@ -204,10 +204,10 @@ class HoverButtonRounded(Button): # this class is specifically made for only 1 b
             Color(rgba=self.current_color)
             self.rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
 
-    def show_stats_popup(self):
-        # Create and show the stats popup
-        self.stats_popup = StatsPopup()
-        self.stats_popup.open()
+    # def show_stats_popup(self):
+    #     # Create and show the stats popup
+    #     self.stats_popup = StatsPopup()
+    #     self.stats_popup.open()
 
 class HoverButton(Button):                  # Special effects for main menu buttons
     def __init__(self, **kwargs):
