@@ -1,5 +1,6 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, RoundedRectangle
+from kivy.core.text import Label as CoreLabel
 from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
@@ -457,12 +458,27 @@ class CharacterCreation(Screen):
         self.update_create_button_state()
 
     def on_character_name_input(self, text):
-        # Update the character name and check if input has content
-        self.character_name = text.strip()
+        # Get the TextInput widget
+        input_box = self.ids.character_name_input
+        
+        # Measure the width of the text
+        label = CoreLabel(text=text, font_name=input_box.font_name, font_size=input_box.font_size)
+        label.refresh()  # Required to calculate the width
+        text_width = label.texture.size[0]
+
+        # Check if the text width exceeds the input box width minus padding
+        max_width = input_box.width - input_box.padding[0] - input_box.padding[2]
+        
+        if text_width <= max_width:
+            self.character_name = text  # Accept the text
+        else:
+            input_box.text = self.character_name  # Revert to the last accepted state
+
+        # Update the button state whenever the text changes
         self.update_create_button_state()
 
     def update_create_button_state(self):
-        # Enable create button if all selections are made and character name is not empty
+        # Enable the "Continue" button if all selections are made and the character name is not empty
         if self.selected_gender and self.selected_species and self.selected_class and len(self.character_name) > 0:
             self.ids.create_button.disabled = False
         else:

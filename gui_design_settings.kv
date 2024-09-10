@@ -105,17 +105,17 @@ ScreenManager:
                             keep_ratio: False
                             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-                        # TextInput for character name - now positioned at the top
+                        # TextInput for character name - single line and constrained to borders
                         TextInput:
                             id: character_name_input
                             hint_text: 'Enter Name'
-                            multiline: False
+                            multiline: False  # Keep input to a single line
                             font_name: 'Program_Files/medieval_font_file_2.ttf'
                             font_size: 24
-                            size_hint_y: 0.43
-                            pos_hint: {'top': 1}  # Positioned at the top
+                            size_hint: (0.8, 0.43)  # Reduced width with size_hint_x set to 0.8
+                            pos_hint: {'top': 1, 'center_x': 0.5}  # Center horizontally
                             halign: 'center'
-                            padding: [0, 75, 0, 0]  # 20 pixels padding at the top
+                            padding: [30, 70, 30, 0]  # Adjust padding to keep text within borders
                             foreground_color: (0, 0, 0, 1)  # Black text color
                             background_color: (1, 1, 1, 0)  # Fully transparent background
                             background_normal: ''  # Remove default background image
