@@ -167,6 +167,11 @@ class CharacterCreation(Screen):
         # Preload the initial character image to avoid white square during transition
         self.preload_character_image()
 
+    def show_initial_character_image(self):
+        # Set the character showcase image to 'character_0.png'
+        self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
+        self.ids.character_image.reload()
+
     def preload_character_image(self):
         # Set the initial character image source without making it visible yet
         self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'

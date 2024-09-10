@@ -69,7 +69,6 @@ ScreenManager:
             size_hint: 1, None
             height: 80  # Adjust height as needed
             pos_hint: {'top': 1}
-            padding: [200, 10, 20, 10]  # Add padding: [left, top, right, bottom]
             canvas.before:
                 Color:
                     rgba: 0, 0, 0, 1  # Black color
@@ -264,8 +263,8 @@ ScreenManager:
                 bold: True
                 size_hint_x: 0.33
                 on_release:
-                    root.reset_selections()
-                    app.root.current = 'main_menu'
+                    root.on_back_button_pressed()
+                    root.show_initial_character_image()  # Display character_0.png
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
 
@@ -287,7 +286,9 @@ ScreenManager:
                 bold: True
                 size_hint_x: 0.33
                 disabled: True
-                on_release: root.validate_selection()
+                on_release:
+                    root.on_create_button_pressed()
+                    root.show_initial_character_image()  # Display character_0.png
                 background_color: [0.5, 0.5, 0.5, 0]
                 background_normal: ''
 
