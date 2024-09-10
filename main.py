@@ -157,6 +157,7 @@ class MenuScreen(Screen):  # This class lets us give functionality to our widget
     def change_to_chat(self):
         self.manager.current = 'character_creation'
 
+
 class CharacterCreation(Screen):
     def __init__(self, **kwargs):
         super(CharacterCreation, self).__init__(**kwargs)
@@ -180,13 +181,9 @@ class CharacterCreation(Screen):
         self.ids.character_image.opacity = 0  # Hide it initially
 
     def on_enter(self):
-        # When entering the screen, make the image visible
+        # When entering the screen, show the initial image and update stats immediately
         self.ids.character_image.opacity = 1
-
-    def show_initial_character_image(self):
-        # Set the initial character image source to 'character_0.png'
-        self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
-        self.ids.character_image.reload()
+        self.update_stats_display()
 
     def select_gender(self, gender):
         male_button = self.ids.male_button
@@ -226,6 +223,7 @@ class CharacterCreation(Screen):
 
         self.update_create_button_state()
         self.update_character_image()
+        self.update_stats_display()  # Update stats whenever a selection is made
 
     def select_species(self, species):
         human_button = self.ids.human_button
@@ -288,6 +286,7 @@ class CharacterCreation(Screen):
 
         self.update_create_button_state()
         self.update_character_image()
+        self.update_stats_display()  # Update stats whenever a selection is made
 
     def select_class(self, char_class):
         warrior_button = self.ids.warrior_button
@@ -350,6 +349,7 @@ class CharacterCreation(Screen):
 
         self.update_create_button_state()
         self.update_character_image()
+        self.update_stats_display()  # Update stats whenever a selection is made
 
     def reset_selections(self):
         # Reset all button states and selection variables
@@ -389,10 +389,11 @@ class CharacterCreation(Screen):
         
         # Disable the create button
         self.ids.create_button.disabled = True
+        self.update_stats_display()  # Reset stats display to base stats
 
     def update_create_button_state(self):
-        # Enable create button if all selections are made
-        if self.selected_gender and self.selected_species and self.selected_class:
+        # Enable the "Continue" button if all selections are made and the character name is not empty
+        if self.selected_gender and self.selected_species and self.selected_class and len(self.character_name) > 0:
             self.ids.create_button.disabled = False
         else:
             self.ids.create_button.disabled = True
@@ -470,19 +471,50 @@ class CharacterCreation(Screen):
         max_width = input_box.width - input_box.padding[0] - input_box.padding[2]
         
         if text_width <= max_width:
-            self.character_name = text  # Accept the text
+            self.character_name = text.strip()  # Accept the text
         else:
             input_box.text = self.character_name  # Revert to the last accepted state
 
         # Update the button state whenever the text changes
         self.update_create_button_state()
 
-    def update_create_button_state(self):
-        # Enable the "Continue" button if all selections are made and the character name is not empty
-        if self.selected_gender and self.selected_species and self.selected_class and len(self.character_name) > 0:
-            self.ids.create_button.disabled = False
-        else:
-            self.ids.create_button.disabled = True
+    def update_stats_display(self):
+        # Basic stats
+        base_hp = 50
+        base_dmg = 10
+        base_armor = 10
+
+        # Race bonuses
+        race_bonus = {
+            'human': {'hp': 0, 'dmg': 2, 'armor': 0},
+            'elf': {'hp': 2, 'dmg': 0, 'armor': 0},
+            'dwarf': {'hp': 0, 'dmg': 0, 'armor': 2},
+        }
+
+        # Class bonuses
+        class_bonus = {
+            'warrior': {'hp': 0, 'dmg': 0, 'armor': 5},
+            'ranger': {'hp': 5, 'dmg': 0, 'armor': 0},
+            'mage': {'hp': 0, 'dmg': 5, 'armor': 0},
+        }
+
+        # Get bonuses based on selected options or default to zero if not selected
+        species_bonus = race_bonus.get(self.selected_species, {'hp': 0, 'dmg': 0, 'armor': 0})
+        class_bonus_values = class_bonus.get(self.selected_class, {'hp': 0, 'dmg': 0, 'armor': 0})
+
+        # Calculate final stats
+        final_hp = base_hp + species_bonus['hp'] + class_bonus_values['hp']
+        final_dmg = base_dmg + species_bonus['dmg'] + class_bonus_values['dmg']
+        final_armor = base_armor + species_bonus['armor'] + class_bonus_values['armor']
+
+        # Update the stats_widget label with formatted stats
+        self.ids.stats_widget.text = (
+            f"  DMG:    [color=#ff0000]{final_dmg}[/color]\n"
+            f"   HP:       [color=#00ff00]{final_hp}[/color]\n"
+            f"ARMOR:  [color=#d3d3d3]{final_armor}[/color]"
+            )
+
+
 
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
 class InGameScreen(Screen):  # This class lets us give functionality to our widgets in the game

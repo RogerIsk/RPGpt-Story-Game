@@ -124,13 +124,14 @@ ScreenManager:
                         # Stats Label - now positioned below the TextInput
                         Label:
                             id: stats_widget
-                            text: 'Stats Display (Placeholder)'
+                            text: '[color=#ff0000]DMG: 0[/color]\n[color=#00ff00]HP: 0[/color]\n[color=#d3d3d3]ARMOR: 0[/color]'
+                            markup: True
                             size_hint_y: 0.57
                             pos_hint: {'y': 0}  # Positioned below the TextInput
                             font_size: 20
                             color: (0, 0, 0, 1)
                             halign: 'center'
-                            padding: [0, 0, 0, 20]  # 20 pixels padding at the bottom
+                            padding: [0, 0, 0, 70]  # 20 pixels padding at the bottom
 
                     Image:
                         id: character_image
