@@ -93,20 +93,47 @@ ScreenManager:
                     padding: [20, 165, 0, 100]
                     spacing: 10
 
-                    Label:
-                        id: stats_widget
-                        text: 'Stats Display (Placeholder)'
-                        size_hint_y: 0.2
-                        font_size: 20
-                        color: (1, 1, 1, 1)
-                        halign: 'center'
+                    # New RelativeLayout to add a background image
+                    RelativeLayout:
+                        size_hint_y: 0.3  # Adjust to cover both the label and text input
+                        padding: [0, 0, 0, 0]
+
+                        # Background image behind the label and text input
+                        Image:
+                            source: 'Program_Files/character_creation_images/.png'  # Path to your background image
+                            allow_stretch: True
+                            keep_ratio: False
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+                        # Stats Label
+                        Label:
+                            id: stats_widget
+                            text: 'Stats Display (Placeholder)'
+                            size_hint_y: 0.5
+                            font_size: 20
+                            color: (0, 0, 0, 1)
+                            halign: 'center'
+
+                        # TextInput for character name
+                        TextInput:
+                            id: character_name_input
+                            hint_text: 'Enter Character Name'
+                            multiline: False
+                            font_name: 'Program_Files/medieval_font_file_2.ttf'
+                            font_size: 25
+                            size_hint_y: 0.5
+                            halign: 'center'
+                            foreground_color: (1, 1, 1, 1)  # White text color
+                            background_color: (0, 0, 0, 0.5)  # Semi-transparent black background
+                            background_normal: ''  # Remove default background image
+                            on_text: root.on_character_name_input(self.text)
 
                     Image:
                         id: character_image
                         source: ''
                         allow_stretch: True
                         keep_ratio: True
-                        size_hint_y: 0.8
+                        size_hint_y: 0.85
 
                 BoxLayout:
                     orientation: 'vertical'

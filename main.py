@@ -162,6 +162,7 @@ class CharacterCreation(Screen):
         self.selected_gender = None
         self.selected_species = None
         self.selected_class = None
+        self.character_name = ""
 
     def on_kv_post(self, base_widget):
         # Preload the initial character image to avoid white square during transition
@@ -454,6 +455,18 @@ class CharacterCreation(Screen):
             self.select_class('mage')
 
         self.update_create_button_state()
+
+    def on_character_name_input(self, text):
+        # Update the character name and check if input has content
+        self.character_name = text.strip()
+        self.update_create_button_state()
+
+    def update_create_button_state(self):
+        # Enable create button if all selections are made and character name is not empty
+        if self.selected_gender and self.selected_species and self.selected_class and len(self.character_name) > 0:
+            self.ids.create_button.disabled = False
+        else:
+            self.ids.create_button.disabled = True
 
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
 class InGameScreen(Screen):  # This class lets us give functionality to our widgets in the game
