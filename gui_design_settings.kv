@@ -90,50 +90,54 @@ ScreenManager:
                 BoxLayout:
                     orientation: 'vertical'
                     size_hint_x: 0.3
-                    padding: [20, 165, 0, 100]
+                    padding: [20, 100, 0, 100]
                     spacing: 10
 
-                    # New RelativeLayout to add a background image
+                    # RelativeLayout to add a background image
                     RelativeLayout:
-                        size_hint_y: 0.3  # Adjust to cover both the label and text input
+                        size_hint_y: 0.33  # Adjust to cover both the text input and label
                         padding: [0, 0, 0, 0]
 
-                        # Background image behind the label and text input
+                        # Background image behind the text input and label
                         Image:
-                            source: 'Program_Files/character_creation_images/.png'  # Path to your background image
+                            source: 'Program_Files/character_creation_images/info_scroll.png'  # Path to your background image
                             allow_stretch: True
                             keep_ratio: False
                             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-                        # Stats Label
+                        # TextInput for character name - now positioned at the top
+                        TextInput:
+                            id: character_name_input
+                            hint_text: 'Enter Name'
+                            multiline: False
+                            font_name: 'Program_Files/medieval_font_file_2.ttf'
+                            font_size: 24
+                            size_hint_y: 0.43
+                            pos_hint: {'top': 1}  # Positioned at the top
+                            halign: 'center'
+                            padding: [0, 75, 0, 0]  # 20 pixels padding at the top
+                            foreground_color: (0, 0, 0, 1)  # Black text color
+                            background_color: (1, 1, 1, 0)  # Fully transparent background
+                            background_normal: ''  # Remove default background image
+                            on_text: root.on_character_name_input(self.text)
+
+                        # Stats Label - now positioned below the TextInput
                         Label:
                             id: stats_widget
                             text: 'Stats Display (Placeholder)'
-                            size_hint_y: 0.5
+                            size_hint_y: 0.57
+                            pos_hint: {'y': 0}  # Positioned below the TextInput
                             font_size: 20
                             color: (0, 0, 0, 1)
                             halign: 'center'
-
-                        # TextInput for character name
-                        TextInput:
-                            id: character_name_input
-                            hint_text: 'Enter Character Name'
-                            multiline: False
-                            font_name: 'Program_Files/medieval_font_file_2.ttf'
-                            font_size: 25
-                            size_hint_y: 0.5
-                            halign: 'center'
-                            foreground_color: (1, 1, 1, 1)  # White text color
-                            background_color: (0, 0, 0, 0.5)  # Semi-transparent black background
-                            background_normal: ''  # Remove default background image
-                            on_text: root.on_character_name_input(self.text)
+                            padding: [0, 0, 0, 20]  # 20 pixels padding at the bottom
 
                     Image:
                         id: character_image
                         source: ''
                         allow_stretch: True
                         keep_ratio: True
-                        size_hint_y: 0.85
+                        size_hint_y: 0.66
 
                 BoxLayout:
                     orientation: 'vertical'
