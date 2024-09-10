@@ -1,7 +1,7 @@
 from time import sleep
 from utils import roll_dice
 
-def combat (pc, npc):
+def combat (hero, enemy):
     '''combat structure'''
     # the actual combat actions attack() and take_damage() are in character.py
     print('It\'s a fight!')
@@ -9,34 +9,34 @@ def combat (pc, npc):
 
     # print every character's hp
     print(f'''
-{pc.name}: {pc.hp} HP
-{npc.name}: {npc.hp} HP
+{hero.name}: {hero.hp} HP
+{enemy.name}: {enemy.hp} HP
 ''')
     
     sleep(1.5)
     
     # throw an initiative dice. 
     input('Roll for initative. Press ENTER...')
-    pc_init = roll_dice()
+    hero_init = roll_dice()
     sleep(1.5)
-    print(f'You roll {pc_init}...')
-    npc_init = roll_dice()
+    print(f'You roll {hero_init}...')
+    enemy_init = roll_dice()
     sleep(1.5)
-    print(f'{npc.name} rolls {npc_init}...')
+    print(f'{enemy.name} rolls {enemy_init}...')
     sleep(1.5)
 
     # The character with highest score attacks first
-    if pc_init > npc_init:
-        p1 = pc
-        p2 = npc
+    if hero_init > enemy_init:
+        p1 = hero
+        p2 = enemy
     else:
-        p1 = npc
-        p2 = pc
+        p1 = enemy
+        p2 = hero
     print(f'{p1.name} is starting\n')
     sleep(0.5)
 
     # start fighting turns until one of the characters is down to 0 hp
-    while pc.hp > 0 and npc.hp > 0:
+    while hero.hp > 0 and enemy.hp > 0:
         p1.attack(p2)
         # stop combat turns if player 2 drops to 0hp
         if p2.hp <= 0:
@@ -46,11 +46,11 @@ def combat (pc, npc):
         if p1.hp <= 0:
             break
 
-    # If pc dies: game over
-    if pc.hp <= 0:
+    # If hero dies: game over
+    if hero.hp <= 0:
         combat_result = "LOST"
-    # If npc dies: player wins
-    if npc.hp <= 0:
+    # If enemy dies: player wins
+    if enemy.hp <= 0:
         combat_result = "WON"
         input('You won!')
 
