@@ -155,100 +155,352 @@ ScreenManager:
 
 
 <InGameScreen>:
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        canvas.before:
-            Color:
-                rgba: 1, 1, 1, 1
-            Rectangle:
-                source: 'Program_Files/in-game_background.png'
-                pos: self.pos
-                size: self.size
-
-        BoxLayout:
-            size_hint_y: None
-            height: 40
-            padding: 0
-            spacing: 10  # Adjust spacing for better alignment
-            pos_hint: {'top': 1}
-
-            HoverButtonRounded:
-                text: 'Back'
-                size_hint: (None, None)
-                size: (120, 50)
-                font_size: 20
-                background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
-                on_release: root.go_back_to_menu(self)
-
-            HoverButtonRounded:
-                text: 'Statistics'
-                size_hint: (None, None)
-                size: (120, 50)
-                font_size: 20
-                background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
-
-            HoverButtonRounded:
-                text: 'Inventory'
-                size_hint: (None, None)
-                size: (120, 50)
-                font_size: 20
-                background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
-
-            HoverButtonRounded:
-                text: 'Save'
-                size_hint: (None, None)
-                size: (120, 50)
-                font_size: 20
-                background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
-
-            HoverButtonRounded:
-                text: 'Load'
-                size_hint: (None, None)
-                size: (120, 50)
-                font_size: 20
-                background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
-
-            HoverButtonRounded:
-                text: 'Exit'
-                size_hint: (None, None)
-                size: (120, 50)
-                font_size: 20
-                background_normal: ''
-                background_color: (0.4, 0.7, 0.7, 0)
-                on_release: root.exit_app(self)
-
-        # Main content area
+    FloatLayout:
         BoxLayout:
             orientation: 'vertical'
-            size_hint: (1, 0.9)
+            padding: 20
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                Rectangle:
+                    source: 'Program_Files/in-game_background.png'
+                    pos: self.pos
+                    size: self.size
 
+            BoxLayout:
+                size_hint_y: None
+                height: 40
+                padding: 0
+                spacing: 10  # Adjust spacing for better alignment
+                pos_hint: {'top': 1}
+
+                HoverButtonRounded:
+                    text: 'Back'
+                    size_hint: (None, None)
+                    size: (120, 50)
+                    font_size: 20
+                    background_normal: ''
+                    background_color: (0.4, 0.7, 0.7, 0)
+                    on_release: root.go_back_to_menu(self)
+
+                HoverButtonRounded:
+                    text: 'Statistics'
+                    size_hint: (None, None)
+                    size: (120, 50)
+                    font_size: 20
+                    background_normal: ''
+                    background_color: (0.4, 0.7, 0.7, 0)
+                    on_release: root.toggle_panel('stats')
+
+                HoverButtonRounded:
+                    text: 'Inventory'
+                    size_hint: (None, None)
+                    size: (120, 50)
+                    font_size: 20
+                    background_normal: ''
+                    background_color: (0.4, 0.7, 0.7, 0)
+                    on_release: root.toggle_panel('backpack', 'stats')
+
+                HoverButtonRounded:
+                    text: 'Save'
+                    size_hint: (None, None)
+                    size: (120, 50)
+                    font_size: 20
+                    background_normal: ''
+                    background_color: (0.4, 0.7, 0.7, 0)
+
+                HoverButtonRounded:
+                    text: 'Load'
+                    size_hint: (None, None)
+                    size: (120, 50)
+                    font_size: 20
+                    background_normal: ''
+                    background_color: (0.4, 0.7, 0.7, 0)
+
+                HoverButtonRounded:
+                    text: 'Exit'
+                    size_hint: (None, None)
+                    size: (120, 50)
+                    font_size: 20
+                    background_normal: ''
+                    background_color: (0.4, 0.7, 0.7, 0)
+                    on_release: root.exit_app(self)
+
+            # Main content area
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: (1, 0.9)
+
+                Label:
+                    id: output_label
+                    size_hint: (1, 0.8)
+                    font_size: 16
+                    color: (1, 1, 1, 1)
+                    outline_width: 0
+                    outline_color: (0, 0, 0, 0)
+                    text_size: (self.width - 40, None)
+                    padding: (0, 600, 0, 0)
+                    valign: 'top'
+                    halign: 'left'
+
+                TextInput:
+                    id: input_text
+                    size_hint: (1, 0.045)
+                    font_size: 30
+                    font_name: 'Program_Files/medieval_font_file.ttf'
+                    background_color: (1, 1, 1, 1)
+                    multiline: False
+                    padding: (15, 10, 15, 10)
+                    on_text_validate: root.on_text_enter(self)
+
+                       
+        # Stats panel (initially hidden)
+        FloatLayout:
+            id: stats
+            size_hint: (0.601, 0.60)
+            pos: (20, 307) # Using pos with fixed value bc pos_hint doesnt work 
+            padding: 10
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.7
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            opacity: 0  # Initially hidden
+            disabled: True  # Initially disabled
+
+            # Layout title. Replace with character name variable
             Label:
-                id: output_label
-                size_hint: (1, 0.8)
-                font_size: 16
+                text: 'GRUMBAR'
                 color: (1, 1, 1, 1)
-                outline_width: 0
-                outline_color: (0, 0, 0, 0)
-                text_size: (self.width - 40, None)
-                padding: (0, 600, 0, 0)
-                valign: 'top'
-                halign: 'left'
+                font_size: 36
+                font_name: 'Program_Files/medieval_font_file_2.ttf'
+                size_hint: 1, None
+                size: self.texture_size
+                pos_hint: {'center_x': 0.5, 'top': 1}  # Center horizontally and align to the top
+                padding: [15, 15, 15, 15]
 
-            TextInput:
-                id: input_text
-                size_hint: (1, 0.045)
-                font_size: 30
-                font_name: 'Program_Files/medieval_font_file.ttf'
-                background_color: (1, 1, 1, 1)
-                multiline: False
-                padding: (15, 10, 15, 10)
-                on_text_validate: root.on_text_enter(self)
+            # Content of equipped tab
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1, 1  # Take all available space in width and height
+                size: self.minimum_size             
+                pos_hint: {'right': 1, 'top': 1}  # Align to top right
+
+                # BoxLayout for the stats
+                BoxLayout:
+                    size_hint: None, None
+                    width: 230
+                    height: self.minimum_height
+                    pos_hint: {'top': 1}  # Align to top
+                    # Label for stats
+                    Label:
+                        text: '[b]Species:[/b] Dwarf\n\n[b]HP:[/b] 55\n\n[b]Damage:[/b] 9\n\n[b]Armor:[/b] 11'
+                        markup: True
+                        color: (1, 1, 1, 1)
+                        font_size: 24
+                        font_name: 'Program_Files/Modesto-Poster-Regular.otf'
+                        size_hint: None, None
+                        size: self.texture_size
+                        pos_hint: {'top': 0.8}  # Center horizontally and align below the title
+                        padding: [30]
+                
+
+                # BoxLayout for the character picture
+                BoxLayout:
+                    size_hint: 1, None  # Take all available space in width
+                    height: self.minimum_height
+                    spos_hint: {'top': 1}  # Align to top
+                    Image:
+                        source: 'Program_Files/char_pics/dwarf.png'
+                        size_hint: None, None
+                        size: 333, 512  # Set the size of the image
+                        pos_hint: {'center_x': 0.5}  # Center horizontally
+
+                # Horizontal BoxLayout for equipped items
+                GridLayout:
+                    cols: 1  # Set the number of columns to 1
+                    size_hint: None, None
+                    width: 120  # Set a fixed width for the grid
+                    size: self.minimum_size
+                    spacing: 30  # Add spacing between the items
+                    padding: [30, 30, 30, 30]
+                    pos_hint: {'right': 1, 'top': 1}  # Align to top right
+
+                    # Item containers
+                    BoxLayout:
+                        size_hint: None, None
+                        size: 104, 104  # Set the size of the container
+                        Image:
+                            source: 'Program_Files/items_96p/item-slot.png'
+                            size_hint: None, None
+                            size: 104, 104  # Set the size of the image to 96x96 pixels
+
+                    BoxLayout:
+                        size_hint: None, None
+                        size: 104, 104  # Set the size of the container
+                        Image:
+                            source: 'Program_Files/items_96p/item-slot.png'
+                            size_hint: None, None
+                            size: 104, 104  # Set the size of the image to 96x96 pixels
+
+                    BoxLayout:
+                        size_hint: None, None
+                        size: 104, 104  # Set the size of the container
+                        Image:
+                            source: 'Program_Files/items_96p/item-slot.png'
+                            size_hint: None, None
+                            size: 104, 104  # Set the size of the image to 96x96 pixels
+
+            
+      
+        # Backpack panel (initially hidden)
+        FloatLayout:  
+            id: backpack
+            size_hint: (0.360, 0.66)
+            pos_hint: {'right': 0.987, 'top': 0.98}
+            orientation: 'vertical'
+            padding: 10
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.7
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            opacity: 0  # Initially hidden
+            disabled: True  # Initially disabled
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: self.minimum_size
+                pos_hint: {'x': 0, 'top': 1}  # Align to top left
+
+                Label:
+                    text: 'BACKPACK'
+                    color: (1, 1, 1, 1)
+                    font_size: 24
+                    font_name: 'Program_Files/medieval_font_file_2.ttf'
+                    size_hint: None, None
+                    size: self.texture_size
+                    padding: [15, 15, 15, 3]
+                    pos_hint: {'center_x': 0.5}  # Center horizontally
+               
+                # Horizontal BoxLayout for item buttons
+                GridLayout:
+                    cols: 4  # Set the number of columns to 3
+                    size_hint: None, None
+                    size: self.minimum_size
+                    spacing: 12  # Add spacing between the items
+                    padding: [12]  # Add padding to the left
+
+
+                    # Item buttons
+                    Button:
+                        text: 'Sword'
+                        size_hint: None, None
+                        size: 100, 100
+                        background_normal: 'Program_Files/items_96p/background.jpg'
+                        background_down: 'Program_Files/items_96p/background-click.jpg'  # Optional
+                        text: ''
+                        canvas.before:
+                            Color:
+                                rgba: 1.0, 0.92, 0.8, 1  # Set your desired background color (R, G, B, A)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size                        
+                        canvas.after:
+                            Color:
+                                rgba: 1, 1, 1, 1  # Ensure the image is drawn with full opacity
+                            Rectangle:
+                                source: 'Program_Files/items_96p/weapon-sword.png'
+                                size: 96, 96 # Set the size of the image to 96x96 pixels
+                                pos: (self.center_x - 48, self.center_y - 48)  # Center the image within the button
+
+                    Button:
+                        text: 'Axe'
+                        size_hint: None, None
+                        size: 100, 100
+                        background_normal: 'Program_Files/items_96p/background.jpg'
+                        background_down: 'Program_Files/items_96p/background-click.jpg'  # Optional
+                        text: ''
+                        canvas.before:
+                            Color:
+                                rgba: 1.0, 0.92, 0.8, 1  # Set your desired background color (R, G, B, A)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size                        
+                        canvas.after:
+                            Color:
+                                rgba: 1, 1, 1, 1  # Ensure the image is drawn with full opacity
+                            Rectangle:
+                                source: 'Program_Files/items_96p/weapon-axe.png'
+                                size: 96, 96 # Set the size of the image to 96x96 pixels
+                                pos: (self.center_x - 48, self.center_y - 48)  # Center the image within the button
+
+                    Button:
+                        text: 'Chainmail'
+                        size_hint: None, None
+                        size: 100, 100
+                        background_normal: 'Program_Files/items_96p/background.jpg'
+                        background_down: 'Program_Files/items_96p/background-click.jpg'  # Optional
+                        text: ''
+                        canvas.before:
+                            Color:
+                                rgba: 1.0, 0.92, 0.8, 1  # Set your desired background color (R, G, B, A)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size                        
+                        canvas.after:
+                            Color:
+                                rgba: 1, 1, 1, 1  # Ensure the image is drawn with full opacity
+                            Rectangle:
+                                source: 'Program_Files/items_96p/armor-chainmail.png'
+                                size: 96, 96 # Set the size of the image to 96x96 pixels
+                                pos: (self.center_x - 48, self.center_y - 48)  # Center the image within the buttone text display on button
+                        text: ''  
+
+                    Button:
+                        text: 'Health Potion'
+                        size_hint: None, None
+                        size: 100, 100
+                        background_normal: 'Program_Files/items_96p/background.jpg'
+                        background_down: 'Program_Files/items_96p/background-click.jpg'  # Optional
+                        text: ''
+                        canvas.before:
+                            Color:
+                                rgba: 1.0, 0.92, 0.8, 1  # Set your desired background color (R, G, B, A)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size                        
+                        canvas.after:
+                            Color:
+                                rgba: 1, 1, 1, 1  # Ensure the image is drawn with full opacity
+                            Rectangle:
+                                source: 'Program_Files/items_96p/potion-health.png'
+                                size: 96, 96 # Set the size of the image to 96x96 pixels
+                                pos: (self.center_x - 48, self.center_y - 48)  # Center the image within the button
+
+                    Button:
+                        text: 'Health Potion'
+                        size_hint: None, None
+                        size: 100, 100
+                        background_normal: 'Program_Files/items_96p/background.jpg'
+                        background_down: 'Program_Files/items_96p/background-click.jpg'  # Optional
+                        text: ''
+                        canvas.before:
+                            Color:
+                                rgba: 1.0, 0.92, 0.8, 1  # Set your desired background color (R, G, B, A)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size                        
+                        canvas.after:
+                            Color:
+                                rgba: 1, 1, 1, 1  # Ensure the image is drawn with full opacity
+                            Rectangle:
+                                source: 'Program_Files/items_96p/potion-health.png'
+                                size: 96, 96 # Set the size of the image to 96x96 pixels
+                                pos: (self.center_x - 48, self.center_y - 48)  # Center the image within the button
 
 
 <HoverButton@Button>:

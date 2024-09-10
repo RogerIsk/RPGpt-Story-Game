@@ -18,6 +18,10 @@ import kivy
 import json
 import sys
 import os
+import re
+from combat import combat
+from character import PC, NPC
+from utils import read_json_file
 
 
 
@@ -133,7 +137,7 @@ Character Creation and Introduction: After character details, introduce their st
 Gameplay Flow: Respond to the player’s actions, adapt the story, and keep interactions concise.
 Choice Management: You may refuse an action if it’s implausible, offering another choice. The player can take any reasonable action.
 Continuity and Progression: Maintain internal coherence. Characters, names, actions, and goals should remain consistent. Allow quests to be completed over several choices.
-Dialogue: When the player uses quotes, treat it as their character speaking.
+Dialogue: When the player uses quotes, treat it as their cHoharacter speaking.
 Mechanics: Use simplified DnD 5e rules for combat and challenges:
 Character Stats: Level 1 for the player, scaled enemies and NPCs.
 Dice Rolls: Use dice rolls for actions and combat, consistent with the character’s stats. Ask the player to press enter for rolls.
@@ -314,8 +318,23 @@ class InGameScreen(Screen):                 # this class lets us give functional
     def go_back_to_menu(self, instance):    # functionality of the 'back' button
         self.manager.current = 'menu'
 
-    def show_inventory():                   # 'Inventory' button functionality
-        pass
+    def toggle_panel(self, *panel_ids):
+        '''Toggle and untoggle panel on game screen (inventory, stats...)'''
+        # define panels to toggle/untoggle
+        for panel_id in panel_ids:
+            panel = self.ids[panel_id]
+            if panel.opacity == 0:
+                panel.opacity = 1
+                panel.disabled = False
+                for child in panel.children:
+                    child.opacity = 1
+                    child.disabled = False
+            else:
+                panel.opacity = 0
+                panel.disabled = True
+                for child in panel.children:
+                    child.opacity = 0
+                    child.disabled = True
 
     def show_character_stats():             # 'Statistics' button functionality
         pass
@@ -328,17 +347,6 @@ class InGameScreen(Screen):                 # this class lets us give functional
 
     def exit_app(self, instance):           # 'Exit' button functionality
         App.get_running_app().stop()
-
-class StatsPopup(Popup):                    # 'Statistics' button visual part - what you see after you hover your mouse on 'Statistics'
-    def __init__(self, **kwargs):
-        super(StatsPopup, self).__init__(**kwargs)
-        self.title = ''
-        self.size_hint = (None, None)
-        self.size = (400, 300)              # Set the size of the popup window
-        self.background = ''                # Remove default popup background
-        self.background_color = (0, 0, 0, 0)  # Make the default background transparent
-        self.content = Image(source='Program_Files/statistics_background.png')  # background image for the stats window
-
 class RPGApp(App):                          # General GUI options
     def build(self):
         Window.size = (1280, 960)

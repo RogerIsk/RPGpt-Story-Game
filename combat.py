@@ -48,8 +48,11 @@ def combat (pc, npc):
 
     # If pc dies: game over
     if pc.hp <= 0:
-        input('GAME OVER...')
-        quit()
+        combat_result = "LOST"
     # If npc dies: player wins
     if npc.hp <= 0:
+        combat_result = "WON"
         input('You won!')
+
+    # return combat result to check_instructions()
+    return f'[END_COMBAT, {combat_result}]'
