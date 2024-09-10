@@ -67,8 +67,9 @@ ScreenManager:
         # Title Image placed above the background image with a black background
         RelativeLayout:
             size_hint: 1, None
-            height: 80  # Adjust height as needed
-            pos_hint: {'top': 1}
+            height: 100  # Adjust height to account for padding
+            pos_hint: {'top': 0.985}
+            padding: [0, 20, 0, 0]  # Padding from the top (left, top, right, bottom)
             canvas.before:
                 Color:
                     rgba: 0, 0, 0, 1  # Black color
@@ -80,7 +81,7 @@ ScreenManager:
                 source: 'Program_Files/character_creation_images/character_creation_title.png'  # Replace with your image path
                 allow_stretch: True
                 keep_ratio: True
-
+                pos_hint: {'center_x': 0.5, 'top': 1}  # Adjust as necessary
         BoxLayout:
             orientation: 'vertical'
 
