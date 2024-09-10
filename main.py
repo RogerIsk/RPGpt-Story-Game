@@ -166,6 +166,10 @@ class CharacterCreation(Screen):
         self.selected_class = None
         self.character_name = ""
 
+        # Lists of random names for male and female characters
+        self.male_names = ['Arthur', 'Lancelot', 'Gawain', 'Percival', 'Tristan']
+        self.female_names = ['Guinevere', 'Elaine', 'Isolde', 'Morgana', 'Viviane']
+
     def on_kv_post(self, base_widget):
         # Preload the initial character image to avoid white square during transition
         self.preload_character_image()
@@ -425,7 +429,7 @@ class CharacterCreation(Screen):
         self.validate_selection()
 
     def random_selection(self):
-        # Randomly select options and ensure create button is enabled
+        # Randomly select gender
         gender_choice = random.choice(['male', 'female'])
         if gender_choice == 'male':
             self.ids.male_button.state = 'down'
@@ -433,7 +437,18 @@ class CharacterCreation(Screen):
         else:
             self.ids.female_button.state = 'down'
             self.select_gender('female')
+        
+        # Select a random name based on gender
+        if self.selected_gender == 'male':
+            random_name = random.choice(self.male_names)
+        else:
+            random_name = random.choice(self.female_names)
 
+        # Set the random name into the TextInput
+        self.ids.character_name_input.text = random_name
+        self.on_character_name_input(random_name)
+
+        # Randomly select species
         species_choice = random.choice(['human', 'elf', 'dwarf'])
         if species_choice == 'human':
             self.ids.human_button.state = 'down'
@@ -445,6 +460,7 @@ class CharacterCreation(Screen):
             self.ids.dwarf_button.state = 'down'
             self.select_species('dwarf')
 
+        # Randomly select class
         class_choice = random.choice(['warrior', 'ranger', 'mage'])
         if class_choice == 'warrior':
             self.ids.warrior_button.state = 'down'
@@ -479,6 +495,40 @@ class CharacterCreation(Screen):
         self.update_create_button_state()
 
     def update_stats_display(self):
+        # Basic stats
+        base_hp = 50
+        base_dmg = 10
+        base_armor = 10
+
+        # Race bonuses
+        race_bonus = {
+            'human': {'hp': 0, 'dmg': 2, 'armor': 0},
+            'elf': {'hp': 2, 'dmg': 0, 'armor': 0},
+            'dwarf': {'hp': 0, 'dmg': 0, 'armor': 2},
+        }
+
+        # Class bonuses
+        class_bonus = {
+            'warrior': {'hp': 0, 'dmg': 0, 'armor': 5},
+            'ranger': {'hp': 5, 'dmg': 0, 'armor': 0},
+            'mage': {'hp': 0, 'dmg': 5, 'armor': 0},
+        }
+
+        # Get bonuses based on selected options or default to zero if not selected
+        species_bonus = race_bonus.get(self.selected_species, {'hp': 0, 'dmg': 0, 'armor': 0})
+        class_bonus_values = class_bonus.get(self.selected_class, {'hp': 0, 'dmg': 0, 'armor': 0})
+
+        # Calculate final stats
+        final_hp = base_hp + species_bonus['hp'] + class_bonus_values['hp']
+        final_dmg = base_dmg + species_bonus['dmg'] + class_bonus_values['dmg']
+        final_armor = base_armor + species_bonus['armor'] + class_bonus_values['armor']
+
+        # Update the stats_widget label with formatted stats
+        self.ids.stats_widget.text = (
+            f"  DMG:    [color=#ff0000]{final_dmg}[/color]\n"
+            f"   HP:       [color=#00ff00]{final_hp}[/color]\n"
+            f"ARMOR:  [color=#d3d3d3]{final_armor}[/color]"
+        )
         # Basic stats
         base_hp = 50
         base_dmg = 10
