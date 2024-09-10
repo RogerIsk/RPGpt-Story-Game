@@ -190,6 +190,7 @@ ScreenManager:
                     font_size: 20
                     background_normal: ''
                     background_color: (0.4, 0.7, 0.7, 0)
+                    on_release: root.toggle_panel('statistics')
 
                 HoverButtonRounded:
                     text: 'Inventory'
@@ -254,7 +255,7 @@ ScreenManager:
 
                        
         # Statistics panel (initially hidden)
-        BoxLayout:
+        FloatLayout:
             id: statistics
             size_hint: (0.61, 0.60)
             pos: (20, 307) # Using pos with fixed value bc pos_hint doesnt work 
@@ -269,10 +270,18 @@ ScreenManager:
             opacity: 0  # Initially hidden
             disabled: True  # Initially disabled
 
-            Label:
-                text: 'Statistics'
-                color: (1, 1, 1, 1)
-                font_size: 20
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: self.minimum_size
+                pos_hint: {'x': 0, 'top': 1}  # Align to top left
+
+                Label:
+                    text: 'Satistics'
+                    color: (1, 1, 1, 1)
+                    font_size: 20
+                    size_hint: None, None
+                    size: self.texture_size
             
       
         # Backpack panel (initially hidden)
