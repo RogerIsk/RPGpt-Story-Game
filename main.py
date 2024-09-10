@@ -396,11 +396,15 @@ class CharacterCreation(Screen):
             self.ids.create_button.disabled = True
 
     def update_character_image(self):
-        # Update character image based on selections
+        # Check if all selections (gender, species, and class) are made
         if self.selected_gender and self.selected_species and self.selected_class:
+            # Show the actual character based on the selections
             image_name = f'{self.selected_gender}_{self.selected_species}_{self.selected_class}.png'
             self.ids.character_image.source = f'Program_Files/playable_characters/{image_name}'
-            self.ids.character_image.reload()
+        else:
+            # Show 'character_0.png' if not all selections are made
+            self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
+        self.ids.character_image.reload()
 
     def validate_selection(self):
         # Create character and reset selections
