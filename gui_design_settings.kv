@@ -3,7 +3,7 @@
 
 ScreenManager:
     MenuScreen:
-        name: 'menu'
+        name: 'main_menu'
     CharacterCreation:
         name: 'character_creation'
     InGameScreen:
@@ -56,177 +56,220 @@ ScreenManager:
             on_press: app.stop()
 
 <CharacterCreation>:
-    BoxLayout:
-        orientation: 'vertical'
-        canvas.before:
-            Rectangle:
-                pos: self.pos
-                size: self.size
-                source: 'Program_Files/character_creation_images/background_image.gif'  # Changed to .gif
-    
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, 0.3)
-            spacing: 20
-            padding: [50, 0, 50, 0]
-
-            RelativeLayout:
-                Image:
-                    id: female_gif
-                    source: 'Program_Files/character_creation_images/1_inactive_female.gif'
-                    anim_delay: 0.1
-                    allow_stretch: True
-                    keep_ratio: True
-
-                ToggleButton:
-                    id: female_button
-                    group: 'gender'
-                    background_color: (0, 0, 0, 0)
-                    background_normal: ''
-                    on_press: root.select_gender('female')
-
-            RelativeLayout:
-                Image:
-                    id: male_gif
-                    source: 'Program_Files/character_creation_images/2_inactive_male.gif'
-                    anim_delay: 0.1
-                    allow_stretch: True
-                    keep_ratio: True
-
-                ToggleButton:
-                    id: male_button
-                    group: 'gender'
-                    background_color: (0, 0, 0, 0)
-                    background_normal: ''
-                    on_press: root.select_gender('male')
+    # Use a FloatLayout to layer the Image (background) beneath the main content
+    FloatLayout:
+        # Background Image with animation enabled
+        Image:
+            source: 'Program_Files/character_creation_images/es.gif'
+            allow_stretch: True
+            keep_ratio: False
+            anim_delay: 0.01  # Controls the speed of the GIF
 
         BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, 0.3)
-            spacing: 20
-            padding: [50, 0, 50, 0]
+            orientation: 'vertical'
+            # Top area for stats, character display, and selection buttons
+            BoxLayout:
+                orientation: 'horizontal'
 
-            RelativeLayout:
-                Image:
-                    id: human_gif
-                    source: 'Program_Files/character_creation_images/3_inactive_human.gif'
-                    anim_delay: 0.1
-                    allow_stretch: True
-                    keep_ratio: True
+                # Left 30% for stats and character display
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: 0.3
+                    padding: [20, 165, 0, 100]
+                    spacing: 10
 
-                ToggleButton:
-                    id: human_button
-                    group: 'species'
-                    background_color: (0, 0, 0, 0)
-                    background_normal: ''
-                    on_press: root.select_species('human')
+                    # Stats Widget (Top 1/3)
+                    Label:
+                        id: stats_widget
+                        text: 'Stats Display (Placeholder)'
+                        size_hint_y: 0.2
+                        font_size: 20
+                        color: (1, 1, 1, 1)
+                        halign: 'center'
 
-            RelativeLayout:
-                Image:
-                    id: elf_gif
-                    source: 'Program_Files/character_creation_images/4_inactive_elf.gif'
-                    anim_delay: 0.1
-                    allow_stretch: True
-                    keep_ratio: True
+                    # Character Image Display (Bottom 2/3)
+                    Image:
+                        id: character_image
+                        source: ''
+                        allow_stretch: True
+                        keep_ratio: True
+                        size_hint_y: 0.8
 
-                ToggleButton:
-                    id: elf_button
-                    group: 'species'
-                    background_color: (0, 0, 0, 0)
-                    background_normal: ''
-                    on_press: root.select_species('elf')
+                # Right 70% for selection buttons
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: 0.64
 
-            RelativeLayout:
-                Image:
-                    id: dwarf_gif
-                    source: 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
-                    anim_delay: 0.1
-                    allow_stretch: True
-                    keep_ratio: True
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: (1, 0.3)
+                        spacing: 0
+                        padding: [50, 150, 50, 20]
 
-                ToggleButton:
-                    id: dwarf_button
-                    group: 'species'
-                    background_color: (0, 0, 0, 0)
-                    background_normal: ''
-                    on_press: root.select_species('dwarf')
+                        RelativeLayout:
+                            Image:
+                                id: female_gif
+                                source: 'Program_Files/character_creation_images/1_inactive_female.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
 
+                            ToggleButton:
+                                id: female_button
+                                group: 'gender'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_gender('female')
+
+                        RelativeLayout:
+                            Image:
+                                id: male_gif
+                                source: 'Program_Files/character_creation_images/2_inactive_male.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: male_button
+                                group: 'gender'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_gender('male')
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: (1, 0.3)
+                        spacing: 0
+                        padding: [30, 0, 30, 0]
+
+                        RelativeLayout:
+                            Image:
+                                id: human_gif
+                                source: 'Program_Files/character_creation_images/3_inactive_human.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: human_button
+                                group: 'species'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_species('human')
+
+                        RelativeLayout:
+                            Image:
+                                id: elf_gif
+                                source: 'Program_Files/character_creation_images/4_inactive_elf.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: elf_button
+                                group: 'species'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_species('elf')
+
+                        RelativeLayout:
+                            Image:
+                                id: dwarf_gif
+                                source: 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: dwarf_button
+                                group: 'species'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_species('dwarf')
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: (1, 0.3)
+                        spacing: 0
+                        padding: [50, 0, 50, 100]
+
+                        RelativeLayout:
+                            Image:
+                                id: warrior_gif
+                                source: 'Program_Files/character_creation_images/6_inactive_warrior.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: warrior_button
+                                group: 'class'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_class('warrior')
+
+                        RelativeLayout:
+                            Image:
+                                id: ranger_gif
+                                source: 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: ranger_button
+                                group: 'class'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_class('ranger')
+
+                        RelativeLayout:
+                            Image:
+                                id: mage_gif
+                                source: 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: mage_button
+                                group: 'class'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_class('mage')
+
+        # Bottom area for back, random, and create buttons, spanning full width
         BoxLayout:
             orientation: 'horizontal'
-            size_hint: (1, 0.3)
-            spacing: 20
-            padding: [50, 0, 50, 0]
+            size_hint_y: 0.1
+            padding: [10, 15, 10, 15]
+            spacing: 15
 
-            RelativeLayout:
-                Image:
-                    id: warrior_gif
-                    source: 'Program_Files/character_creation_images/6_inactive_warrior.gif'
-                    anim_delay: 0.1
-                    allow_stretch: True
-                    keep_ratio: True
-
-                ToggleButton:
-                    id: warrior_button
-                    group: 'class'
-                    background_color: (0, 0, 0, 0)
-                    background_normal: ''
-                    on_press: root.select_class('warrior')
-
-            RelativeLayout:
-                Image:
-                    id: ranger_gif
-                    source: 'Program_Files/character_creation_images/7_inactive_ranger.gif'
-                    anim_delay: 0.1
-                    allow_stretch: True
-                    keep_ratio: True
-
-                ToggleButton:
-                    id: ranger_button
-                    group: 'class'
-                    background_color: (0, 0, 0, 0)
-                    background_normal: ''
-                    on_press: root.select_class('ranger')
-
-            RelativeLayout:
-                Image:
-                    id: mage_gif
-                    source: 'Program_Files/character_creation_images/8_inactive_mage.gif'
-                    anim_delay: 0.1
-                    allow_stretch: True
-                    keep_ratio: True
-
-                ToggleButton:
-                    id: mage_button
-                    group: 'class'
-                    background_color: (0, 0, 0, 0)
-                    background_normal: ''
-                    on_press: root.select_class('mage')
-
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, 0.1)
-            padding: [50, 20, 50, 20]
-            spacing: 20
-            
             HoverButtonRounded:
                 text: 'Back'
-                on_release: app.root.current = 'menu'
+                size_hint_x: 0.33
+                on_release:
+                    root.reset_selections()  # Call the reset method
+                    app.root.current = 'main_menu'  # Then navigate to the main menu
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
 
             HoverButtonRounded:
                 text: 'Random'
-                on_release: root.random_selection()  # Calls the new random selection method
+                size_hint_x: 0.34
+                on_release: root.random_selection()
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
 
             HoverButtonRounded:
                 id: create_button
                 text: 'Create'
+                size_hint_x: 0.33
                 disabled: True
                 on_release: root.validate_selection()
                 background_color: [0.5, 0.5, 0.5, 0]
                 background_normal: ''
+
         
 
 

@@ -163,6 +163,24 @@ class CharacterCreation(Screen):
         self.selected_species = None
         self.selected_class = None
 
+    def on_kv_post(self, base_widget):
+        # Preload the initial character image to avoid white square during transition
+        self.preload_character_image()
+
+    def preload_character_image(self):
+        # Set the initial character image source without making it visible yet
+        self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
+        self.ids.character_image.opacity = 0  # Hide it initially
+
+    def on_enter(self):
+        # When entering the screen, make the image visible
+        self.ids.character_image.opacity = 1
+
+    def show_initial_character_image(self):
+        # Set the initial character image source to 'character_0.png'
+        self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
+        self.ids.character_image.reload()
+
     def select_gender(self, gender):
         male_button = self.ids.male_button
         female_button = self.ids.female_button
@@ -200,6 +218,7 @@ class CharacterCreation(Screen):
                 self.selected_gender = None
 
         self.update_create_button_state()
+        self.update_character_image()
 
     def select_species(self, species):
         human_button = self.ids.human_button
@@ -261,6 +280,7 @@ class CharacterCreation(Screen):
                 self.selected_species = None
 
         self.update_create_button_state()
+        self.update_character_image()
 
     def select_class(self, char_class):
         warrior_button = self.ids.warrior_button
@@ -322,23 +342,78 @@ class CharacterCreation(Screen):
                 self.selected_class = None
 
         self.update_create_button_state()
+        self.update_character_image()
+
+    def reset_selections(self):
+        # Reset all button states and selection variables
+        self.ids.male_button.state = 'normal'
+        self.ids.female_button.state = 'normal'
+        self.ids.human_button.state = 'normal'
+        self.ids.elf_button.state = 'normal'
+        self.ids.dwarf_button.state = 'normal'
+        self.ids.warrior_button.state = 'normal'
+        self.ids.ranger_button.state = 'normal'
+        self.ids.mage_button.state = 'normal'
+
+        # Reset GIFs to their inactive states
+        self.ids.male_gif.source = 'Program_Files/character_creation_images/2_inactive_male.gif'
+        self.ids.female_gif.source = 'Program_Files/character_creation_images/1_inactive_female.gif'
+        self.ids.human_gif.source = 'Program_Files/character_creation_images/3_inactive_human.gif'
+        self.ids.elf_gif.source = 'Program_Files/character_creation_images/4_inactive_elf.gif'
+        self.ids.dwarf_gif.source = 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+        self.ids.warrior_gif.source = 'Program_Files/character_creation_images/6_inactive_warrior.gif'
+        self.ids.ranger_gif.source = 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+        self.ids.mage_gif.source = 'Program_Files/character_creation_images/8_inactive_mage.gif'
+
+        # Reload GIFs to update their state
+        self.ids.male_gif.reload()
+        self.ids.female_gif.reload()
+        self.ids.human_gif.reload()
+        self.ids.elf_gif.reload()
+        self.ids.dwarf_gif.reload()
+        self.ids.warrior_gif.reload()
+        self.ids.ranger_gif.reload()
+        self.ids.mage_gif.reload()
+
+        # Reset selected options
+        self.selected_gender = None
+        self.selected_species = None
+        self.selected_class = None
+        
+        # Disable the create button
+        self.ids.create_button.disabled = True
 
     def update_create_button_state(self):
-        # Ensure that all selections are made before enabling the button
+        # Enable create button if all selections are made
         if self.selected_gender and self.selected_species and self.selected_class:
             self.ids.create_button.disabled = False
         else:
             self.ids.create_button.disabled = True
 
+    def update_character_image(self):
+        # Update character image based on selections
+        if self.selected_gender and self.selected_species and self.selected_class:
+            image_name = f'{self.selected_gender}_{self.selected_species}_{self.selected_class}.png'
+            self.ids.character_image.source = f'Program_Files/playable_characters/{image_name}'
+            self.ids.character_image.reload()
+
     def validate_selection(self):
-        # Ensure validation is called correctly
+        # Create character and reset selections
         print("Creating character with the selected options...")
+        self.reset_selections()
         self.manager.current = 'ingame'
 
-    def random_selection(self):
-        # Randomly select one option from each category
+    def on_back_button_pressed(self):
+        # Reset selections when back button is pressed
+        self.reset_selections()
+        self.manager.current = 'main_menu' 
 
-        # Randomly choose and select a gender
+    def on_create_button_pressed(self):
+        # Validate selection and create character
+        self.validate_selection()
+
+    def random_selection(self):
+        # Randomly select options and ensure create button is enabled
         gender_choice = random.choice(['male', 'female'])
         if gender_choice == 'male':
             self.ids.male_button.state = 'down'
@@ -347,7 +422,6 @@ class CharacterCreation(Screen):
             self.ids.female_button.state = 'down'
             self.select_gender('female')
 
-        # Randomly choose and select a species
         species_choice = random.choice(['human', 'elf', 'dwarf'])
         if species_choice == 'human':
             self.ids.human_button.state = 'down'
@@ -359,7 +433,6 @@ class CharacterCreation(Screen):
             self.ids.dwarf_button.state = 'down'
             self.select_species('dwarf')
 
-        # Randomly choose and select a class
         class_choice = random.choice(['warrior', 'ranger', 'mage'])
         if class_choice == 'warrior':
             self.ids.warrior_button.state = 'down'
@@ -371,7 +444,6 @@ class CharacterCreation(Screen):
             self.ids.mage_button.state = 'down'
             self.select_class('mage')
 
-        # Ensure the create button is enabled after selection
         self.update_create_button_state()
 
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
@@ -394,7 +466,7 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
                 self.ids.output_label.text = "Enter a short pitch for your adventure or leave blank:"
                 self.ids.input_text.bind(on_text_validate=self.on_pitch_enter)
             elif user_input == "2":
-                self.manager.current = 'menu'
+                self.manager.current = 'main_menu'
             elif user_input == "3":
                 App.get_running_app().stop()
             else:
@@ -414,7 +486,7 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
         self.ids.input_text.bind(on_text_validate=self.on_text_enter)
 
     def go_back_to_menu(self, instance):  # Functionality of the 'back' button
-        self.manager.current = 'menu'
+        self.manager.current = 'main_menu'
 
     def show_inventory(self):  # 'Inventory' button functionality
         pass
@@ -433,7 +505,7 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
 
 class RPGApp(App):  # General GUI options
     def build(self):
-        Window.size = (1366, 960)
+        Window.size = (1250, 960)
         Window.resizable = False
         sm = Builder.load_file('gui_design_settings.kv')
         return sm
