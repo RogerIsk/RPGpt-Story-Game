@@ -13,6 +13,7 @@ class Character:
     def __init__(self, db_config, char_name):
         '''intitialise a cursor to interact with db'''
         self.conn = psycopg2.connect(**db_config)
+        self.conn.autocommit = True  # Set autocommit to True
         # Use a dictionary cursor, so we can extract the char data as a dictionary for readability
         self.cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
@@ -68,7 +69,7 @@ class Hero(Character):
         self.name = char_name
         # Importing the hero stats to instance attributes
         if char_data:
-            self.race = char_data["race"]  # Access the "Race" column
+            self.species = char_data["species"]  # Access the "species" column
             self.char_class = char_data["class"]  # Access the "Class" column
             self.hp = char_data["hp"]
             self.dmg = char_data["damage"]
@@ -131,9 +132,9 @@ class Enemy(Character):
 def instantiate_hero(db_config, char_name):
     '''Instantiate hero with character name'''
     # declare hero as global to use it from anywhere in the code
-    global hero
     try:
         hero = Hero(db_config, char_name)
+        return hero
     except Exception as e:
         print("Character not found in database!")
         print(f"Error: {e}")

@@ -13,6 +13,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.lang import Builder
+from kivy.properties import StringProperty
 from openai import OpenAI
 from stringcolor import *
 from kivy.app import App
@@ -23,7 +24,7 @@ import sys
 import os
 import re
 from combat import combat
-from character import Hero, Enemy
+from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from utils import read_json_file, DatabaseUtils
 
 
@@ -427,6 +428,8 @@ class CharacterCreation(Screen):
         
 
     def validate_selection(self):
+
+        global hero
         # Create character and reset selections
         print("Creating character with the selected options...")
         # Save new character stats to the character database
@@ -449,6 +452,28 @@ class CharacterCreation(Screen):
             print(f"Error saving character to the database: {e}")
 
         self.reset_selections()
+        # create an instance of hero using the dedicated function
+        hero = instantiate_hero(db_config, self.char_name)
+
+        if isinstance(hero, Hero):
+            print("Hero object exists and is an instance of the Hero class.")
+        else:
+            print("Hero object does not exist or is not an instance of the Hero class.")
+        input('Go on...')
+
+    
+        # Update the Kivy context with the new hero
+        app = App.get_running_app()
+        app.root.hero = hero
+
+        # Set the StringProperty values
+        ingame_screen = app.root.get_screen('ingame')
+        ingame_screen.hero_name = hero.name
+        ingame_screen.hero_species = hero.species
+        ingame_screen.hero_hp = str(hero.hp)
+        ingame_screen.hero_dmg = str(hero.dmg)
+        ingame_screen.hero_armor = str(hero.armor)
+
         self.manager.current = 'ingame'
 
     def on_kv_post(self, base_widget):
@@ -576,6 +601,12 @@ class CharacterCreation(Screen):
 
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
 class InGameScreen(Screen):  # This class lets us give functionality to our widgets in the game
+    hero_name = StringProperty("")
+    hero_species = StringProperty("")
+    hero_hp = StringProperty("")
+    dmg = StringProperty("")
+    hero_armor = StringProperty("")
+    
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
@@ -651,7 +682,14 @@ class RPGApp(App):  # General GUI options
         Window.size = (1250, 960)
         Window.resizable = False
         sm = Builder.load_file('gui_design_settings.kv')
+        sm.hero = None  # Initialize hero attribute
+        # Add InGameScreen to the ScreenManager
+        # sm.add_widget(InGameScreen(name='ingame'))
         return sm
+
+    def on_start(self):
+        # Set the hero attribute after the root widget is initialized
+        self.root.hero = None
 
 if __name__ == '__main__':
     RPGApp().run()

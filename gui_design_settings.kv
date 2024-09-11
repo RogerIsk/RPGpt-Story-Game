@@ -326,6 +326,13 @@ ScreenManager:
                 background_normal: ''
 
 <InGameScreen>:
+    id: ingame_screen
+    hero_name: ""
+    hero_species: ""
+    hero_hp: ""
+    hero_dmg: ""
+    hero_armor: ""
+
     BoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -441,9 +448,9 @@ ScreenManager:
             opacity: 0  # Initially hidden
             disabled: True  # Initially disabled
 
-            # Layout title. Replace with character name variable
+            # Layout title with character name
             Label:
-                text: 'GRUMBAR'
+                text: root.hero_name
                 color: (1, 1, 1, 1)
                 font_size: 36
                 font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
@@ -467,7 +474,7 @@ ScreenManager:
                     pos_hint: {'top': 1}  # Align to top
                     # Label for stats
                     Label:
-                        text: '[b]Species:[/b] Dwarf\n\n[b]HP:[/b] 55\n\n[b]Damage:[/b] 9\n\n[b]Armor:[/b] 11'
+                        text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]Armor:[/b] ' + root.hero_armor
                         markup: True
                         color: (1, 1, 1, 1)
                         font_size: 24
