@@ -59,7 +59,7 @@ ScreenManager:
     FloatLayout:
         # Background Image with animation enabled
         Image:
-            source: 'Program_Files/character_creation_images/character_creation_backgorund.gif'
+            source: 'Program_Files/character_creation_images/character_creation_background.gif'
             allow_stretch: True
             keep_ratio: False
             anim_delay: 0.01
@@ -351,23 +351,23 @@ ScreenManager:
                 background_normal: ''
                 on_release: root.go_back_to_menu(self)
 
-                HoverButtonRounded:
-                    text: 'Statistics'
-                    size_hint: (None, None)
-                    size: (120, 50)
-                    font_size: 20
-                    background_color: [0, 0, 0, 0]
-                    background_normal: ''
-                        on_release: root.toggle_panel('stats')
+            HoverButtonRounded:
+                text: 'Statistics'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
+                on_release: root.toggle_panel('stats')
 
-                HoverButtonRounded:
-                    text: 'Inventory'
-                    size_hint: (None, None)
-                    size: (120, 50)
-                    font_size: 20
-                    background_color: [0, 0, 0, 0]
-                    background_normal: ''
-                        on_release: root.toggle_panel('backpack', 'stats')
+            HoverButtonRounded:
+                text: 'Inventory'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
+                on_release: root.toggle_panel('backpack', 'stats')
 
             HoverButtonRounded:
                 text: 'History'
@@ -419,7 +419,7 @@ ScreenManager:
                     id: input_text
                     size_hint: (1, 0.045)
                     font_size: 30
-                    font_name: 'Program_Files/medieval_font_file.ttf'
+                    font_name: 'Program_Files/fonts/medieval_font_file.ttf'
                     background_color: (1, 1, 1, 1)
                     multiline: False
                     padding: (15, 10, 15, 10)
@@ -446,7 +446,7 @@ ScreenManager:
                 text: 'GRUMBAR'
                 color: (1, 1, 1, 1)
                 font_size: 36
-                font_name: 'Program_Files/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
                 size_hint: 1, None
                 size: self.texture_size
                 pos_hint: {'center_x': 0.5, 'top': 1}  # Center horizontally and align to the top
@@ -471,7 +471,7 @@ ScreenManager:
                         markup: True
                         color: (1, 1, 1, 1)
                         font_size: 24
-                        font_name: 'Program_Files/Modesto-Poster-Regular.otf'
+                        font_name: 'Program_Files/fonts/Modesto-Poster-Regular.otf'
                         size_hint: None, None
                         size: self.texture_size
                         pos_hint: {'top': 0.8}  # Center horizontally and align below the title
@@ -552,7 +552,7 @@ ScreenManager:
                     text: 'BACKPACK'
                     color: (1, 1, 1, 1)
                     font_size: 24
-                    font_name: 'Program_Files/medieval_font_file_2.ttf'
+                    font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
                     size_hint: None, None
                     size: self.texture_size
                     padding: [15, 15, 15, 3]

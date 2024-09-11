@@ -24,7 +24,7 @@ import os
 import re
 from combat import combat
 from character import Hero, Enemy
-from utils import read_json_file
+from utils import read_json_file, DatabaseUtils
 
 
 
@@ -32,16 +32,12 @@ from utils import read_json_file
 # Replace with your actual API key ===========================================================================
 model = "gpt-4o"
 
-def read_json_file(file_path):
-    '''Read the data from a json file'''
-    # we use this to import the api key
-    with open(file_path, 'r') as file:
-        return json.load(file)
-
 # import the api key and create a client using it
 key_data = read_json_file("Program_Files/json_files/key.json")    
 api_key = key_data["api_key"]
 client = OpenAI(api_key=api_key)
+
+db_config = read_json_file("Program_Files/json_files/db_config.json")
 
 # non-regex strings to display in game window
 enter_end = "PRESS ENTER TO EXIT THE GAME..."
@@ -165,6 +161,11 @@ class MenuScreen(Screen):  # This class lets us give functionality to our widget
 
 class CharacterCreation(Screen):
     def __init__(self, **kwargs):
+        # import the database methods
+        self.db_utils = DatabaseUtils(db_config)
+        # open db connection
+        self.db_utils.connect_db()
+
         super(CharacterCreation, self).__init__(**kwargs)
         self.selected_gender = None
         self.selected_species = None
@@ -423,10 +424,30 @@ class CharacterCreation(Screen):
             # Show 'character_0.png' if not all selections are made
             self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
         self.ids.character_image.reload()
+        
 
     def validate_selection(self):
         # Create character and reset selections
         print("Creating character with the selected options...")
+        # Save new character stats to the character database
+        insert_query = """
+        INSERT INTO character (name, species, class, hp, damage, armor)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        # define values to save to db
+        char_data = (self.character_name, self.selected_species, self.selected_class, self.final_hp, self.final_dmg, self.final_armor)
+
+        try:
+            # Execute the SQL statement (write char stats to db)
+            self.db_utils.cursor.execute(insert_query, char_data)
+            # Commit the transaction
+            self.db_utils.conn.commit()
+            print("Character saved to the database.")
+        except Exception as e:
+            # Rollback in case of error
+            self.db_utils.conn.rollback()
+            print(f"Error saving character to the database: {e}")
+
         self.reset_selections()
         self.manager.current = 'ingame'
 
@@ -540,15 +561,15 @@ class CharacterCreation(Screen):
         class_bonus_values = class_bonus.get(self.selected_class, {'hp': 0, 'dmg': 0, 'armor': 0})
 
         # Calculate final stats
-        final_hp = base_hp + species_bonus['hp'] + class_bonus_values['hp']
-        final_dmg = base_dmg + species_bonus['dmg'] + class_bonus_values['dmg']
-        final_armor = base_armor + species_bonus['armor'] + class_bonus_values['armor']
+        self.final_hp = base_hp + species_bonus['hp'] + class_bonus_values['hp']
+        self.final_dmg = base_dmg + species_bonus['dmg'] + class_bonus_values['dmg']
+        self.final_armor = base_armor + species_bonus['armor'] + class_bonus_values['armor']
 
         # Update the stats_widget label with formatted stats
         self.ids.stats_widget.text = (
-            f"  DMG:    [color=#ff0000]{final_dmg}[/color]\n"
-            f"   HP:       [color=#00ff00]{final_hp}[/color]\n"
-            f"ARMOR:  [color=#d3d3d3]{final_armor}[/color]"
+            f"  DMG:    [color=#ff0000]{self.final_dmg}[/color]\n"
+            f"   HP:       [color=#00ff00]{self.final_hp}[/color]\n"
+            f"ARMOR:  [color=#d3d3d3]{self.final_armor}[/color]"
         )
 
 
