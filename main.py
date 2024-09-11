@@ -454,13 +454,6 @@ class CharacterCreation(Screen):
         self.reset_selections()
         # create an instance of hero using the dedicated function
         hero = instantiate_hero(db_config, self.char_name)
-
-        if isinstance(hero, Hero):
-            print("Hero object exists and is an instance of the Hero class.")
-        else:
-            print("Hero object does not exist or is not an instance of the Hero class.")
-        input('Go on...')
-
     
         # Update the Kivy context with the new hero
         app = App.get_running_app()
