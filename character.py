@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras
 from random import randint
 from time import sleep
 from utils import read_json_file
@@ -9,10 +10,11 @@ class Character:
     '''Character class to store the character's data'''
     # This class is used for every character, Hero and Enemys
 
-    def __init__(self, db_config):
+    def __init__(self, db_config, char_name):
         '''intitialise a cursor to interact with db'''
         self.conn = psycopg2.connect(**db_config)
-        self.cursor = self.conn.cursor()
+        # Use a dictionary cursor, so we can extract the char data as a dictionary for readability
+        self.cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def close(self):
         '''close the database connection'''
@@ -52,29 +54,28 @@ class Character:
 class Hero(Character):
     '''Hero class for player's character's specific data and actions'''
 
-    def __init__(self, db_config, start_char):
+    def __init__(self, db_config, char_name):
         '''Initialise the class'''
-        super().__init__(db_config)  # Call the parent class's __init__ method
-        self._get_hero(start_char)  # Call the method to get hero data
+        super().__init__(db_config, char_name)  # Call the parent class's __init__ method
+        self._get_hero(char_name)  # Call the method to get hero data
 
     
 
-    def _get_hero(self, start_char):
-        query = "SELECT * FROM heroes WHERE class = %s"
-        self.cursor.execute(query, (start_char,))
+    def _get_hero(self, char_name):
+        query = "SELECT * FROM character WHERE name = %s"
+        self.cursor.execute(query, (char_name,))
         char_data = self.cursor.fetchone()
-        # REPLACE THE FOLLOWING LINE TO INTERACT WITH GUI
-        self.name = input('Enter your name')
+        self.name = char_name
         # Importing the hero stats to instance attributes
         if char_data:
-            self.race = char_data["Race"]  # Access the "Race" column
-            self.char_class = char_data["Class"]  # Access the "Class" column
-            self.hp = char_data["HP"]
-            self.dmg = char_data["Damage"]
-            self.armor = char_data["Armor"]
-            self.items = char_data["Items"]
-            self.eq_weapon = char_data["Weapon equipped"]
-            self.eq_armor = char_data["Armor equipped"]
+            self.race = char_data["race"]  # Access the "Race" column
+            self.char_class = char_data["class"]  # Access the "Class" column
+            self.hp = char_data["hp"]
+            self.dmg = char_data["damage"]
+            self.armor = char_data["armor"]
+            self.items = char_data["items"]
+            self.eq_weapon = char_data["equipped_weapon"]
+            self.eq_armor = char_data["equipped_armor"]
         return None
     
     
@@ -94,25 +95,21 @@ class Hero(Character):
 class Enemy(Character):
     '''Enemy class for player's character's specific data and actions'''
     # For now it's only used to fetch the character's stats in a different way
-    def __init__(self, sheet_path, enemy_id):
-        '''Initialise the class with character's data from read_char_sheet'''
-        # Read the whole json file
-        char_sheet = read_json_file(sheet_path)
-        # Get the dictionary with the stats of the selected Enemy
-        self.char_dictionary = char_sheet.get(enemy_id, {})
-        # read the dictionary to assign stats asthe character's object attributes
-        self._read_char_sheet()
+    def __init__(self, db_config, char_name):
+        '''Initialise the class'''
+        super().__init__(db_config, char_name)  # Call the parent class's __init__ method
+        self._get_enemy(char_name)  # Call the method to get hero data
 
-    def _get_enemy(self, start_char):
-        query = "SELECT * FROM enemies WHERE class = %s"
-        self.cursor.execute(query, (start_char,))
+    def _get_enemy(self, char_name):
+        query = "SELECT * FROM enemies WHERE name = %s"
+        self.cursor.execute(query, (char_name,))
         char_data = self.cursor.fetchone()
+        self.name = char_name
         # Importing the enemy stats to instance attributes
         if char_data:
-            self.name = char_data["Name"]
-            self.hp = char_data["HP"]
-            self.dmg = char_data["Damage"]
-            self.armor = char_data["Armor"]
+            self.hp = char_data["hp"]
+            self.dmg = char_data["damage"]
+            self.armor = char_data["armor"]
         return None
 
     def attack(self, target):

@@ -1,5 +1,5 @@
 {
-    "dbname": "database_name",
+    "dbname": "rpg_game",
     "user": "postgres",
     "password": "postgres",
     "host": "localhost",

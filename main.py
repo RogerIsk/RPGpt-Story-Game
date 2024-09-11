@@ -36,7 +36,7 @@ def read_json_file(file_path):
         return json.load(file)
 
 # import the api key and create a client using it
-key_data = read_json_file("Program_Files/key.json")    
+key_data = read_json_file("Program_Files/json_files/key.json")    
 api_key = key_data["api_key"]
 client = OpenAI(api_key = api_key)
 
