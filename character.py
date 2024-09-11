@@ -124,3 +124,30 @@ class Enemy(Character):
 
         # apply damage to target
         target.take_damage(dmg)
+
+
+
+# Character stuff
+def instantiate_hero(db_config, char_name):
+    '''Instantiate hero with character name'''
+    # declare hero as global to use it from anywhere in the code
+    global hero
+    try:
+        hero = Hero(db_config, char_name)
+    except Exception as e:
+        print("Character not found in database!")
+        print(f"Error: {e}")
+        return None
+
+
+def instantiate_enemy(db_config, enemy_name):
+    '''Instantiate enemy with character name'''
+    #WILL NEED TO BE CALLED IN MAIN TO START COMBAT
+    # declare enemy as global to use it from anywhere in the code
+    global hero
+    try:
+        enemy = Enemy(db_config, enemy_name)
+    except Exception as e:
+        print("Character not found in database!")
+        print(f"Error: {e}")
+        return None

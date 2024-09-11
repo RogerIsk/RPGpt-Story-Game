@@ -23,7 +23,7 @@ import sys
 import os
 import re
 from combat import combat
-from character import Hero, Enemy
+from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from utils import read_json_file, DatabaseUtils
 
 
@@ -89,6 +89,7 @@ If random is chosen, generate a character with random values for Name, Race, Sex
     # Correct the label reference
     chat_screen.ids.output_label.text = f"Assistant: {bot_response}"
     chat_screen.messages = messages
+
 
 # kivy visual stuff ===========================================================================
 class HoverButtonRounded(Button):  # This lets our buttons show a window with info when mouse is over them (InGameScreen class)
@@ -170,13 +171,13 @@ class CharacterCreation(Screen):
         self.selected_gender = None
         self.selected_species = None
         self.selected_class = None
-        self.character_name = ""
+        self.char_name = ""
         self.names_data = self.load_random_names()
 
     def load_random_names(self):
         # Load the names from the JSON file
         try:
-            with open('Program_Files/json_files/random_character_names.json', 'r') as file:
+            with open('Program_Files/json_files/random_char_names.json', 'r') as file:
                 return json.load(file)
         except FileNotFoundError:
             print("names.json file not found.")
@@ -409,7 +410,7 @@ class CharacterCreation(Screen):
 
     def update_create_button_state(self):
         # Enable the "Continue" button if all selections are made and the character name is not empty
-        if self.selected_gender and self.selected_species and self.selected_class and len(self.character_name) > 0:
+        if self.selected_gender and self.selected_species and self.selected_class and len(self.char_name) > 0:
             self.ids.create_button.disabled = False
         else:
             self.ids.create_button.disabled = True
@@ -429,13 +430,13 @@ class CharacterCreation(Screen):
     def validate_selection(self):
         # Create character and reset selections
         print("Creating character with the selected options...")
-        # Save new character stats to the character database
+        # Save new character stats to the character  ÷× database
         insert_query = """
         INSERT INTO character (name, species, class, hp, damage, armor)
         VALUES (%s, %s, %s, %s, %s, %s)
         """
         # define values to save to db
-        char_data = (self.character_name, self.selected_species, self.selected_class, self.final_hp, self.final_dmg, self.final_armor)
+        char_data = (self.char_name, self.selected_species, self.selected_class, self.final_hp, self.final_dmg, self.final_armor)
 
         try:
             # Execute the SQL statement (write char stats to db)
@@ -447,6 +448,9 @@ class CharacterCreation(Screen):
             # Rollback in case of error
             self.db_utils.conn.rollback()
             print(f"Error saving character to the database: {e}")
+        # create the hero instance and pass the db config and the character name to find it in the db
+        # The other hero stats aren't passed directly here but will be feteched from character table
+        instantiate_hero(db_config, self.char_name)
 
         self.reset_selections()
         self.manager.current = 'ingame'
@@ -457,8 +461,8 @@ class CharacterCreation(Screen):
 
     def on_leave(self):
         # Reset the character name when leaving the screen
-        self.character_name = ""
-        self.ids.character_name_input.text = ""  # Clear the TextInput
+        self.char_name = ""
+        self.ids.char_name_input.text = ""  # Clear the TextInput
 
     def on_back_button_pressed(self):
         # Reset selections when back button is pressed
@@ -499,8 +503,8 @@ class CharacterCreation(Screen):
             random_name = "Unknown"  # Fallback in case of a missing key
 
         # Set the random name into the TextInput
-        self.ids.character_name_input.text = random_name
-        self.on_character_name_input(random_name)
+        self.ids.char_name_input.text = random_name
+        self.on_char_name_input(random_name)
 
         # Randomly select class
         class_choice = random.choice(['warrior', 'ranger', 'mage'])
@@ -516,9 +520,9 @@ class CharacterCreation(Screen):
 
         self.update_create_button_state()
 
-    def on_character_name_input(self, text):
+    def on_char_name_input(self, text):
         # Get the TextInput widget
-        input_box = self.ids.character_name_input
+        input_box = self.ids.char_name_input
         
         # Measure the width of the text
         label = CoreLabel(text=text, font_name=input_box.font_name, font_size=input_box.font_size)
@@ -529,9 +533,9 @@ class CharacterCreation(Screen):
         max_width = input_box.width - input_box.padding[0] - input_box.padding[2]
         
         if text_width <= max_width:
-            self.character_name = text.strip()  # Accept the text
+            self.char_name = text.strip()  # Accept the text
         else:
-            input_box.text = self.character_name  # Revert to the last accepted state
+            input_box.text = self.char_name  # Revert to the last accepted state
 
         # Update the button state whenever the text changes
         self.update_create_button_state()
