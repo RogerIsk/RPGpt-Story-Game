@@ -426,7 +426,7 @@ class CharacterCreation(Screen):
             self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
         self.ids.character_image.reload()
         
-
+ro
     def validate_selection(self):
         # Create character and reset selections
         print("Creating character with the selected options...")
