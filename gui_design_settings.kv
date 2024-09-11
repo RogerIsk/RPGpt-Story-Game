@@ -17,28 +17,28 @@ ScreenManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'Program_Files/main_menu_background.jpg'
+                source: 'Program_Files/main_menu_images/main_menu_background.jpg'
 
         HoverButton:
             text: 'New'
-            font_name: 'Program_Files/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.38}
-            default_image: 'Program_Files/original_button_image.png'
-            hover_image: 'Program_Files/new_game_button.png'
+            default_image: 'Program_Files/main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/main_menu_images/new_game_button.png'
             background_color: [0, 0, 0, 0]
             background_normal: ''
             on_press: root.change_to_chat()
 
         HoverButton:
             text: 'Load'
-            font_name: 'Program_Files/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.62}
-            default_image: 'Program_Files/original_button_image.png'
-            hover_image: 'Program_Files/load_game_button.png'
+            default_image: 'Program_Files/main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/main_menu_images/load_game_button.png'
             background_color: [0, 0, 0, 0]
             background_normal: ''
             on_press: app.stop()
@@ -46,11 +46,11 @@ ScreenManager:
         HoverButton:
             text: 'Die'
             font_size: 70
-            font_name: 'Program_Files/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.49}
-            default_image: 'Program_Files/original_button_image.png'
-            hover_image: 'Program_Files/exit_game_button.png'
+            default_image: 'Program_Files/main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/main_menu_images/exit_game_button.png'
             background_color: [0, 0, 0, 0]
             background_normal: ''
             on_press: app.stop()
@@ -111,7 +111,7 @@ ScreenManager:
                             id: character_name_input
                             hint_text: 'Enter Name'
                             multiline: False  # Keep input to a single line
-                            font_name: 'Program_Files/medieval_font_file_2.ttf'
+                            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
                             font_size: 24
                             size_hint: (0.8, 0.43)  # Reduced width with size_hint_x set to 0.8
                             pos_hint: {'top': 1, 'center_x': 0.5}  # Center horizontally
@@ -291,7 +291,7 @@ ScreenManager:
 
             HoverButtonRounded:
                 text: 'Main Menu'
-                font_name: 'Program_Files/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
                 size_hint_x: 0.33
@@ -303,7 +303,7 @@ ScreenManager:
 
             HoverButtonRounded:
                 text: 'Choose Random'
-                font_name: 'Program_Files/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
                 size_hint_x: 0.34
@@ -314,7 +314,7 @@ ScreenManager:
             HoverButtonRounded:
                 id: create_button
                 text: 'Continue'
-                font_name: 'Program_Files/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
                 size_hint_x: 0.33
@@ -331,7 +331,7 @@ ScreenManager:
         padding: 20
         canvas.before:
             Rectangle:
-                source: 'Program_Files/in-game_background.png'
+                source: 'Program_Files/in_game_images/in_game_background.png'
                 pos: self.pos
                 size: self.size
 
