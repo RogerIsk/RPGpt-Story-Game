@@ -3,7 +3,7 @@
 
 ScreenManager:
     MenuScreen:
-        name: 'menu'
+        name: 'main_menu'
     CharacterCreation:
         name: 'character_creation'
     InGameScreen:
@@ -17,231 +17,403 @@ ScreenManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'Program_Files/main_menu_background.jpg'
+                source: 'Program_Files/main_menu_images/main_menu_background.jpg'
 
         HoverButton:
             text: 'New'
-            font_name: 'Program_Files/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.38}
-            default_image: 'Program_Files/original_button_image.png'
-            hover_image: 'Program_Files/new_game_button.png'
+            default_image: 'Program_Files/main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/main_menu_images/new_game_button.png'
+            background_color: [0, 0, 0, 0]
+            background_normal: ''
             on_press: root.change_to_chat()
 
         HoverButton:
             text: 'Load'
-            font_name: 'Program_Files/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.62}
-            default_image: 'Program_Files/original_button_image.png'
-            hover_image: 'Program_Files/load_game_button.png'
+            default_image: 'Program_Files/main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/main_menu_images/load_game_button.png'
+            background_color: [0, 0, 0, 0]
+            background_normal: ''
             on_press: app.stop()
 
         HoverButton:
             text: 'Die'
             font_size: 70
-            font_name: 'Program_Files/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.49}
-            default_image: 'Program_Files/original_button_image.png'
-            hover_image: 'Program_Files/exit_game_button.png'
+            default_image: 'Program_Files/main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/main_menu_images/exit_game_button.png'
+            background_color: [0, 0, 0, 0]
+            background_normal: ''
             on_press: app.stop()
 
 <CharacterCreation>:
-    BoxLayout:
-        orientation: 'vertical'
-        canvas.before:
-            Rectangle:
-                pos: self.pos
-                size: self.size
-                source: 'Program_Files/character_creation/background_image.png'  # Ensure this image is in your folder
-        
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, 0.3)
-            spacing: 20
-            padding: [50, 0, 50, 0]
-            
-            ToggleButton:
-                id: male_button
-                group: 'gender'
-                background_normal: 'Program_Files/character_creation_pics/male_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/male_symbol_v3.png'
-                on_press: root.select_gender('male')
-            
-            ToggleButton:
-                id: female_button
-                group: 'gender'
-                background_normal: 'Program_Files/character_creation_pics/female_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/female_symbol_v3.png'
-                on_press: root.select_gender('female')
-
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, 0.3)
-            spacing: 20
-            padding: [50, 0, 50, 0]
-
-            ToggleButton:
-                id: human_button
-                group: 'species'
-                background_normal: 'Program_Files/character_creation_pics/1class_warrior_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/1class_warrior_symbol_v3.png'
-                on_press: root.select_species('human')
-
-            ToggleButton:
-                id: elf_button
-                group: 'species'
-                background_normal: 'Program_Files/character_creation_pics/1class_warrior_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/1class_warrior_symbol_v3.png'
-                on_press: root.select_species('elf')
-
-            ToggleButton:
-                id: dwarf_button
-                group: 'species'
-                background_normal: 'Program_Files/character_creation_pics/1class_warrior_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/1class_warrior_symbol_v3.png'
-                on_press: root.select_species('dwarf')
-
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, 0.3)
-            spacing: 20
-            padding: [50, 0, 50, 0]
-
-            ToggleButton:
-                id: warrior_button
-                group: 'class'
-                background_normal: 'Program_Files/character_creation_pics/1class_warrior_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/1class_warrior_symbol_v3.png'
-                on_press: root.select_class('warrior')
-
-            ToggleButton:
-                id: ranger_button
-                group: 'class'
-                background_normal: 'Program_Files/character_creation_pics/2class_ranger_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/2class_ranger_symbol_v3.png'
-                on_press: root.select_class('ranger')
-
-            ToggleButton:
-                id: mage_button
-                group: 'class'
-                background_normal: 'Program_Files/character_creation_pics/3class_mage_symbol_v2.png'
-                background_down: 'Program_Files/character_creation_pics/3class_mage_symbol_v3.png'
-                on_press: root.select_class('mage')
-
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, 0.1)
-            padding: [50, 20, 50, 20]
-            spacing: 20
-            
-            Button:
-                text: 'Back'
-                on_release: app.root.current = 'menu'
-
-            Button:
-                id: create_button
-                text: 'Create'
-                disabled: True
-                on_release: root.validate_selection()
-
-
-
-
-
-
-
-<InGameScreen>:
     FloatLayout:
-        BoxLayout:
-            orientation: 'vertical'
-            padding: 20
+        # Background Image with animation enabled
+        Image:
+            source: 'Program_Files/character_creation_images/character_creation_backgorund.gif'
+            allow_stretch: True
+            keep_ratio: False
+            anim_delay: 0.01
+
+        # Title Image placed above the background image with a black background
+        RelativeLayout:
+            size_hint: 1, None
+            height: 100  # Adjust height to account for padding
+            pos_hint: {'top': 0.985}
+            padding: [0, 20, 0, 0]  # Padding from the top (left, top, right, bottom)
             canvas.before:
                 Color:
-                    rgba: 1, 1, 1, 1
+                    rgba: 0, 0, 0, 1  # Black color
                 Rectangle:
-                    source: 'Program_Files/in-game_background.png'
                     pos: self.pos
                     size: self.size
 
-            BoxLayout:
-                size_hint_y: None
-                height: 40
-                padding: 0
-                spacing: 10  # Adjust spacing for better alignment
-                pos_hint: {'top': 1}
+            Image:
+                source: 'Program_Files/character_creation_images/character_creation_title.png'  # Replace with your image path
+                allow_stretch: True
+                keep_ratio: True
+                pos_hint: {'center_x': 0.5, 'top': 1}  # Adjust as necessary
+        BoxLayout:
+            orientation: 'vertical'
 
-                HoverButtonRounded:
-                    text: 'Back'
-                    size_hint: (None, None)
-                    size: (120, 50)
-                    font_size: 20
-                    background_normal: ''
-                    background_color: (0.4, 0.7, 0.7, 0)
-                    on_release: root.go_back_to_menu(self)
+            BoxLayout:
+                orientation: 'horizontal'
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: 0.3
+                    padding: [20, 100, 0, 100]
+                    spacing: 10
+
+                    # RelativeLayout to add a background image
+                    RelativeLayout:
+                        size_hint_y: 0.33  # Adjust to cover both the text input and label
+                        padding: [0, 0, 0, 0]
+
+                        # Background image behind the text input and label
+                        Image:
+                            source: 'Program_Files/character_creation_images/info_scroll.png'  # Path to your background image
+                            allow_stretch: True
+                            keep_ratio: False
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+                        # TextInput for character name - single line and constrained to borders
+                        TextInput:
+                            id: character_name_input
+                            hint_text: 'Enter Name'
+                            multiline: False  # Keep input to a single line
+                            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                            font_size: 24
+                            size_hint: (0.8, 0.43)  # Reduced width with size_hint_x set to 0.8
+                            pos_hint: {'top': 1, 'center_x': 0.5}  # Center horizontally
+                            halign: 'center'
+                            padding: [30, 70, 30, 0]  # Adjust padding to keep text within borders
+                            foreground_color: (0, 0, 0, 1)  # Black text color
+                            background_color: (1, 1, 1, 0)  # Fully transparent background
+                            background_normal: ''  # Remove default background image
+                            on_text: root.on_character_name_input(self.text)
+
+                        # Stats Label - now positioned below the TextInput
+                        Label:
+                            id: stats_widget
+                            text: '[color=#ff0000]DMG: 0[/color]\n[color=#00ff00]HP: 0[/color]\n[color=#d3d3d3]ARMOR: 0[/color]'
+                            markup: True
+                            size_hint_y: 0.57
+                            pos_hint: {'y': 0}  # Positioned below the TextInput
+                            font_size: 20
+                            color: (0, 0, 0, 1)
+                            halign: 'center'
+                            padding: [0, 0, 0, 70]  # 20 pixels padding at the bottom
+
+                    Image:
+                        id: character_image
+                        source: ''
+                        allow_stretch: True
+                        keep_ratio: True
+                        size_hint_y: 0.66
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: 0.64
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: (1, 0.3)
+                        spacing: 0
+                        padding: [50, 150, 50, 20]
+
+                        RelativeLayout:
+                            Image:
+                                id: female_gif
+                                source: 'Program_Files/character_creation_images/1_inactive_female.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: female_button
+                                group: 'gender'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_gender('female')
+
+                        RelativeLayout:
+                            Image:
+                                id: male_gif
+                                source: 'Program_Files/character_creation_images/2_inactive_male.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: male_button
+                                group: 'gender'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_gender('male')
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: (1, 0.3)
+                        spacing: 0
+                        padding: [30, 0, 30, 0]
+
+                        RelativeLayout:
+                            Image:
+                                id: human_gif
+                                source: 'Program_Files/character_creation_images/3_inactive_human.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: human_button
+                                group: 'species'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_species('human')
+
+                        RelativeLayout:
+                            Image:
+                                id: elf_gif
+                                source: 'Program_Files/character_creation_images/4_inactive_elf.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: elf_button
+                                group: 'species'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_species('elf')
+
+                        RelativeLayout:
+                            Image:
+                                id: dwarf_gif
+                                source: 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: dwarf_button
+                                group: 'species'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_species('dwarf')
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: (1, 0.3)
+                        spacing: 0
+                        padding: [50, 0, 50, 100]
+
+                        RelativeLayout:
+                            Image:
+                                id: warrior_gif
+                                source: 'Program_Files/character_creation_images/6_inactive_warrior.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: warrior_button
+                                group: 'class'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_class('warrior')
+
+                        RelativeLayout:
+                            Image:
+                                id: ranger_gif
+                                source: 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: ranger_button
+                                group: 'class'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_class('ranger')
+
+                        RelativeLayout:
+                            Image:
+                                id: mage_gif
+                                source: 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                                anim_delay: 0.05
+                                allow_stretch: True
+                                keep_ratio: True
+
+                            ToggleButton:
+                                id: mage_button
+                                group: 'class'
+                                background_color: (0, 0, 0, 0)
+                                background_normal: ''
+                                on_press: root.select_class('mage')
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
+            padding: [10, 15, 10, 15]
+            spacing: 15
+
+            HoverButtonRounded:
+                text: 'Main Menu'
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                font_size: 30
+                bold: True
+                size_hint_x: 0.33
+                on_release:
+                    root.on_back_button_pressed()
+                    root.show_initial_character_image()  # Display character_0.png
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
+
+            HoverButtonRounded:
+                text: 'Choose Random'
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                font_size: 30
+                bold: True
+                size_hint_x: 0.34
+                on_release: root.random_selection()
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
+
+            HoverButtonRounded:
+                id: create_button
+                text: 'Continue'
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                font_size: 30
+                bold: True
+                size_hint_x: 0.33
+                disabled: True
+                on_release:
+                    root.on_create_button_pressed()
+                    root.show_initial_character_image()  # Display character_0.png
+                background_color: [0.5, 0.5, 0.5, 0]
+                background_normal: ''
+
+<InGameScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        canvas.before:
+            Rectangle:
+                source: 'Program_Files/in_game_images/in_game_background.png'
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: 40
+            padding: 0
+            spacing: 10
+            pos_hint: {'top': 1}
+
+            HoverButtonRounded:
+                text: 'Back'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
+                on_release: root.go_back_to_menu(self)
 
                 HoverButtonRounded:
                     text: 'Statistics'
                     size_hint: (None, None)
                     size: (120, 50)
                     font_size: 20
+                    background_color: [0, 0, 0, 0]
                     background_normal: ''
-                    background_color: (0.4, 0.7, 0.7, 0)
-                    on_release: root.toggle_panel('stats')
+                        on_release: root.toggle_panel('stats')
 
                 HoverButtonRounded:
                     text: 'Inventory'
                     size_hint: (None, None)
                     size: (120, 50)
                     font_size: 20
+                    background_color: [0, 0, 0, 0]
                     background_normal: ''
-                    background_color: (0.4, 0.7, 0.7, 0)
-                    on_release: root.toggle_panel('backpack', 'stats')
+                        on_release: root.toggle_panel('backpack', 'stats')
 
-                HoverButtonRounded:
-                    text: 'Save'
-                    size_hint: (None, None)
-                    size: (120, 50)
-                    font_size: 20
-                    background_normal: ''
-                    background_color: (0.4, 0.7, 0.7, 0)
+            HoverButtonRounded:
+                text: 'History'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
 
-                HoverButtonRounded:
-                    text: 'Load'
-                    size_hint: (None, None)
-                    size: (120, 50)
-                    font_size: 20
-                    background_normal: ''
-                    background_color: (0.4, 0.7, 0.7, 0)
+            HoverButtonRounded:
+                text: 'Load'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
 
-                HoverButtonRounded:
-                    text: 'Exit'
-                    size_hint: (None, None)
-                    size: (120, 50)
-                    font_size: 20
-                    background_normal: ''
-                    background_color: (0.4, 0.7, 0.7, 0)
-                    on_release: root.exit_app(self)
+            HoverButtonRounded:
+                text: 'Save'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
+
+            HoverButtonRounded:
+                text: 'Exit'
+                size_hint: (None, None)
+                size: (120, 50)
+                font_size: 20
+                background_color: [0, 0, 0, 0]
+                background_normal: ''
+                on_release: root.exit_app(self)
 
             # Main content area
             BoxLayout:
                 orientation: 'vertical'
                 size_hint: (1, 0.9)
 
-                Label:
-                    id: output_label
-                    size_hint: (1, 0.8)
-                    font_size: 16
-                    color: (1, 1, 1, 1)
-                    outline_width: 0
-                    outline_color: (0, 0, 0, 0)
-                    text_size: (self.width - 40, None)
-                    padding: (0, 600, 0, 0)
-                    valign: 'top'
-                    halign: 'left'
+            Label:
+                id: output_label
+                size_hint: (1, 0.8)
+                font_size: 16
+                color: (1, 1, 1, 1)
+                valign: 'top'
+                halign: 'left'
 
                 TextInput:
                     id: input_text
