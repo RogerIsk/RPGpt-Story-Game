@@ -110,7 +110,7 @@ ScreenManager:
 
                         # TextInput for character name - single line and constrained to borders
                         TextInput:
-                            id: character_name_input
+                            id: char_name_input
                             hint_text: 'Enter Name'
                             multiline: False  # Keep input to a single line
                             font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
@@ -122,7 +122,7 @@ ScreenManager:
                             foreground_color: (0, 0, 0, 1)  # Black text color
                             background_color: (1, 1, 1, 0)  # Fully transparent background
                             background_normal: ''  # Remove default background image
-                            on_text: root.on_character_name_input(self.text)
+                            on_text: root.on_char_name_input(self.text)
 
                         # Stats Label - now positioned below the TextInput
                         Label:
@@ -624,6 +624,13 @@ ScreenManager:
                     background_normal: ''
 
 <InGameScreen>:
+    id: ingame_screen
+    hero_name: ""
+    hero_species: ""
+    hero_hp: ""
+    hero_dmg: ""
+    hero_armor: ""
+
     BoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -656,6 +663,7 @@ ScreenManager:
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
+                on_release: root.toggle_panel('stats')
 
             HoverButtonRounded:
                 text: 'Inventory'
@@ -664,6 +672,7 @@ ScreenManager:
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
+                on_release: root.toggle_panel('backpack', 'stats')
 
             HoverButtonRounded:
                 text: 'History'

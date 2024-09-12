@@ -14,6 +14,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.lang import Builder
+from kivy.properties import StringProperty
 from openai import OpenAI
 from stringcolor import *
 from kivy.app import App
@@ -22,22 +23,24 @@ import kivy
 import json
 import sys
 import os
+import re
+from combat import combat
+from character import Hero, Enemy, instantiate_hero, instantiate_enemy
+from items import Item
+from utils import read_json_file, DatabaseUtils
+
 
 
 
 # Replace with your actual API key ===========================================================================
 model = "gpt-4o"
 
-def read_json_file(file_path):
-    '''Read the data from a json file'''
-    # we use this to import the api key
-    with open(file_path, 'r') as file:
-        return json.load(file)
-
 # import the api key and create a client using it
 key_data = read_json_file("Program_Files/7_json_files/key.json")    
 api_key = key_data["api_key"]
 client = OpenAI(api_key=api_key)
+
+db_config = read_json_file("Program_Files/json_files/db_config.json")
 
 # non-regex strings to display in game window
 enter_end = "PRESS ENTER TO EXIT THE GAME..."
@@ -89,6 +92,24 @@ If random is chosen, generate a character with random values for Name, Race, Sex
     # Correct the label reference
     chat_screen.ids.output_label.text = f"Assistant: {bot_response}"
     chat_screen.messages = messages
+
+
+# General methods to use in kivy app ===========================================================================
+def update_ingame_screen():
+    """Update the in-game screen with the hero's attributes
+    Call this function whenever new information about the hero needs to be displayed"""
+    # Update the Kivy context with the new hero
+    app = App.get_running_app()
+    app.root.hero = hero
+    # Set the StringProperty values so we can use values in ingame screen
+    ingame_screen = app.root.get_screen('ingame')
+    ingame_screen.hero_name = hero.name
+    ingame_screen.hero_species = hero.species
+    ingame_screen.hero_hp = str(hero.hp)
+    ingame_screen.hero_dmg = str(hero.dmg)
+    ingame_screen.hero_armor = str(hero.armor)
+
+
 
 # kivy visual stuff ===========================================================================
 class HoverButtonRounded(Button):  # This lets our buttons show a window with info when mouse is over them (InGameScreen class)
@@ -161,11 +182,16 @@ class MenuScreen(Screen):  # This class lets us give functionality to our widget
 
 class CharacterCreation(Screen):
     def __init__(self, **kwargs):
+        # import the database methods
+        self.db_utils = DatabaseUtils(db_config)
+        # open db connection
+        self.db_utils.connect_db()
+
         super(CharacterCreation, self).__init__(**kwargs)
         self.selected_gender = None
         self.selected_species = None
         self.selected_class = None
-        self.character_name = ""
+        self.char_name = ""
         self.names_data = self.load_random_names()
 
     def load_random_names(self):
@@ -404,7 +430,7 @@ class CharacterCreation(Screen):
 
     def update_create_button_state(self):
         # Enable the "Continue" button if all selections are made and the character name is not empty
-        if self.selected_gender and self.selected_species and self.selected_class and len(self.character_name) > 0:
+        if self.selected_gender and self.selected_species and self.selected_class and len(self.char_name) > 0:
             self.ids.create_button.disabled = False
         else:
             self.ids.create_button.disabled = True
@@ -419,12 +445,40 @@ class CharacterCreation(Screen):
             # Show 'character_0.png' if not all selections are made
             self.ids.character_image.source = 'Program_Files/2_character_creation_images/character_0.png'
         self.ids.character_image.reload()
+        
 
     def validate_selection(self):
+
+        global hero
         # Create character and reset selections
         print("Creating character with the selected options...")
+        # Save new character stats to the character database
+        insert_query = """
+        INSERT INTO characters (name, species, gender, class, hp, damage, armor)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+        # define values to save to db
+        char_data = (self.char_name, self.selected_species, self.selected_gender, self.selected_class, self.final_hp, self.final_dmg, self.final_armor)
+
+        try:
+            # Execute the SQL statement (write char stats to db)
+            self.db_utils.cursor.execute(insert_query, char_data)
+            # Commit the transaction
+            self.db_utils.conn.commit()
+            print("Character saved to the database.")
+        except Exception as e:
+            # Rollback in case of error
+            self.db_utils.conn.rollback()
+            print(f"Error saving character to the database: {e}")
+
         self.reset_selections()
-        self.manager.current = 'map_selection'
+        # create an instance of hero using the dedicated function
+        hero = instantiate_hero(db_config, self.char_name)
+
+        # Update the Kivy context with the new hero
+        update_ingame_screen()
+
+        self.manager.current = 'ingame'
 
     def on_kv_post(self, base_widget):
         # Preload the initial character image to avoid white square during transition
@@ -432,8 +486,8 @@ class CharacterCreation(Screen):
 
     def on_leave(self):
         # Reset the character name when leaving the screen
-        self.character_name = ""
-        self.ids.character_name_input.text = ""  # Clear the TextInput
+        self.char_name = ""
+        self.ids.char_name_input.text = ""  # Clear the TextInput
 
     def on_back_button_pressed(self):
         # Reset selections when back button is pressed
@@ -474,8 +528,8 @@ class CharacterCreation(Screen):
             random_name = "Unknown"  # Fallback in case of a missing key
 
         # Set the random name into the TextInput
-        self.ids.character_name_input.text = random_name
-        self.on_character_name_input(random_name)
+        self.ids.char_name_input.text = random_name
+        self.on_char_name_input(random_name)
 
         # Randomly select class
         class_choice = random.choice(['warrior', 'ranger', 'mage'])
@@ -491,9 +545,9 @@ class CharacterCreation(Screen):
 
         self.update_create_button_state()
 
-    def on_character_name_input(self, text):
+    def on_char_name_input(self, text):
         # Get the TextInput widget
-        input_box = self.ids.character_name_input
+        input_box = self.ids.char_name_input
         
         # Measure the width of the text
         label = CoreLabel(text=text, font_name=input_box.font_name, font_size=input_box.font_size)
@@ -504,9 +558,9 @@ class CharacterCreation(Screen):
         max_width = input_box.width - input_box.padding[0] - input_box.padding[2]
         
         if text_width <= max_width:
-            self.character_name = text.strip()  # Accept the text
+            self.char_name = text.strip()  # Accept the text
         else:
-            input_box.text = self.character_name  # Revert to the last accepted state
+            input_box.text = self.char_name  # Revert to the last accepted state
 
         # Update the button state whenever the text changes
         self.update_create_button_state()
@@ -536,15 +590,15 @@ class CharacterCreation(Screen):
         class_bonus_values = class_bonus.get(self.selected_class, {'hp': 0, 'dmg': 0, 'armor': 0})
 
         # Calculate final stats
-        final_hp = base_hp + species_bonus['hp'] + class_bonus_values['hp']
-        final_dmg = base_dmg + species_bonus['dmg'] + class_bonus_values['dmg']
-        final_armor = base_armor + species_bonus['armor'] + class_bonus_values['armor']
+        self.final_hp = base_hp + species_bonus['hp'] + class_bonus_values['hp']
+        self.final_dmg = base_dmg + species_bonus['dmg'] + class_bonus_values['dmg']
+        self.final_armor = base_armor + species_bonus['armor'] + class_bonus_values['armor']
 
         # Update the stats_widget label with formatted stats
         self.ids.stats_widget.text = (
-            f"  DMG:    [color=#ff0000]{final_dmg}[/color]\n"
-            f"   HP:       [color=#00ff00]{final_hp}[/color]\n"
-            f"ARMOR:  [color=#d3d3d3]{final_armor}[/color]"
+            f"  DMG:    [color=#ff0000]{self.final_dmg}[/color]\n"
+            f"   HP:       [color=#00ff00]{self.final_hp}[/color]\n"
+            f"ARMOR:  [color=#d3d3d3]{self.final_armor}[/color]"
         )
 
 class MapSelection(Screen):
@@ -629,9 +683,20 @@ class MapSelection(Screen):
 
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
 class InGameScreen(Screen):  # This class lets us give functionality to our widgets in the game
+    hero_name = StringProperty("")
+    hero_species = StringProperty("")
+    hero_hp = StringProperty("")
+    hero_dmg = StringProperty("")
+    hero_armor = StringProperty("")
+    
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
+
+        # Fetch all items and create Item objects
+        Item.fetch_all_items(db_config)
+        # Dynamically create global variables for each item object with the format: item_1, item_2...
+        globals().update({f'item_{item.item_id}': item for item in Item.items.values()})
 
     def on_enter(self, *args):  # This shows up on the output text bar right after we enter the page
         self.ids.output_label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
@@ -669,10 +734,25 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
     def go_back_to_menu(self, instance):  # Functionality of the 'back' button
         self.manager.current = 'main_menu'
 
-    def show_inventory(self):  # 'Inventory' button functionality
-        pass
+    def toggle_panel(self, *panel_ids):
+        '''Toggle and untoggle panel on game screen (inventory, stats...)'''
+        # define panels to toggle/untoggle
+        for panel_id in panel_ids:
+            panel = self.ids[panel_id]
+            if panel.opacity == 0:
+                panel.opacity = 1
+                panel.disabled = False
+                for child in panel.children:
+                    child.opacity = 1
+                    child.disabled = False
+            else:
+                panel.opacity = 0
+                panel.disabled = True
+                for child in panel.children:
+                    child.opacity = 0
+                    child.disabled = True
 
-    def show_character_stats(self):  # 'Statistics' button functionality
+    def send_character_stats(self):  # 'Statistics' button functionality
         pass
 
     def save_character_info_in_database(self):  # 'Save Game' button functionality
@@ -689,7 +769,14 @@ class RPGApp(App):  # General GUI options
         Window.size = (1250, 960)
         Window.resizable = False
         sm = Builder.load_file('gui_design_settings.kv')
+        sm.hero = None  # Initialize hero attribute
+        # Add InGameScreen to the ScreenManager
+        # sm.add_widget(InGameScreen(name='ingame'))
         return sm
+
+    def on_start(self):
+        # Set the hero attribute after the root widget is initialized
+        self.root.hero = None
 
 if __name__ == '__main__':
     RPGApp().run()

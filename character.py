@@ -1,3 +1,5 @@
+import psycopg2
+import psycopg2.extras
 from random import randint
 from time import sleep
 from utils import read_json_file
@@ -6,30 +8,32 @@ press_enter = 'Press ENTER to continue...\n'
 
 class Character:
     '''Character class to store the character's data'''
-    # This class is used for every character, PC and NPCs
+    # This class is used for every character, Hero and Enemys
 
-    def _read_char_sheet(self):
-        '''Read the data and get character's stats from the character sheet'''
-        
-        # unpack the stats dictionary to get all the character's data
-        self.name = self.char_dictionary['name']
-        self.hp = self.char_dictionary['hp']
-        self.armor = self.char_dictionary['armor']
-        self.atk = self.char_dictionary['atk']
-        self.xp = self.char_dictionary['xp']
+    def __init__(self, db_config, char_name):
+        '''intitialise a cursor to interact with db'''
+        self.conn = psycopg2.connect(**db_config)
+        self.conn.autocommit = True  # Set autocommit to True
+        # Use a dictionary cursor, so we can extract the char data as a dictionary for readability
+        self.cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    def close(self):
+        '''close the database connection'''
+        self.cursor.close()
+        self.conn.close()
 
     def calc_dmg(self):
-        '''randomize the attack damage by applying a percentage modifier to character's atk stat'''
+        '''randomize the attack damage by applying a percentage modifier to character's dmg stat'''
         # roll for random percentage
         dmg_modifier = randint(75, 125) / 100
         # apply percentage to attack stat
-        dmg = self.atk * dmg_modifier
+        dmg = self.dmg * dmg_modifier
         # Round and convert to integer
         dmg = int(round(dmg))
         return dmg
 
     def take_damage(self, dmg):
-        '''Apply damage to PC when hit'''
+        '''Apply damage to character when hit'''
         # substract armor stat from the damge received
         final_dmg = dmg - (dmg * self.armor / 100)
         # Round and convert to integer
@@ -48,27 +52,35 @@ class Character:
     
 
 
-class PC(Character):
-    '''PC class for player's character's specific data and actions'''
+class Hero(Character):
+    '''Hero class for player's character's specific data and actions'''
 
-    def __init__(self, sheet_path):
-        '''Initialise the class with character's data from read_char_sheet'''
-        # This class will be used only for the playable character and add specific stats
-        # use the entire json file as the character dictionary
-        self.char_dictionary = read_json_file(sheet_path)
-        # Call read_char_sheet method to get both general and PC specific character's attributes
-        self._read_char_sheet()
+    def __init__(self, db_config, char_name):
+        '''Initialise the class'''
+        super().__init__(db_config, char_name)  # Call the parent class's __init__ method
+        self._get_hero(char_name)  # Call the method to get hero data
 
-    def _read_char_sheet(self):
-        '''Read the data and get character's stats from the character sheet'''
-        # Inherit the instance attributes (characteristics) from the parent class Character
-        super()._read_char_sheet()
+    
 
-        # unpack the stats dictionary to get the additional PC data
-        self.race = self.char_dictionary['race']
-        self.char_class = self.char_dictionary['char_class']
-        self.level = self.char_dictionary['level']
-
+    def _get_hero(self, char_name):
+        query = "SELECT * FROM characters WHERE name = %s"
+        self.cursor.execute(query, (char_name,))
+        char_data = self.cursor.fetchone()
+        self.name = char_name
+        # Importing the hero stats to instance attributes
+        if char_data:
+            self.species = char_data["species"]  # Access the "species" column
+            self.gender = char_data["gender"]
+            self.char_class = char_data["class"]  # Access the "Class" column
+            self.hp = char_data["hp"]
+            self.dmg = char_data["damage"]
+            self.armor = char_data["armor"]
+            self.items = char_data["items"]
+            self.eq_weapon = char_data["equipped_weapon"]
+            self.eq_armor = char_data["equipped_armor"]
+        return None
+    
+    
     def attack(self, target):
         '''attack enemy'''
         input('Press ENTER to attack...\n')
@@ -82,17 +94,25 @@ class PC(Character):
         target.take_damage(dmg)
 
 
-class NPC(Character):
-    '''NPC class for player's character's specific data and actions'''
+class Enemy(Character):
+    '''Enemy class for player's character's specific data and actions'''
     # For now it's only used to fetch the character's stats in a different way
-    def __init__(self, sheet_path, npc_id):
-        '''Initialise the class with character's data from read_char_sheet'''
-        # Read the whole json file
-        char_sheet = read_json_file(sheet_path)
-        # Get the dictionary with the stats of the selected npc
-        self.char_dictionary = char_sheet.get(npc_id, {})
-        # read the dictionary to assign stats asthe character's object attributes
-        self._read_char_sheet()
+    def __init__(self, db_config, char_name):
+        '''Initialise the class'''
+        super().__init__(db_config, char_name)  # Call the parent class's __init__ method
+        self._get_enemy(char_name)  # Call the method to get hero data
+
+    def _get_enemy(self, char_name):
+        query = "SELECT * FROM enemies WHERE name = %s"
+        self.cursor.execute(query, (char_name,))
+        char_data = self.cursor.fetchone()
+        self.name = char_name
+        # Importing the enemy stats to instance attributes
+        if char_data:
+            self.hp = char_data["hp"]
+            self.dmg = char_data["damage"]
+            self.armor = char_data["armor"]
+        return None
 
     def attack(self, target):
         '''attack enemy'''
@@ -106,3 +126,30 @@ class NPC(Character):
 
         # apply damage to target
         target.take_damage(dmg)
+
+
+
+# Character stuff
+def instantiate_hero(db_config, char_name):
+    '''Instantiate hero with character name'''
+    # PLEASE DECLARE hero AS GLOBAL VARIABLE WHEN CALLED IN MAIN CODE
+    try:
+        hero = Hero(db_config, char_name)
+        return hero
+    except Exception as e:
+        print("Character not found in database!")
+        print(f"Error: {e}")
+        return None
+
+
+def instantiate_enemy(db_config, enemy_name):
+    '''Instantiate enemy with character name'''
+    # WILL NEED TO BE CALLED IN MAIN TO START COMBAT
+    # PLEASE DECLARE enemy AS GLOBAL VARIABLE WHEN CALLED IN MAIN CODE
+    try:
+        enemy = Enemy(db_config, enemy_name)
+        return enemy
+    except Exception as e:
+        print("Character not found in database!")
+        print(f"Error: {e}")
+        return None
