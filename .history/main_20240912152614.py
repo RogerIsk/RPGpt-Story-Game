@@ -724,12 +724,8 @@ class RPGApp(App):  # General GUI options
     def on_start(self):
         # Set the hero attribute after the root widget is initialized
         self.root.hero = None
-        # initialize  music manager and start playing music
-        self.music_manager = MusicManager()
-        self.music_manager.start_music()
-
-    def on_stop(self):
-        self.music_manager.stop_music()    
+    
+        
 
 if __name__ == '__main__':
     RPGApp().run()

@@ -726,7 +726,7 @@ class RPGApp(App):  # General GUI options
         self.root.hero = None
         # initialize  music manager and start playing music
         self.music_manager = MusicManager()
-        self.music_manager.start_music()
+        self.music_manager =
 
     def on_stop(self):
         self.music_manager.stop_music()    

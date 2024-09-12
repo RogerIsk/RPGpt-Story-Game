@@ -23,8 +23,7 @@ import json
 import sys
 import os
 import re
-import pygame
-import threading
+import 
 from combat import combat
 from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from items import Item
@@ -691,7 +690,7 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
 class MusicManager:
     def __init__(self):
         pygame.mixer.init()
-        pygame.mixer.music.load("Medieval Theme.mp3")
+        pygame.mixer.music.load("adventure_music.mp3")
         pygame.mixer.music.set_volume(0.2)
 
     def start_music(self):
@@ -724,12 +723,6 @@ class RPGApp(App):  # General GUI options
     def on_start(self):
         # Set the hero attribute after the root widget is initialized
         self.root.hero = None
-        # initialize  music manager and start playing music
-        self.music_manager = MusicManager()
-        self.music_manager.start_music()
-
-    def on_stop(self):
-        self.music_manager.stop_music()    
 
 if __name__ == '__main__':
     RPGApp().run()

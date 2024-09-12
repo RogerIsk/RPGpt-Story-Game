@@ -23,8 +23,6 @@ import json
 import sys
 import os
 import re
-import pygame
-import threading
 from combat import combat
 from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from items import Item
@@ -687,30 +685,6 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
     def exit_app(self, instance):  # 'Exit' button functionality
         App.get_running_app().stop()
 
-# MusicManager class
-class MusicManager:
-    def __init__(self):
-        pygame.mixer.init()
-        pygame.mixer.music.load("Medieval Theme.mp3")
-        pygame.mixer.music.set_volume(0.2)
-
-    def start_music(self):
-        self.music_thread = threading.Thread(target=self._play_music)
-        self.music_thread.start()
-
-    def _play_music(self):
-        pygame.mixer.music.play(-1)
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.mixer.music.stop()
-                    pygame.quit()
-                    return
-
-    def stop_music(self):
-        pygame.mixer.music.stop()
-        pygame.quit()
-
 class RPGApp(App):  # General GUI options
     def build(self):
         Window.size = (1250, 960)
@@ -724,12 +698,6 @@ class RPGApp(App):  # General GUI options
     def on_start(self):
         # Set the hero attribute after the root widget is initialized
         self.root.hero = None
-        # initialize  music manager and start playing music
-        self.music_manager = MusicManager()
-        self.music_manager.start_music()
-
-    def on_stop(self):
-        self.music_manager.stop_music()    
 
 if __name__ == '__main__':
     RPGApp().run()
