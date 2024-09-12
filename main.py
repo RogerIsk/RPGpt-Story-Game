@@ -452,11 +452,11 @@ class CharacterCreation(Screen):
         print("Creating character with the selected options...")
         # Save new character stats to the character database
         insert_query = """
-        INSERT INTO character (name, species, class, hp, damage, armor)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO characters (name, species, gender, class, hp, damage, armor)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         # define values to save to db
-        char_data = (self.char_name, self.selected_species, self.selected_class, self.final_hp, self.final_dmg, self.final_armor)
+        char_data = (self.char_name, self.selected_species, self.selected_gender, self.selected_class, self.final_hp, self.final_dmg, self.final_armor)
 
         try:
             # Execute the SQL statement (write char stats to db)

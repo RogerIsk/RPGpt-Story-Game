@@ -63,13 +63,14 @@ class Hero(Character):
     
 
     def _get_hero(self, char_name):
-        query = "SELECT * FROM character WHERE name = %s"
+        query = "SELECT * FROM characters WHERE name = %s"
         self.cursor.execute(query, (char_name,))
         char_data = self.cursor.fetchone()
         self.name = char_name
         # Importing the hero stats to instance attributes
         if char_data:
             self.species = char_data["species"]  # Access the "species" column
+            self.gender = char_data["gender"]
             self.char_class = char_data["class"]  # Access the "Class" column
             self.hp = char_data["hp"]
             self.dmg = char_data["damage"]
