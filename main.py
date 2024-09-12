@@ -91,6 +91,24 @@ If random is chosen, generate a character with random values for Name, Race, Sex
     chat_screen.ids.output_label.text = f"Assistant: {bot_response}"
     chat_screen.messages = messages
 
+
+# General methods to use in kivy app ===========================================================================
+def update_ingame_screen():
+    """Update the in-game screen with the hero's attributes
+    Call this function whenever new information about the hero needs to be displayed"""
+    # Update the Kivy context with the new hero
+    app = App.get_running_app()
+    app.root.hero = hero
+    # Set the StringProperty values so we can use values in ingame screen
+    ingame_screen = app.root.get_screen('ingame')
+    ingame_screen.hero_name = hero.name
+    ingame_screen.hero_species = hero.species
+    ingame_screen.hero_hp = str(hero.hp)
+    ingame_screen.hero_dmg = str(hero.dmg)
+    ingame_screen.hero_armor = str(hero.armor)
+
+
+
 # kivy visual stuff ===========================================================================
 class HoverButtonRounded(Button):  # This lets our buttons show a window with info when mouse is over them (InGameScreen class)
     def __init__(self, **kwargs):
@@ -454,18 +472,8 @@ class CharacterCreation(Screen):
         self.reset_selections()
         # create an instance of hero using the dedicated function
         hero = instantiate_hero(db_config, self.char_name)
-    
         # Update the Kivy context with the new hero
-        app = App.get_running_app()
-        app.root.hero = hero
-
-        # Set the StringProperty values
-        ingame_screen = app.root.get_screen('ingame')
-        ingame_screen.hero_name = hero.name
-        ingame_screen.hero_species = hero.species
-        ingame_screen.hero_hp = str(hero.hp)
-        ingame_screen.hero_dmg = str(hero.dmg)
-        ingame_screen.hero_armor = str(hero.armor)
+        update_ingame_screen()
 
         self.manager.current = 'ingame'
 
@@ -597,7 +605,7 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
     hero_name = StringProperty("")
     hero_species = StringProperty("")
     hero_hp = StringProperty("")
-    dmg = StringProperty("")
+    hero_dmg = StringProperty("")
     hero_armor = StringProperty("")
     
     def __init__(self, **kwargs):
@@ -658,7 +666,7 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
                     child.opacity = 0
                     child.disabled = True
 
-    def show_character_stats(self):  # 'Statistics' button functionality
+    def send_character_stats(self):  # 'Statistics' button functionality
         pass
 
     def save_character_info_in_database(self):  # 'Save Game' button functionality
