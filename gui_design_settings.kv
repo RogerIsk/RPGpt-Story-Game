@@ -338,14 +338,13 @@ ScreenManager:
     map_8: map_8
     map_9: map_9
 
-    # Adding a RelativeLayout to overlay widgets on the background image
     RelativeLayout:
         # Background image for the world selection screen
         Image:
             source: 'Program_Files/3_world_selection_images/world_selection_background_image.gif'
             allow_stretch: True
             keep_ratio: False  # Fills the entire screen
-            color: (1, 1, 1, 0.2)  # Set the color with lower alpha (0.5) for transparency
+            color: (1, 1, 1, 0.5)  # Set the color with lower alpha (0.5) for transparency
 
         BoxLayout:
             orientation: 'vertical'
@@ -379,7 +378,17 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/1_anime_active.gif', map_1_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/1_anime_active.gif', map_1_image, map_1_label)
+                    Label:
+                        id: map_1_label
+                        text: 'Anime'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
                 # Button 2: Cyberpunk
                 RelativeLayout:
@@ -393,7 +402,17 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/2_cyberpunk_active.gif', map_2_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/2_cyberpunk_active.gif', map_2_image, map_2_label)
+                    Label:
+                        id: map_2_label
+                        text: 'Cyberpunk'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
                 # Button 3: Post-Apocalyptic Zombies
                 RelativeLayout:
@@ -407,7 +426,17 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/3_post_apocalyptic_zombies_active.gif', map_3_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/3_post_apocalyptic_zombies_active.gif', map_3_image, map_3_label)
+                    Label:
+                        id: map_3_label
+                        text: 'Post-Apocalyptic Zombies'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
                 # Button 4: Post-Apocalyptic Fallout
                 RelativeLayout:
@@ -421,7 +450,17 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/4_post_apocalyptic_fallout_active.gif', map_4_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/4_post_apocalyptic_fallout_active.gif', map_4_image, map_4_label)
+                    Label:
+                        id: map_4_label
+                        text: 'Post-Apocalyptic Fallout'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
                 # Button 5: Feudal Japan
                 RelativeLayout:
@@ -435,7 +474,17 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/5_feudal_japan_active.gif', map_5_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/5_feudal_japan_active.gif', map_5_image, map_5_label)
+                    Label:
+                        id: map_5_label
+                        text: 'Feudal Japan'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
                 # Button 6: Game of Thrones
                 RelativeLayout:
@@ -449,7 +498,17 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/6_game_of_thrones_active.gif', map_6_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/6_game_of_thrones_active.gif', map_6_image, map_6_label)
+                    Label:
+                        id: map_6_label
+                        text: 'Game of Thrones'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
                 # Button 7: Classic Medieval
                 RelativeLayout:
@@ -463,7 +522,17 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/7_classic_medieval_active.gif', map_7_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/7_classic_medieval_active.gif', map_7_image, map_7_label)
+                    Label:
+                        id: map_7_label
+                        text: 'Classic Medieval'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
                 # Button 8: Dark Fantasy
                 RelativeLayout:
@@ -477,13 +546,23 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/8_fantasy_active.gif', map_8_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/8_fantasy_active.gif', map_8_image, map_8_label)
+                    Label:
+                        id: map_8_label
+                        text: 'Dark Fantasy'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
                 # Button 9: Star Wars Sci-Fi
                 RelativeLayout:
                     Image:
                         id: map_9_image
-                        source: 'Program_Files/3_world_selection_images/9_dark_fantasy_inactive.png'
+                        source: 'Program_Files/3_world_selection_images/9_dark_fantasy_hard_mode_inactive.png'
                         allow_stretch: True
                         keep_ratio: True
                     ToggleButton:
@@ -491,7 +570,17 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/9_dark_fantasy_active.gif', map_9_image)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/9_dark_fantasy_hard_mode_active.gif', map_9_image, map_9_label)
+                    Label:
+                        id: map_9_label
+                        text: 'Dark Fantasy - Hard Mode'
+                        font_size: 20
+                        bold: True
+                        color: (1, 1, 1, 1)
+                        pos_hint: {'center_x': 0.5, 'y': 0}
+                        size_hint_y: None
+                        height: 30
+                        opacity: 0  # Initially hidden
 
             BoxLayout:
                 orientation: 'horizontal'

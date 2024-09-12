@@ -572,9 +572,12 @@ class MapSelection(Screen):
             if map_button is not None and map_button.state == 'down':
                 map_button.state = 'normal'
                 image_widget = self.ids.get(f"map_{index}_image")
+                label_widget = self.ids.get(f"map_{index}_label")
                 if image_widget:
                     image_widget.source = image_widget.source.replace('_active.gif', '_inactive.png')
                     image_widget.anim_delay = -1
+                if label_widget:
+                    label_widget.opacity = 0  # Hide the label when deselected
 
         # Update button state after resetting
         self.update_start_button_state()
@@ -598,14 +601,16 @@ class MapSelection(Screen):
         # Update button state after random selection
         self.update_start_button_state()
 
-    def update_map_image(self, toggle_button, gif_source, image_widget):
-        """Update the image source when a toggle button is selected or deselected."""
+    def update_map_image(self, toggle_button, gif_source, image_widget, label_widget):
+        """Update the image source and label visibility when a toggle button is selected or deselected."""
         if toggle_button.state == 'down':
             image_widget.source = gif_source
             image_widget.anim_delay = 0.05
+            label_widget.opacity = 1  # Show the label when selected
         else:
             image_widget.source = gif_source.replace('_active.gif', '_inactive.png')
             image_widget.anim_delay = -1
+            label_widget.opacity = 0  # Hide the label when deselected
         
         # Update the button state whenever a toggle button is pressed
         self.update_start_button_state()
