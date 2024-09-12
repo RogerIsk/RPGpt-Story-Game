@@ -40,7 +40,7 @@ key_data = read_json_file("Program_Files/7_json_files/key.json")
 api_key = key_data["api_key"]
 client = OpenAI(api_key=api_key)
 
-db_config = read_json_file("Program_Files/json_files/db_config.json")
+db_config = read_json_file("Program_Files/7_json_files/db_config.json")
 
 # non-regex strings to display in game window
 enter_end = "PRESS ENTER TO EXIT THE GAME..."
