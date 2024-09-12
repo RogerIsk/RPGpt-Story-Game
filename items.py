@@ -3,8 +3,8 @@ import os
 import psycopg2
 from utils import read_json_file
 
-db_config = read_json_file("Program_Files/json_files/db_config.json")
-image_folder = "/Program_Files/items_96p"
+db_config = read_json_file("Program_Files/7_json_files/db_config.json")
+image_folder = "Program_Files/9_items_96p"
 
 class Item:
     '''used to create an object for every item in the game'''

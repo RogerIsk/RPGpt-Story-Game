@@ -27,20 +27,35 @@ import re
 from combat import combat
 from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from items import Item
-from utils import read_json_file, DatabaseUtils
+from utils import read_json_file, DatabaseUtils  # Ensure 'utils.py' is correctly placed or referenced
 
-
-
-
-# Replace with your actual API key ===========================================================================
+# Replace with your actual model
 model = "gpt-4o"
 
-# import the api key and create a client using it
-key_data = read_json_file("Program_Files/7_json_files/key.json")    
-api_key = key_data["api_key"]
+# Ensure the correct path resolution and print the resolved path
+def get_full_path(relative_path):
+    base_path = os.path.dirname(__file__)  
+    full_path = os.path.join(base_path, relative_path)
+    print(f"Resolved full path: {full_path}")  # Debug statement
+    return full_path
+
+# Example usage with additional checks
+config_path = get_full_path("Program_Files/7_json_files/db_config.json")
+if not os.path.exists(config_path):
+    print(f"Error: File not found at {config_path}")
+else:
+    db_config = read_json_file(config_path)
+
+# Check and set the current working directory (useful for debugging)
+print(f"Current working directory: {os.getcwd()}")
+
+# Import the API key and create a client using it
+key_data = read_json_file(get_full_path("Program_Files/7_json_files/key.json"))
+api_key = key_data.get("api_key")  # Use .get() for safer access
 client = OpenAI(api_key=api_key)
 
-db_config = read_json_file("Program_Files/7_json_files/db_config.json")
+# Read database configuration
+db_config = read_json_file(get_full_path("Program_Files/7_json_files/db_config.json"))
 
 # non-regex strings to display in game window
 enter_end = "PRESS ENTER TO EXIT THE GAME..."
