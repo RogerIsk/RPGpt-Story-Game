@@ -132,7 +132,7 @@ class Enemy(Character):
 # Character stuff
 def instantiate_hero(db_config, char_name):
     '''Instantiate hero with character name'''
-    # declare hero as global to use it from anywhere in the code
+    # PLEASE DECLARE hero AS GLOBAL VARIABLE WHEN CALLED IN MAIN CODE
     try:
         hero = Hero(db_config, char_name)
         return hero
@@ -144,11 +144,11 @@ def instantiate_hero(db_config, char_name):
 
 def instantiate_enemy(db_config, enemy_name):
     '''Instantiate enemy with character name'''
-    #WILL NEED TO BE CALLED IN MAIN TO START COMBAT
-    # declare enemy as global to use it from anywhere in the code
-    global hero
+    # WILL NEED TO BE CALLED IN MAIN TO START COMBAT
+    # PLEASE DECLARE enemy AS GLOBAL VARIABLE WHEN CALLED IN MAIN CODE
     try:
         enemy = Enemy(db_config, enemy_name)
+        return enemy
     except Exception as e:
         print("Character not found in database!")
         print(f"Error: {e}")

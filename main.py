@@ -25,6 +25,7 @@ import os
 import re
 from combat import combat
 from character import Hero, Enemy, instantiate_hero, instantiate_enemy
+from items import Item
 from utils import read_json_file, DatabaseUtils
 
 
@@ -611,6 +612,13 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
+
+        # Fetch all items from the database and create Item objects
+        all_items = Item.fetch_all_items(db_config)
+        
+        # Example: Access an item by its ID and print its name and image path
+        for item_id, item in all_items.items():            
+            print(f"Item ID: {item_id}, Item Name: {item.name}, Image Path: {item.image_path}")
 
     def on_enter(self, *args):  # This shows up on the output text bar right after we enter the page
         self.ids.output_label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
