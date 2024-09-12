@@ -1,3 +1,4 @@
+from kivy.properties import ObjectProperty, BooleanProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, RoundedRectangle
 from kivy.core.text import Label as CoreLabel
@@ -34,7 +35,7 @@ def read_json_file(file_path):
         return json.load(file)
 
 # import the api key and create a client using it
-key_data = read_json_file("Program_Files/json_files/key.json")    
+key_data = read_json_file("Program_Files/7_json_files/key.json")    
 api_key = key_data["api_key"]
 client = OpenAI(api_key=api_key)
 
@@ -170,7 +171,7 @@ class CharacterCreation(Screen):
     def load_random_names(self):
         # Load the names from the JSON file
         try:
-            with open('Program_Files/json_files/random_character_names.json', 'r') as file:
+            with open('Program_Files/7_json_files/random_character_names.json', 'r') as file:
                 return json.load(file)
         except FileNotFoundError:
             print("names.json file not found.")
@@ -182,12 +183,12 @@ class CharacterCreation(Screen):
 
     def show_initial_character_image(self):
         # Set the character showcase image to 'character_0.png'
-        self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
+        self.ids.character_image.source = 'Program_Files/2_character_creation_images/character_0.png'
         self.ids.character_image.reload()
 
     def preload_character_image(self):
         # Set the initial character image source without making it visible yet
-        self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
+        self.ids.character_image.source = 'Program_Files/2_character_creation_images/character_0.png'
         self.ids.character_image.opacity = 0  # Hide it initially
 
     def on_enter(self):
@@ -203,30 +204,30 @@ class CharacterCreation(Screen):
 
         if gender == 'male':
             if male_button.state == 'down':
-                male_gif.source = 'Program_Files/character_creation_images/2_active_male.gif'
+                male_gif.source = 'Program_Files/2_character_creation_images/2_active_male.gif'
                 male_gif.anim_delay = 0.1
                 female_button.state = 'normal'
-                female_gif.source = 'Program_Files/character_creation_images/1_inactive_female.gif'
+                female_gif.source = 'Program_Files/2_character_creation_images/1_inactive_female.gif'
                 female_gif.anim_delay = 0.1
                 female_gif.reload()
                 self.selected_gender = 'male'
             else:
-                male_gif.source = 'Program_Files/character_creation_images/2_inactive_male.gif'
+                male_gif.source = 'Program_Files/2_character_creation_images/2_inactive_male.gif'
                 male_gif.anim_delay = 0.1
                 male_gif.reload()
                 self.selected_gender = None
 
         elif gender == 'female':
             if female_button.state == 'down':
-                female_gif.source = 'Program_Files/character_creation_images/1_active_female.gif'
+                female_gif.source = 'Program_Files/2_character_creation_images/1_active_female.gif'
                 female_gif.anim_delay = 0.1
                 male_button.state = 'normal'
-                male_gif.source = 'Program_Files/character_creation_images/2_inactive_male.gif'
+                male_gif.source = 'Program_Files/2_character_creation_images/2_inactive_male.gif'
                 male_gif.anim_delay = 0.1
                 male_gif.reload()
                 self.selected_gender = 'female'
             else:
-                female_gif.source = 'Program_Files/character_creation_images/1_inactive_female.gif'
+                female_gif.source = 'Program_Files/2_character_creation_images/1_inactive_female.gif'
                 female_gif.anim_delay = 0.1
                 female_gif.reload()
                 self.selected_gender = None
@@ -245,51 +246,51 @@ class CharacterCreation(Screen):
 
         if species == 'human':
             if human_button.state == 'down':
-                human_gif.source = 'Program_Files/character_creation_images/3_active_human.gif'
+                human_gif.source = 'Program_Files/2_character_creation_images/3_active_human.gif'
                 human_gif.anim_delay = 0.1
                 elf_button.state = 'normal'
                 dwarf_button.state = 'normal'
-                elf_gif.source = 'Program_Files/character_creation_images/4_inactive_elf.gif'
-                dwarf_gif.source = 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                elf_gif.source = 'Program_Files/2_character_creation_images/4_inactive_elf.gif'
+                dwarf_gif.source = 'Program_Files/2_character_creation_images/5_inactive_dwarf.gif'
                 elf_gif.reload()
                 dwarf_gif.reload()
                 self.selected_species = 'human'
             else:
-                human_gif.source = 'Program_Files/character_creation_images/3_inactive_human.gif'
+                human_gif.source = 'Program_Files/2_character_creation_images/3_inactive_human.gif'
                 human_gif.anim_delay = 0.1
                 human_gif.reload()
                 self.selected_species = None
 
         elif species == 'elf':
             if elf_button.state == 'down':
-                elf_gif.source = 'Program_Files/character_creation_images/4_active_elf.gif'
+                elf_gif.source = 'Program_Files/2_character_creation_images/4_active_elf.gif'
                 elf_gif.anim_delay = 0.1
                 human_button.state = 'normal'
                 dwarf_button.state = 'normal'
-                human_gif.source = 'Program_Files/character_creation_images/3_inactive_human.gif'
-                dwarf_gif.source = 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                human_gif.source = 'Program_Files/2_character_creation_images/3_inactive_human.gif'
+                dwarf_gif.source = 'Program_Files/2_character_creation_images/5_inactive_dwarf.gif'
                 human_gif.reload()
                 dwarf_gif.reload()
                 self.selected_species = 'elf'
             else:
-                elf_gif.source = 'Program_Files/character_creation_images/4_inactive_elf.gif'
+                elf_gif.source = 'Program_Files/2_character_creation_images/4_inactive_elf.gif'
                 elf_gif.anim_delay = 0.1
                 elf_gif.reload()
                 self.selected_species = None
 
         elif species == 'dwarf':
             if dwarf_button.state == 'down':
-                dwarf_gif.source = 'Program_Files/character_creation_images/5_active_dwarf.gif'
+                dwarf_gif.source = 'Program_Files/2_character_creation_images/5_active_dwarf.gif'
                 dwarf_gif.anim_delay = 0.1
                 human_button.state = 'normal'
                 elf_button.state = 'normal'
-                human_gif.source = 'Program_Files/character_creation_images/3_inactive_human.gif'
-                elf_gif.source = 'Program_Files/character_creation_images/4_inactive_elf.gif'
+                human_gif.source = 'Program_Files/2_character_creation_images/3_inactive_human.gif'
+                elf_gif.source = 'Program_Files/2_character_creation_images/4_inactive_elf.gif'
                 human_gif.reload()
                 elf_gif.reload()
                 self.selected_species = 'dwarf'
             else:
-                dwarf_gif.source = 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                dwarf_gif.source = 'Program_Files/2_character_creation_images/5_inactive_dwarf.gif'
                 dwarf_gif.anim_delay = 0.1
                 dwarf_gif.reload()
                 self.selected_species = None
@@ -308,51 +309,51 @@ class CharacterCreation(Screen):
 
         if char_class == 'warrior':
             if warrior_button.state == 'down':
-                warrior_gif.source = 'Program_Files/character_creation_images/6_active_warrior.gif'
+                warrior_gif.source = 'Program_Files/2_character_creation_images/6_active_warrior.gif'
                 warrior_gif.anim_delay = 0.1
                 ranger_button.state = 'normal'
                 mage_button.state = 'normal'
-                ranger_gif.source = 'Program_Files/character_creation_images/7_inactive_ranger.gif'
-                mage_gif.source = 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                ranger_gif.source = 'Program_Files/2_character_creation_images/7_inactive_ranger.gif'
+                mage_gif.source = 'Program_Files/2_character_creation_images/8_inactive_mage.gif'
                 ranger_gif.reload()
                 mage_gif.reload()
                 self.selected_class = 'warrior'
             else:
-                warrior_gif.source = 'Program_Files/character_creation_images/6_inactive_warrior.gif'
+                warrior_gif.source = 'Program_Files/2_character_creation_images/6_inactive_warrior.gif'
                 warrior_gif.anim_delay = 0.1
                 warrior_gif.reload()
                 self.selected_class = None
 
         elif char_class == 'ranger':
             if ranger_button.state == 'down':
-                ranger_gif.source = 'Program_Files/character_creation_images/7_active_ranger.gif'
+                ranger_gif.source = 'Program_Files/2_character_creation_images/7_active_ranger.gif'
                 ranger_gif.anim_delay = 0.1
                 warrior_button.state = 'normal'
                 mage_button.state = 'normal'
-                warrior_gif.source = 'Program_Files/character_creation_images/6_inactive_warrior.gif'
-                mage_gif.source = 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                warrior_gif.source = 'Program_Files/2_character_creation_images/6_inactive_warrior.gif'
+                mage_gif.source = 'Program_Files/2_character_creation_images/8_inactive_mage.gif'
                 warrior_gif.reload()
                 mage_gif.reload()
                 self.selected_class = 'ranger'
             else:
-                ranger_gif.source = 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+                ranger_gif.source = 'Program_Files/2_character_creation_images/7_inactive_ranger.gif'
                 ranger_gif.anim_delay = 0.1
                 ranger_gif.reload()
                 self.selected_class = None
 
         elif char_class == 'mage':
             if mage_button.state == 'down':
-                mage_gif.source = 'Program_Files/character_creation_images/8_active_mage.gif'
+                mage_gif.source = 'Program_Files/2_character_creation_images/8_active_mage.gif'
                 mage_gif.anim_delay = 0.1
                 warrior_button.state = 'normal'
                 ranger_button.state = 'normal'
-                warrior_gif.source = 'Program_Files/character_creation_images/6_inactive_warrior.gif'
-                ranger_gif.source = 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+                warrior_gif.source = 'Program_Files/2_character_creation_images/6_inactive_warrior.gif'
+                ranger_gif.source = 'Program_Files/2_character_creation_images/7_inactive_ranger.gif'
                 warrior_gif.reload()
                 ranger_gif.reload()
                 self.selected_class = 'mage'
             else:
-                mage_gif.source = 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                mage_gif.source = 'Program_Files/2_character_creation_images/8_inactive_mage.gif'
                 mage_gif.anim_delay = 0.1
                 mage_gif.reload()
                 self.selected_class = None
@@ -373,14 +374,14 @@ class CharacterCreation(Screen):
         self.ids.mage_button.state = 'normal'
 
         # Reset GIFs to their inactive states
-        self.ids.male_gif.source = 'Program_Files/character_creation_images/2_inactive_male.gif'
-        self.ids.female_gif.source = 'Program_Files/character_creation_images/1_inactive_female.gif'
-        self.ids.human_gif.source = 'Program_Files/character_creation_images/3_inactive_human.gif'
-        self.ids.elf_gif.source = 'Program_Files/character_creation_images/4_inactive_elf.gif'
-        self.ids.dwarf_gif.source = 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
-        self.ids.warrior_gif.source = 'Program_Files/character_creation_images/6_inactive_warrior.gif'
-        self.ids.ranger_gif.source = 'Program_Files/character_creation_images/7_inactive_ranger.gif'
-        self.ids.mage_gif.source = 'Program_Files/character_creation_images/8_inactive_mage.gif'
+        self.ids.male_gif.source = 'Program_Files/2_character_creation_images/2_inactive_male.gif'
+        self.ids.female_gif.source = 'Program_Files/2_character_creation_images/1_inactive_female.gif'
+        self.ids.human_gif.source = 'Program_Files/2_character_creation_images/3_inactive_human.gif'
+        self.ids.elf_gif.source = 'Program_Files/2_character_creation_images/4_inactive_elf.gif'
+        self.ids.dwarf_gif.source = 'Program_Files/2_character_creation_images/5_inactive_dwarf.gif'
+        self.ids.warrior_gif.source = 'Program_Files/2_character_creation_images/6_inactive_warrior.gif'
+        self.ids.ranger_gif.source = 'Program_Files/2_character_creation_images/7_inactive_ranger.gif'
+        self.ids.mage_gif.source = 'Program_Files/2_character_creation_images/8_inactive_mage.gif'
 
         # Reload GIFs to update their state
         self.ids.male_gif.reload()
@@ -413,17 +414,17 @@ class CharacterCreation(Screen):
         if self.selected_gender and self.selected_species and self.selected_class:
             # Show the actual character based on the selections
             image_name = f'{self.selected_gender}_{self.selected_species}_{self.selected_class}.png'
-            self.ids.character_image.source = f'Program_Files/playable_characters/{image_name}'
-        else:
+            self.ids.character_image.source = f'Program_Files/5_playable_characters/{image_name}'
+        else:   
             # Show 'character_0.png' if not all selections are made
-            self.ids.character_image.source = 'Program_Files/character_creation_images/character_0.png'
+            self.ids.character_image.source = 'Program_Files/2_character_creation_images/character_0.png'
         self.ids.character_image.reload()
 
     def validate_selection(self):
         # Create character and reset selections
         print("Creating character with the selected options...")
         self.reset_selections()
-        self.manager.current = 'ingame'
+        self.manager.current = 'map_selection'
 
     def on_kv_post(self, base_widget):
         # Preload the initial character image to avoid white square during transition
@@ -544,6 +545,79 @@ class CharacterCreation(Screen):
             f"  DMG:    [color=#ff0000]{final_dmg}[/color]\n"
             f"   HP:       [color=#00ff00]{final_hp}[/color]\n"
             f"ARMOR:  [color=#d3d3d3]{final_armor}[/color]"
+        )
+
+class MapSelection(Screen):
+    map_1 = ObjectProperty(None)
+    map_2 = ObjectProperty(None)
+    map_3 = ObjectProperty(None)
+    map_4 = ObjectProperty(None)
+    map_5 = ObjectProperty(None)
+    map_6 = ObjectProperty(None)
+    map_7 = ObjectProperty(None)
+    map_8 = ObjectProperty(None)
+    map_9 = ObjectProperty(None)
+    
+    # Property to track if a map is selected
+    is_map_selected = BooleanProperty(False)
+
+    def reset_current_selection(self):
+        """Deselect any currently selected toggle button and reset its image."""
+        maps = [
+            self.map_1, self.map_2, self.map_3, self.map_4, self.map_5,
+            self.map_6, self.map_7, self.map_8, self.map_9
+        ]
+
+        for index, map_button in enumerate(maps, start=1):
+            if map_button is not None and map_button.state == 'down':
+                map_button.state = 'normal'
+                image_widget = self.ids.get(f"map_{index}_image")
+                if image_widget:
+                    image_widget.source = image_widget.source.replace('_active.gif', '_inactive.png')
+                    image_widget.anim_delay = -1
+
+        # Update button state after resetting
+        self.update_start_button_state()
+
+    def random_select_map(self):
+        """Randomly select one of the map toggle buttons."""
+        maps = [
+            self.map_1, self.map_2, self.map_3, self.map_4, self.map_5,
+            self.map_6, self.map_7, self.map_8, self.map_9
+        ]
+        
+        # Deselect all buttons first
+        self.reset_current_selection()
+
+        available_maps = [btn for btn in maps if btn is not None]
+
+        if available_maps:
+            random_choice = random.choice(available_maps)
+            random_choice.state = 'down'
+
+        # Update button state after random selection
+        self.update_start_button_state()
+
+    def update_map_image(self, toggle_button, gif_source, image_widget):
+        """Update the image source when a toggle button is selected or deselected."""
+        if toggle_button.state == 'down':
+            image_widget.source = gif_source
+            image_widget.anim_delay = 0.05
+        else:
+            image_widget.source = gif_source.replace('_active.gif', '_inactive.png')
+            image_widget.anim_delay = -1
+        
+        # Update the button state whenever a toggle button is pressed
+        self.update_start_button_state()
+
+    def update_start_button_state(self):
+        """Enable or disable the 'Start Story' button based on map selection."""
+        # Check if any map toggle button is in the 'down' state
+        self.is_map_selected = any(
+            btn.state == 'down' for btn in [
+                self.map_1, self.map_2, self.map_3, self.map_4, self.map_5,
+                self.map_6, self.map_7, self.map_8, self.map_9
+            ] if btn is not None
         )
 
 

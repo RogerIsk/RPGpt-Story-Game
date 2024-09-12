@@ -6,6 +6,8 @@ ScreenManager:
         name: 'main_menu'
     CharacterCreation:
         name: 'character_creation'
+    MapSelection:
+        name: 'map_selection'
     InGameScreen:
         name: 'ingame'
 
@@ -17,28 +19,28 @@ ScreenManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'Program_Files/main_menu_images/main_menu_background.jpg'
+                source: 'Program_Files/1_main_menu_images/main_menu_background.jpg'
 
         HoverButton:
             text: 'New'
-            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.38}
-            default_image: 'Program_Files/main_menu_images/original_button_image.png'
-            hover_image: 'Program_Files/main_menu_images/new_game_button.png'
+            default_image: 'Program_Files/1_main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/1_main_menu_images/new_game_button.png'
             background_color: [0, 0, 0, 0]
             background_normal: ''
             on_press: root.change_to_chat()
 
         HoverButton:
             text: 'Load'
-            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
             font_size: 70
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.62}
-            default_image: 'Program_Files/main_menu_images/original_button_image.png'
-            hover_image: 'Program_Files/main_menu_images/load_game_button.png'
+            default_image: 'Program_Files/1_main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/1_main_menu_images/load_game_button.png'
             background_color: [0, 0, 0, 0]
             background_normal: ''
             on_press: app.stop()
@@ -46,11 +48,11 @@ ScreenManager:
         HoverButton:
             text: 'Die'
             font_size: 70
-            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
             size_hint: 0.2, 0.3
             pos_hint: {'center_x': 0.49}
-            default_image: 'Program_Files/main_menu_images/original_button_image.png'
-            hover_image: 'Program_Files/main_menu_images/exit_game_button.png'
+            default_image: 'Program_Files/1_main_menu_images/original_button_image.png'
+            hover_image: 'Program_Files/1_main_menu_images/exit_game_button.png'
             background_color: [0, 0, 0, 0]
             background_normal: ''
             on_press: app.stop()
@@ -59,7 +61,7 @@ ScreenManager:
     FloatLayout:
         # Background Image with animation enabled
         Image:
-            source: 'Program_Files/character_creation_images/character_creation_backgorund.gif'
+            source: 'Program_Files/2_character_creation_images/character_creation_backgorund.gif'
             allow_stretch: True
             keep_ratio: False
             anim_delay: 0.01
@@ -78,7 +80,7 @@ ScreenManager:
                     size: self.size
 
             Image:
-                source: 'Program_Files/character_creation_images/character_creation_title.png'  # Replace with your image path
+                source: 'Program_Files/2_character_creation_images/character_creation_title.png'  # Replace with your image path
                 allow_stretch: True
                 keep_ratio: True
                 pos_hint: {'center_x': 0.5, 'top': 1}  # Adjust as necessary
@@ -101,7 +103,7 @@ ScreenManager:
 
                         # Background image behind the text input and label
                         Image:
-                            source: 'Program_Files/character_creation_images/info_scroll.png'  # Path to your background image
+                            source: 'Program_Files/2_character_creation_images/info_scroll.png'  # Path to your background image
                             allow_stretch: True
                             keep_ratio: False
                             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
@@ -111,7 +113,7 @@ ScreenManager:
                             id: character_name_input
                             hint_text: 'Enter Name'
                             multiline: False  # Keep input to a single line
-                            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                            font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
                             font_size: 24
                             size_hint: (0.8, 0.43)  # Reduced width with size_hint_x set to 0.8
                             pos_hint: {'top': 1, 'center_x': 0.5}  # Center horizontally
@@ -154,7 +156,7 @@ ScreenManager:
                         RelativeLayout:
                             Image:
                                 id: female_gif
-                                source: 'Program_Files/character_creation_images/1_inactive_female.gif'
+                                source: 'Program_Files/2_character_creation_images/1_inactive_female.gif'
                                 anim_delay: 0.05
                                 allow_stretch: True
                                 keep_ratio: True
@@ -169,7 +171,7 @@ ScreenManager:
                         RelativeLayout:
                             Image:
                                 id: male_gif
-                                source: 'Program_Files/character_creation_images/2_inactive_male.gif'
+                                source: 'Program_Files/2_character_creation_images/2_inactive_male.gif'
                                 anim_delay: 0.05
                                 allow_stretch: True
                                 keep_ratio: True
@@ -190,7 +192,7 @@ ScreenManager:
                         RelativeLayout:
                             Image:
                                 id: human_gif
-                                source: 'Program_Files/character_creation_images/3_inactive_human.gif'
+                                source: 'Program_Files/2_character_creation_images/3_inactive_human.gif'
                                 anim_delay: 0.05
                                 allow_stretch: True
                                 keep_ratio: True
@@ -205,7 +207,7 @@ ScreenManager:
                         RelativeLayout:
                             Image:
                                 id: elf_gif
-                                source: 'Program_Files/character_creation_images/4_inactive_elf.gif'
+                                source: 'Program_Files/2_character_creation_images/4_inactive_elf.gif'
                                 anim_delay: 0.05
                                 allow_stretch: True
                                 keep_ratio: True
@@ -220,7 +222,7 @@ ScreenManager:
                         RelativeLayout:
                             Image:
                                 id: dwarf_gif
-                                source: 'Program_Files/character_creation_images/5_inactive_dwarf.gif'
+                                source: 'Program_Files/2_character_creation_images/5_inactive_dwarf.gif'
                                 anim_delay: 0.05
                                 allow_stretch: True
                                 keep_ratio: True
@@ -241,7 +243,7 @@ ScreenManager:
                         RelativeLayout:
                             Image:
                                 id: warrior_gif
-                                source: 'Program_Files/character_creation_images/6_inactive_warrior.gif'
+                                source: 'Program_Files/2_character_creation_images/6_inactive_warrior.gif'
                                 anim_delay: 0.05
                                 allow_stretch: True
                                 keep_ratio: True
@@ -256,7 +258,7 @@ ScreenManager:
                         RelativeLayout:
                             Image:
                                 id: ranger_gif
-                                source: 'Program_Files/character_creation_images/7_inactive_ranger.gif'
+                                source: 'Program_Files/2_character_creation_images/7_inactive_ranger.gif'
                                 anim_delay: 0.05
                                 allow_stretch: True
                                 keep_ratio: True
@@ -271,7 +273,7 @@ ScreenManager:
                         RelativeLayout:
                             Image:
                                 id: mage_gif
-                                source: 'Program_Files/character_creation_images/8_inactive_mage.gif'
+                                source: 'Program_Files/2_character_creation_images/8_inactive_mage.gif'
                                 anim_delay: 0.05
                                 allow_stretch: True
                                 keep_ratio: True
@@ -286,12 +288,12 @@ ScreenManager:
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: 0.1
-            padding: [10, 15, 10, 15]
+            padding: [15, 15, 15, 15]
             spacing: 15
 
             HoverButtonRounded:
                 text: 'Main Menu'
-                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
                 size_hint_x: 0.33
@@ -303,7 +305,7 @@ ScreenManager:
 
             HoverButtonRounded:
                 text: 'Choose Random'
-                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
                 size_hint_x: 0.34
@@ -314,7 +316,7 @@ ScreenManager:
             HoverButtonRounded:
                 id: create_button
                 text: 'Continue'
-                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
                 font_size: 30
                 bold: True
                 size_hint_x: 0.33
@@ -325,13 +327,219 @@ ScreenManager:
                 background_color: [0.5, 0.5, 0.5, 0]
                 background_normal: ''
 
+<MapSelection>:
+    map_1: map_1
+    map_2: map_2
+    map_3: map_3
+    map_4: map_4
+    map_5: map_5
+    map_6: map_6
+    map_7: map_7
+    map_8: map_8
+    map_9: map_9
+
+    # Adding a RelativeLayout to overlay widgets on the background image
+    RelativeLayout:
+        # Background image for the world selection screen
+        Image:
+            source: 'Program_Files/3_world_selection_images/world_selection_background_image.gif'
+            allow_stretch: True
+            keep_ratio: False  # Fills the entire screen
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 20
+            spacing: 10
+
+            # Adding the title image at the top of the screen
+            BoxLayout:
+                padding: [200, 20, 200, 80]  # Left, Top, Right, Bottom padding
+                size_hint_y: 0.25  # Adjust this value as needed
+                Image:
+                    source: 'Program_Files/3_world_selection_images/world_selection_title.png'
+                    allow_stretch: True
+                    keep_ratio: True
+
+            GridLayout:
+                cols: 3
+                spacing: 10
+                padding: 10
+
+                # Toggle images with PNGs initially, changing to GIFs when selected
+                # Button 1: Anime
+                RelativeLayout:
+                    Image:
+                        id: map_1_image
+                        source: 'Program_Files/3_world_selection_images/1_anime_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_1
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/1_anime_active.gif', map_1_image)
+
+                # Button 2: Cyberpunk
+                RelativeLayout:
+                    Image:
+                        id: map_2_image
+                        source: 'Program_Files/3_world_selection_images/2_cyberpunk_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_2
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/2_cyberpunk_active.gif', map_2_image)
+
+                # Button 3: Post-Apocalyptic Zombies
+                RelativeLayout:
+                    Image:
+                        id: map_3_image
+                        source: 'Program_Files/3_world_selection_images/3_post_apocalyptic_zombies_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_3
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/3_post_apocalyptic_zombies_active.gif', map_3_image)
+
+                # Button 4: Post-Apocalyptic Fallout
+                RelativeLayout:
+                    Image:
+                        id: map_4_image
+                        source: 'Program_Files/3_world_selection_images/4_post_apocalyptic_fallout_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_4
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/4_post_apocalyptic_fallout_active.gif', map_4_image)
+
+                # Button 5: Feudal Japan
+                RelativeLayout:
+                    Image:
+                        id: map_5_image
+                        source: 'Program_Files/3_world_selection_images/5_feudal_japan_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_5
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/5_feudal_japan_active.gif', map_5_image)
+
+                # Button 6: Game of Thrones
+                RelativeLayout:
+                    Image:
+                        id: map_6_image
+                        source: 'Program_Files/3_world_selection_images/6_game_of_thrones_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_6
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/6_game_of_thrones_active.gif', map_6_image)
+
+                # Button 7: Classic Medieval
+                RelativeLayout:
+                    Image:
+                        id: map_7_image
+                        source: 'Program_Files/3_world_selection_images/7_classic_medieval_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_7
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/7_classic_medieval_active.gif', map_7_image)
+
+                # Button 8: Dark Fantasy
+                RelativeLayout:
+                    Image:
+                        id: map_8_image
+                        source: 'Program_Files/3_world_selection_images/8_fantasy_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_8
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/8_fantasy_active.gif', map_8_image)
+
+                # Button 9: Star Wars Sci-Fi
+                RelativeLayout:
+                    Image:
+                        id: map_9_image
+                        source: 'Program_Files/3_world_selection_images/9_dark_fantasy_inactive.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                    ToggleButton:
+                        id: map_9
+                        group: 'maps'
+                        background_color: (0, 0, 0, 0)
+                        background_normal: ''
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/9_dark_fantasy_active.gif', map_9_image)
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: 0.2
+                spacing: 20
+                padding: (0, 62, 0, 0)
+
+                HoverButtonRounded:
+                    text: 'Back'
+                    font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
+                    font_size: 30
+                    bold: True
+                    size_hint_x: 0.33
+                    on_release:
+                        root.reset_current_selection()
+                        app.root.current = 'character_creation'
+                    background_color: [0, 0, 0, 0]
+                    background_normal: ''
+
+                HoverButtonRounded:
+                    text: 'Random'
+                    font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
+                    font_size: 30
+                    bold: True
+                    size_hint_x: 0.34
+                    on_release: root.random_select_map()
+                    background_color: [0, 0, 0, 0]
+                    background_normal: ''
+
+                HoverButtonRounded:
+                    text: 'Start Story'
+                    font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
+                    font_size: 30
+                    bold: True
+                    size_hint_x: 0.33
+                    disabled: not root.is_map_selected  # Disable if no map is selected
+                    on_release:
+                        root.reset_current_selection()
+                        app.root.current = 'ingame'
+                    background_color: [0, 0, 0, 0]
+                    background_normal: ''
+
 <InGameScreen>:
     BoxLayout:
         orientation: 'vertical'
         padding: 20
         canvas.before:
             Rectangle:
-                source: 'Program_Files/in_game_images/in_game_background.png'
+                source: 'Program_Files/4_in_game_images/in_game_background.png'
                 pos: self.pos
                 size: self.size
 
@@ -404,13 +612,16 @@ ScreenManager:
             orientation: 'vertical'
             size_hint: (1, 0.9)
 
-            Label:
-                id: output_label
-                size_hint: (1, 0.8)
-                font_size: 16
-                color: (1, 1, 1, 1)
-                valign: 'top'
-                halign: 'left'
+            FloatLayout:
+                # Position the Label at the bottom without affecting the input text
+                Label:
+                    id: output_label
+                    size_hint: (0.16, 0.3)
+                    font_size: 16
+                    color: (1, 1, 1, 1)
+                    valign: 'bottom'
+                    halign: 'left'
+                    pos_hint: {'x': 0, 'y': 0}  # Places the label at the bottom left corner
 
             TextInput:
                 id: input_text
