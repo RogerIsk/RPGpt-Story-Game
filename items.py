@@ -8,6 +8,8 @@ image_folder = "/Program_Files/items_96p"
 
 class Item:
     '''used to create an object for every item in the game'''
+    items = {}  # Class-level dictionary to store all item objects
+
     def __init__(self, item_id, name, type, bonus_type, bonus_value, image_file):
         self.item_id = item_id
         self.name = name
@@ -16,6 +18,8 @@ class Item:
         self.bonus_value = bonus_value
         self.image_file = image_file
         self.image_path = self.get_image_path(image_folder)
+        # Add the item object to the class-level dictionary
+        Item.items[item_id] = self
 
     def get_image_path(self, image_folder):
         '''add full image path to items (including directory)'''
@@ -32,6 +36,6 @@ class Item:
         results = cursor.fetchall()
         cursor.close()
         conn.close()
-        # Store items in adictionary with item_id as the key
-        items = {result[0]: Item(*result) for result in results}
-        return items
+        # Create Item objects and store them in the class-level dictionary
+        for result in results:
+            Item(*result)
