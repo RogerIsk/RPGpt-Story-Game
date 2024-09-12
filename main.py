@@ -472,10 +472,7 @@ class CharacterCreation(Screen):
 
         self.reset_selections()
         # create an instance of hero using the dedicated function
-        # hero = instantiate_hero(db_config, self.char_name)
-
-        # Test statement to import hero
-        hero = instantiate_hero(db_config, self.Sora)
+        hero = instantiate_hero(db_config, self.char_name)
 
         # Update the Kivy context with the new hero
         update_ingame_screen()
