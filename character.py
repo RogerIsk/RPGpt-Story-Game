@@ -75,10 +75,29 @@ class Hero(Character):
             self.hp = char_data["hp"]
             self.dmg = char_data["damage"]
             self.armor = char_data["armor"]
-            self.items = char_data["items"]
+            self.items = self._fetch_hero_items() # Fetch and link hero's items
             self.eq_weapon = char_data["equipped_weapon"]
             self.eq_armor = char_data["equipped_armor"]
         return None
+
+    def _fetch_hero_items(self):
+        # SQL query to fetch and split the array of item IDs
+        query = """
+        SELECT unnest(items) AS item_id
+        FROM characters
+        WHERE name = %s;
+        """
+        self.cursor.execute(query, (self.name,))
+        item_ids = self.cursor.fetchall()
+
+        # Link hero's items with the corresponding Item objects
+        hero_items = []
+        for item_id_tuple in item_ids:
+            item_id = item_id_tuple[0]
+            item_variable_name = f'item_{item_id}'
+            if item_variable_name in globals():
+                hero_items.append(globals()[item_variable_name])
+        return hero_items
     
     
     def attack(self, target):
