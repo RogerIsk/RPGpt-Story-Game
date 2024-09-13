@@ -690,8 +690,9 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
 # MusicManager class
 class MusicManager:
     def __init__(self):
+        pygame.init()  # Initialize Pygame, including the video system
         pygame.mixer.init()
-        pygame.mixer.music.load("Medieval Theme.mp3")
+        pygame.mixer.music.load("Program_Files/music/Medieval Theme.mp3")
         pygame.mixer.music.set_volume(0.2)
 
     def start_music(self):
