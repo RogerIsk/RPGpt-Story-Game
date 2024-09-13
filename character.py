@@ -63,7 +63,12 @@ class Hero(Character):
     
 
     def _get_hero(self, char_name):
-        query = "SELECT * FROM characters WHERE name = %s"
+        # NESTED QUERY let's be proud of it
+        query = """
+        SELECT character.*
+        FROM characters character
+        WHERE character.name = %s;
+        """
         self.cursor.execute(query, (char_name,))
         char_data = self.cursor.fetchone()
         self.name = char_name
@@ -75,21 +80,12 @@ class Hero(Character):
             self.hp = char_data["hp"]
             self.dmg = char_data["damage"]
             self.armor = char_data["armor"]
-            self.items = self._fetch_hero_items() # Fetch and link hero's items
+            self.items = self._link_items(char_data["items"])  # Link hero's items
             self.eq_weapon = char_data["equipped_weapon"]
             self.eq_armor = char_data["equipped_armor"]
         return None
 
-    def _fetch_hero_items(self):
-        # SQL query to fetch and split the array of item IDs
-        query = """
-        SELECT unnest(items) AS item_id
-        FROM characters
-        WHERE name = %s;
-        """
-        self.cursor.execute(query, (self.name,))
-        item_ids = self.cursor.fetchall()
-
+    def _link_items(self, item_ids):
         # Link hero's items with the corresponding Item objects
         hero_items = []
         for item_id_tuple in item_ids:
