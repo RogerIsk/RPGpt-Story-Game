@@ -99,6 +99,13 @@ If random is chosen, generate a character with random values for Name, Race, Sex
 def update_ingame_screen():
     """Update the in-game screen with the hero's attributes
     Call this function whenever new information about the hero needs to be displayed"""
+    global hero  # Use global if hero is defined outside the function
+
+    # Debugging: Check if hero is None
+    if hero is None:
+        print("Error: Hero is not defined or is None.")
+        return  # Exit the function early to avoid further errors
+
     # Update the Kivy context with the new hero
     app = App.get_running_app()
     app.root.hero = hero
