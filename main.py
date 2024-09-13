@@ -493,7 +493,7 @@ class CharacterCreation(Screen):
         # Update the Kivy context with the new hero
         update_ingame_screen()
 
-        self.manager.current = 'ingame'
+        self.manager.current = 'map_selection'
 
     def on_kv_post(self, base_widget):
         # Preload the initial character image to avoid white square during transition
