@@ -27,7 +27,6 @@ import pygame
 import threading
 from combat import combat
 from character import Hero, Enemy, instantiate_hero, instantiate_enemy
-from items import Item
 from utils import read_json_file, DatabaseUtils
 
 
@@ -482,6 +481,8 @@ class CharacterCreation(Screen):
         self.reset_selections()
         # create an instance of hero using the dedicated function
         hero = instantiate_hero(db_config, self.char_name)
+        print(f"Created hero {hero.name}")
+        hero.print_attributes()
 
         # Update the Kivy context with the new hero
         update_ingame_screen()
@@ -623,10 +624,6 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
 
-        # Fetch all items and create Item objects
-        Item.fetch_all_items(db_config)
-        # Dynamically create global variables for each item object with the format: item_1, item_2...
-        globals().update({f'item_{item.item_id}': item for item in Item.items.values()})
 
     def on_enter(self, *args):  # This shows up on the output text bar right after we enter the page
         self.ids.output_label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
