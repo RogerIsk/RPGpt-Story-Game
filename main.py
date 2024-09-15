@@ -13,7 +13,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.lang import Builder
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty
 from openai import OpenAI
 from stringcolor import *
 from kivy.app import App
@@ -44,6 +44,7 @@ db_config = read_json_file("Program_Files/json_files/db_config.json")
 
 # non-regex strings to display in game window
 enter_end = "PRESS ENTER TO EXIT THE GAME..."
+
 
 # Communicating with ChatGPT ===========================================================================
 def get_response(messages):
@@ -93,7 +94,6 @@ If random is chosen, generate a character with random values for Name, Race, Sex
     chat_screen.ids.output_label.text = f"Assistant: {bot_response}"
     chat_screen.messages = messages
 
-
 # General methods to use in kivy app ===========================================================================
 def update_ingame_screen():
     """Update the in-game screen with the hero's attributes
@@ -115,7 +115,8 @@ def update_ingame_screen():
     ingame_screen.hero_hp = str(hero.hp)
     ingame_screen.hero_dmg = str(hero.dmg)
     ingame_screen.hero_armor = str(hero.armor)
-
+    # Update item properties, similar result as previous lines but for items
+    ingame_screen.update_item_properties()
 
 
 # kivy visual stuff ===========================================================================
@@ -185,7 +186,6 @@ class HoverButton(Button):  # Handles button images for normal and hover states
 class MenuScreen(Screen):  # This class lets us give functionality to our widgets in the main menu
     def change_to_chat(self):
         self.manager.current = 'character_creation'
-
 
 class CharacterCreation(Screen):
     def __init__(self, **kwargs):
@@ -611,9 +611,10 @@ class CharacterCreation(Screen):
         )
 
 
-
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
 class InGameScreen(Screen):  # This class lets us give functionality to our widgets in the game
+    # create empty kivy properties at startup
+    # The actual values will be added after reading character and items data from db
     hero_name = StringProperty("")
     hero_species = StringProperty("")
     hero_hp = StringProperty("")
@@ -623,6 +624,30 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
+        self.create_kivy_properties()
+
+    
+    def create_kivy_properties(self):
+        # Predefine empty kivy properties for up to 64 items
+        # this is a workaround to have the property names existing at startup
+        for i in range(64):
+            setattr(InGameScreen, f"item_{i}_name", StringProperty(""))
+            setattr(InGameScreen, f"item_{i}_damage", NumericProperty(0))
+            setattr(InGameScreen, f"item_{i}_armor", NumericProperty(0))
+            setattr(InGameScreen, f"item_{i}_effect", StringProperty(""))
+            
+
+    def update_item_properties(self):
+        """
+        Dynamically bind item properties to UI elements.
+        This method iterates over the items in the hero's inventory and creates Kivy properties
+        for each item attribute. It then binds these properties to the corresponding UI elements.
+        """
+        for i, item in enumerate(hero.items):
+            for key, value in item.items():
+                prop_name = f"item_{i}_{key}"
+                if hasattr(self, prop_name):
+                    setattr(self, prop_name, str(value) if isinstance(value, (int, float)) else value)
 
 
     def on_enter(self, *args):  # This shows up on the output text bar right after we enter the page

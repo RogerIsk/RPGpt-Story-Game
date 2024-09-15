@@ -1,6 +1,7 @@
 import os
 import psycopg2
 import psycopg2.extras
+from kivy.properties import StringProperty, NumericProperty
 from random import randint
 from time import sleep
 from utils import read_json_file
@@ -124,9 +125,20 @@ class Hero(Character):
             self.add_item_image_path()
             self.eq_weapon = char_data['equipped_weapon']
             self.eq_armor = char_data['equipped_armor']
+            # create kivy properties for each item attribute. We'll bind them to the InGameScreen in main
+            self.create_kivy_properties()
         else:
             return None
     
+    def create_kivy_properties(self):
+        # Dynamically create Kivy properties for each item attribute
+        for i, item in enumerate(self.items):
+            for key, value in item.items():
+                prop_name = f"item_{i}_{key}"
+                if isinstance(value, str):
+                    setattr(self.__class__, prop_name, StringProperty(value))
+                elif isinstance(value, (int, float)):
+                    setattr(self.__class__, prop_name, NumericProperty(value))
 
     
     
