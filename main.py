@@ -461,38 +461,36 @@ class CharacterCreation(Screen):
             self.ids.character_image.source = 'Program_Files/2_character_creation_images/character_0.png'
         self.ids.character_image.reload()
         
-
     def validate_selection(self):
-
         global hero
-        # Create character and reset selections
         print("Creating character with the selected options...")
+
         # Save new character stats to the character database
         insert_query = """
         INSERT INTO characters (name, species, gender, class, hp, damage, armor)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        # define values to save to db
         char_data = (self.char_name, self.selected_species, self.selected_gender, self.selected_class, self.final_hp, self.final_dmg, self.final_armor)
 
         try:
-            # Execute the SQL statement (write char stats to db)
             self.db_utils.cursor.execute(insert_query, char_data)
-            # Commit the transaction
             self.db_utils.conn.commit()
             print("Character saved to the database.")
         except Exception as e:
-            # Rollback in case of error
             self.db_utils.conn.rollback()
             print(f"Error saving character to the database: {e}")
 
+        # Pass the character stats to the InGameScreen
+        ingame_screen = self.manager.get_screen('ingame')
+        ingame_screen.hero_name = self.char_name
+        ingame_screen.hero_species = self.selected_species
+        ingame_screen.hero_hp = str(self.final_hp)
+        ingame_screen.hero_dmg = str(self.final_dmg)
+        ingame_screen.hero_armor = str(self.final_armor)
+
         self.reset_selections()
-        # create an instance of hero using the dedicated function
         hero = instantiate_hero(db_config, self.char_name)
-
-        # Update the Kivy context with the new hero
         update_ingame_screen()
-
         self.manager.current = 'map_selection'
 
     def on_kv_post(self, base_widget):
@@ -616,6 +614,10 @@ class CharacterCreation(Screen):
             f"ARMOR:  [color=#d3d3d3]{self.final_armor}[/color]"
         )
 
+
+
+
+
 class MapSelection(Screen):
     map_1 = ObjectProperty(None)
     map_2 = ObjectProperty(None)
@@ -697,24 +699,26 @@ class MapSelection(Screen):
 
 
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
-class InGameScreen(Screen):  # This class lets us give functionality to our widgets in the game
+class InGameScreen(Screen):  
     hero_name = StringProperty("")
     hero_species = StringProperty("")
     hero_hp = StringProperty("")
     hero_dmg = StringProperty("")
     hero_armor = StringProperty("")
-    
+
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
 
-        # Fetch all items and create Item objects
         Item.fetch_all_items(db_config)
-        # Dynamically create global variables for each item object with the format: item_1, item_2...
         globals().update({f'item_{item.item_id}': item for item in Item.items.values()})
 
-    def on_enter(self, *args):  # This shows up on the output text bar right after we enter the page
-        self.ids.output_label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
+    def on_enter(self, *args):  
+        self.ids.output_label.text = (
+            f"Welcome, {self.hero_name} the {self.hero_species}!\n"
+            f"HP: {self.hero_hp}, DMG: {self.hero_dmg}, ARMOR: {self.hero_armor}\n\n"
+            "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
+        )
         self.messages = []  
 
     def on_text_enter(self, instance):  # Functionality of the output text bar
@@ -766,6 +770,25 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
                 for child in panel.children:
                     child.opacity = 0
                     child.disabled = True
+
+    def update_hero_hp(self, hp_change):
+        self.hero_hp = str(int(self.hero_hp) + hp_change)
+        self.update_display()
+
+    def update_hero_dmg(self, dmg_change):
+        self.hero_dmg = str(int(self.hero_dmg) + dmg_change)
+        self.update_display()
+
+    def update_hero_armor(self, armor_change):
+        self.hero_armor = str(int(self.hero_armor) + armor_change)
+        self.update_display()
+
+    def update_display(self):
+        self.ids.output_label.text = (
+            f"Welcome, {self.hero_name} the {self.hero_species}!\n"
+            f"HP: {self.hero_hp}, DMG: {self.hero_dmg}, ARMOR: {self.hero_armor}\n\n"
+            "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
+        )
 
     def send_character_stats(self):  # 'Statistics' button functionality
         pass

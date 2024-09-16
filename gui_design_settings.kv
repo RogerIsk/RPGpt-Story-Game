@@ -663,7 +663,7 @@ ScreenManager:
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
-                on_release: root.toggle_panel('stats')
+                on_release: root.toggle_panel('stats_panel')
 
             HoverButtonRounded:
                 text: 'Inventory'
@@ -672,7 +672,7 @@ ScreenManager:
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
-                on_release: root.toggle_panel('backpack', 'stats')
+                on_release: root.toggle_panel('backpack', 'stats_panel')
 
             HoverButtonRounded:
                 text: 'History'
@@ -722,9 +722,43 @@ ScreenManager:
                     halign: 'left'
                     pos_hint: {'x': 0, 'y': 0}  # Places the label at the bottom left corner
 
+            # Hidden stats panel, initially invisible
+            BoxLayout:
+                id: stats_panel
+                orientation: 'vertical'
+                size_hint: (0.4, 0.3)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                opacity: 0
+                disabled: True
+
+                Label:
+                    text: f"Name: {root.hero_name}"
+                    font_size: 20
+                    color: (1, 1, 1, 1)
+
+                Label:
+                    text: f"Species: {root.hero_species}"
+                    font_size: 20
+                    color: (1, 1, 1, 1)
+
+                Label:
+                    text: f"HP: {root.hero_hp}"
+                    font_size: 20
+                    color: (0, 1, 0, 1)
+
+                Label:
+                    text: f"Damage: {root.hero_dmg}"
+                    font_size: 20
+                    color: (1, 0, 0, 1)
+
+                Label:
+                    text: f"Armor: {root.hero_armor}"
+                    font_size: 20
+                    color: (0.8, 0.8, 0.8, 1)
+
             TextInput:
                 id: input_text
-                size_hint: (1, 0.045)
+                size_hint: (1, 0.09)
                 font_size: 30
                 multiline: False
                 padding: (15, 10, 15, 10)
