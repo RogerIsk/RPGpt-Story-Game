@@ -578,37 +578,12 @@ ScreenManager:
             # Grid Layout for item buttons
             GridLayout:
                 id: item_grid
-                cols: 3  # Set the number of columns to 3
+                cols: 4 # Set the number of columns to 4
                 size_hint: None, None
                 size: self.minimum_size
                 spacing: 12  # Add spacing between the items
                 padding: [12]  # Add padding to the left
 
-
-                # Item buttons
-                Button:
-                    text: 'Sword'
-                    size_hint: None, None
-                    size: 100, 100
-                    background_normal: 'Program_Files/items_96p/background.jpg'
-                    background_down: 'Program_Files/items_96p/background-click.jpg'  # Optional
-                    text: ''
-                    canvas.before:
-                        Color:
-                            rgba: 1.0, 0.92, 0.8, 1  # Set your desired background color (R, G, B, A)
-                        Rectangle:
-                            pos: self.pos
-                            size: self.size                        
-                    canvas.after:
-                        Color:
-                            rgba: 1, 1, 1, 1  # Ensure the image is drawn with full opacity
-                        Rectangle:
-                            source: 'Program_Files/items_96p/weapon-sword.png'
-                            size: 96, 96 # Set the size of the image to 96x96 pixels
-                            pos: (self.center_x - 48, self.center_y - 48)  # Center the image within the button
-
-                Label:
-                    text: root.item_7_name
 
 <HoverButton@Button>:
     background_color: 0, 0, 0, 0

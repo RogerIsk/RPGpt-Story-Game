@@ -480,7 +480,7 @@ class CharacterCreation(Screen):
 
         self.reset_selections()
         # create an instance of hero using the dedicated function
-        hero = instantiate_hero(db_config, self.char_name)
+        hero = instantiate_hero(db_config, "Sora")
         print(f"Created hero {hero.name}")
         hero.print_attributes()
 
@@ -631,10 +631,12 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
         # Predefine empty kivy properties for up to 64 items
         # this is a workaround to have the property names existing at startup
         for i in range(64):
+            setattr(InGameScreen, f"item_{i}_id", NumericProperty(""))
             setattr(InGameScreen, f"item_{i}_name", StringProperty(""))
-            setattr(InGameScreen, f"item_{i}_damage", NumericProperty(0))
-            setattr(InGameScreen, f"item_{i}_armor", NumericProperty(0))
-            setattr(InGameScreen, f"item_{i}_effect", StringProperty(""))
+            setattr(InGameScreen, f"item_{i}_type", StringProperty(""))
+            setattr(InGameScreen, f"item_{i}_bonus_type", StringProperty(0))
+            setattr(InGameScreen, f"item_{i}bonus_value", NumericProperty(0))
+            setattr(InGameScreen, f"item_{i}_image_file", StringProperty(""))
             
 
     def update_item_properties(self):
@@ -647,45 +649,31 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
             for key, value in item.items():
                 prop_name = f"item_{i}_{key}"
                 if hasattr(self, prop_name):
+                    print(f"Setting {prop_name} to {value}")
                     setattr(self, prop_name, str(value) if isinstance(value, (int, float)) else value)
-
+                    print(self.item_3_name)
 
     def display_item_buttons(self):
         """
         Display buttons for each item with the corresponding name and image path.
         """
-            
         item_grid = self.ids.item_grid  # Reference the GridLayout by its id
         item_grid.clear_widgets()  # Clear any existing widgets
 
-        for i in range(64):
-            item_name = getattr(self, f"item_{i}_name", "")
-            item_image_path = getattr(self, f"item_{i}_image_path", "")
-            item_bonus = getattr(self, f"item_{i}_bonus", 0)
-            
-            if item_name:
-                # Create a button for the item
-                button = Button(
-                    text=item_name,
-                    size_hint=(None, None),
-                    size=(100, 100),
-                    background_normal='Program_Files/items_96p/background.jpg',
-                    background_down='Program_Files/items_96p/background-click.jpg'
-                )
-                button.canvas.before.clear()
-                with button.canvas.before:
-                    Color(1.0, 0.92, 0.8, 1)
-                    Rectangle(pos=button.pos, size=button.size)
-                button.canvas.after.clear()
-                with button.canvas.after:
-                    Color(1, 1, 1, 1)
-                    Rectangle(source=item_image_path, size=(96, 96), pos=(button.center_x - 48, button.center_y - 48))
-                
-                # Add the button to the item_grid layout
-                item_grid.add_widget(button)    
-                
-                # Add the bonus to another number displayed (e.g., hero_dmg)
-                self.hero_dmg = str(int(self.hero_dmg) + item_bonus)
+        item_name = getattr(self, "item_7_name", "")
+        item_image_file = getattr(self, "item_7_image_file", "")
+
+        if item_name:
+            # Create a button for the item
+            button = Button(
+                text="",
+                size_hint=(None, None),
+                size=(96, 96),
+                background_normal=item_image_file
+            )
+
+            # Add the button to the item_grid layout
+            item_grid.add_widget(button)
 
     def on_enter(self, *args):  # This shows up on the output text bar right after we enter the page
         self.ids.output_label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"

@@ -6,7 +6,7 @@ from random import randint
 from time import sleep
 from utils import read_json_file
 
-image_folder = "/Program_Files/items_96p"
+image_folder = "Program_Files/items_96p"
 press_enter = 'Press ENTER to continue...\n'
 
 class Character:
@@ -139,6 +139,8 @@ class Hero(Character):
                     setattr(self.__class__, prop_name, StringProperty(value))
                 elif isinstance(value, (int, float)):
                     setattr(self.__class__, prop_name, NumericProperty(value))
+                print(f"Created property {prop_name} with value {value}")
+        input('Properties created...')
 
     
     
