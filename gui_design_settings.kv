@@ -630,6 +630,8 @@ ScreenManager:
     hero_hp: ""
     hero_dmg: ""
     hero_armor: ""
+    hero_class: ""
+    world_type: ""
 
     BoxLayout:
         orientation: 'vertical'
@@ -715,7 +717,7 @@ ScreenManager:
                 # Position the Label at the bottom without affecting the input text
                 Label:
                     id: output_label
-                    size_hint: (0.16, 0.3)
+                    size_hint: (0.16, 0.4)
                     font_size: 16
                     color: (1, 1, 1, 1)
                     valign: 'bottom'
@@ -726,10 +728,17 @@ ScreenManager:
             BoxLayout:
                 id: stats_panel
                 orientation: 'vertical'
-                size_hint: (0.4, 0.3)
+                size_hint: (0.6, 0.5)
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 opacity: 0
                 disabled: True
+                canvas.before:
+                    Color:
+                        rgba: (0.8, 0.4, 0, 0.5)  # Dark orange with 50% opacity
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [20]
 
                 Label:
                     text: f"Name: {root.hero_name}"
@@ -738,6 +747,16 @@ ScreenManager:
 
                 Label:
                     text: f"Species: {root.hero_species}"
+                    font_size: 20
+                    color: (1, 1, 1, 1)
+
+                Label:
+                    text: f"Class: {root.hero_class}"
+                    font_size: 20
+                    color: (1, 1, 1, 1)
+
+                Label:
+                    text: f"World Type: {root.world_type}"
                     font_size: 20
                     color: (1, 1, 1, 1)
 
