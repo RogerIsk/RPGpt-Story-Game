@@ -228,6 +228,13 @@ CHARACTER STATISTICS
             
             # Print the dictionary
             for column, value in full_stats_dict.items():
+                # Replace underscores with spaces and capitalize each word
+                column = column.replace('_', ' ').title()
+                # Replace names with clearer ones
+                if column == 'Damage':
+                    column = 'Base Damage'
+                if column == 'Armor':
+                    column = 'Base Armor'
                 print(f'{column}: {value}')
 
         else:
