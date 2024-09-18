@@ -365,7 +365,6 @@ ScreenManager:
                 spacing: 10
                 padding: 10
 
-                # Toggle images with PNGs initially, changing to GIFs when selected
                 # Button 1: Anime
                 RelativeLayout:
                     Image:
@@ -378,7 +377,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/1_anime_active.gif', map_1_image, map_1_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/1_anime_active.gif', map_1_image, map_1_label, "Anime")
                     Label:
                         id: map_1_label
                         text: 'Anime'
@@ -402,7 +401,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/2_cyberpunk_active.gif', map_2_image, map_2_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/2_cyberpunk_active.gif', map_2_image, map_2_label, "Cyberpunk")
                     Label:
                         id: map_2_label
                         text: 'Cyberpunk'
@@ -426,7 +425,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/3_post_apocalyptic_zombies_active.gif', map_3_image, map_3_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/3_post_apocalyptic_zombies_active.gif', map_3_image, map_3_label, "Post-Apocalyptic Zombies")
                     Label:
                         id: map_3_label
                         text: 'Post-Apocalyptic Zombies'
@@ -450,7 +449,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/4_post_apocalyptic_fallout_active.gif', map_4_image, map_4_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/4_post_apocalyptic_fallout_active.gif', map_4_image, map_4_label, "Post-Apocalyptic Fallout")
                     Label:
                         id: map_4_label
                         text: 'Post-Apocalyptic Fallout'
@@ -474,7 +473,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/5_feudal_japan_active.gif', map_5_image, map_5_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/5_feudal_japan_active.gif', map_5_image, map_5_label, "Feudal Japan")
                     Label:
                         id: map_5_label
                         text: 'Feudal Japan'
@@ -498,7 +497,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/6_game_of_thrones_active.gif', map_6_image, map_6_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/6_game_of_thrones_active.gif', map_6_image, map_6_label, "Game of Thrones")
                     Label:
                         id: map_6_label
                         text: 'Game of Thrones'
@@ -522,7 +521,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/7_classic_medieval_active.gif', map_7_image, map_7_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/7_classic_medieval_active.gif', map_7_image, map_7_label, "Classic Medieval")
                     Label:
                         id: map_7_label
                         text: 'Classic Medieval'
@@ -546,7 +545,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/8_fantasy_active.gif', map_8_image, map_8_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/8_fantasy_active.gif', map_8_image, map_8_label, "Dark Fantasy")
                     Label:
                         id: map_8_label
                         text: 'Dark Fantasy'
@@ -558,7 +557,7 @@ ScreenManager:
                         height: 30
                         opacity: 0  # Initially hidden
 
-                # Button 9: Star Wars Sci-Fi
+                # Button 9: Dark Fantasy - Hard Mode
                 RelativeLayout:
                     Image:
                         id: map_9_image
@@ -570,7 +569,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/9_dark_fantasy_hard_mode_active.gif', map_9_image, map_9_label)
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/9_dark_fantasy_hard_mode_active.gif', map_9_image, map_9_label, "Dark Fantasy - Hard Mode")
                     Label:
                         id: map_9_label
                         text: 'Dark Fantasy - Hard Mode'
@@ -618,8 +617,7 @@ ScreenManager:
                     size_hint_x: 0.33
                     disabled: not root.is_map_selected  # Disable if no map is selected
                     on_release:
-                        root.reset_current_selection()
-                        app.root.current = 'ingame'
+                        root.on_start_story()
                     background_color: [0, 0, 0, 0]
                     background_normal: ''
 
@@ -665,7 +663,7 @@ ScreenManager:
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
-                on_release: root.toggle_panel('stats_panel')
+                on_release: root.toggle_panel('stats_widget')
 
             HoverButtonRounded:
                 text: 'Inventory'
@@ -717,14 +715,28 @@ ScreenManager:
                 # Position the Label at the bottom without affecting the input text
                 Label:
                     id: output_label
-                    size_hint: (0.16, 0.6)
+                    size_hint: (1, None)  # Use full width of the screen and let the height adjust dynamically
+                    height: self.texture_size[1]  # Adjust height based on the text content
                     font_size: 16
                     color: (1, 1, 1, 1)
                     valign: 'bottom'
                     halign: 'left'
-                    pos_hint: {'x': 0.08, 'y': -0.6}  # Places the label at the bottom left corner
+                    padding: [1, 0]  # 10 pixels padding on left and right
+                    text_size: self.width - 20, None  # Text will wrap within the label, accounting for padding
+                    pos_hint: {'x': 0, 'y': -0.43}  # Keep the label aligned to the bottom left  # Places the label at the bottom left corner
 
-            # Hidden stats panel, initially invisible
+                # Turns count widget in the top-right corner
+                Label:
+                    id: turns_label
+                    text: "Turns: 0"
+                    font_size: 20
+                    color: (1, 1, 1, 1)
+                    size_hint: None, None
+                    size: self.texture_size
+                    pos_hint: {'right': 0.99, 'top': 0.99}
+                    padding: [10, 10]  # 10 pixels padding
+            
+            # Hidden stats panel, initially invisible 'Statistics' button
             BoxLayout:
                 id: stats_widget
                 orientation: 'vertical'
