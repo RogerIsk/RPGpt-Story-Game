@@ -478,10 +478,20 @@ ScreenManager:
 
             # BoxLayout for the stats
             BoxLayout:
+                orientation: 'vertical'
                 size_hint: None, None
                 width: 230
                 height: self.minimum_height
                 pos_hint: {'top': 1}  # Align to top
+                Button:
+                    text: 'View stats in terminal'
+                    size_hint: (None, None)
+                    font_size: 14
+                    color: [0.8, 0.8, 0.8, 1]
+                    background_color: [0, 0, 0, 0]
+                    background_normal: ''
+                    padding: [80, 0, 0, 0]
+                    on_press: root.stats_in_terminal_button()  # Call the function when pressed
                 # Label for stats
                 Label:
                     text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]Armor:[/b] ' + root.hero_armor

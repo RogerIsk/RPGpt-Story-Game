@@ -482,7 +482,7 @@ class CharacterCreation(Screen):
         # create an instance of hero using the dedicated function
         hero = instantiate_hero(db_config, "Sora")
         print(f"Created hero {hero.name}")
-        hero.print_attributes()
+        hero.display_stats_view()
 
         # Update the Kivy context with the new hero
         update_ingame_screen()
@@ -679,6 +679,9 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
         self.ids.output_label.text = "Welcome to RPGbot\n\n1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         self.messages = []  
         self.display_item_buttons()  # Call the method to display item buttons
+
+    def stats_in_terminal_button(self):
+        hero.display_stats_view()
 
     def on_text_enter(self, instance):  # Functionality of the output text bar
         user_input = self.ids.input_text.text

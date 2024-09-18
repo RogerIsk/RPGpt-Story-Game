@@ -112,6 +112,7 @@ class Hero(Character):
         self.name = char_name
         # Importing the hero stats to instance attributes
         if char_data:
+            self.character_id = char_data['character_id']
             self.species = char_data['species']  # Access the 'species' column
             self.gender = char_data['gender']
             self.char_class = char_data['class']  # Access the 'Class' column
@@ -127,22 +128,80 @@ class Hero(Character):
             self.eq_armor = char_data['equipped_armor']
             # create kivy properties for each item attribute. We'll bind them to the InGameScreen in main
             self.create_kivy_properties()
+            self.create_stats_view()
         else:
             return None
     
     def create_kivy_properties(self):
         # Dynamically create Kivy properties for each item attribute
-        for i, item in enumerate(self.items):
-            for key, value in item.items():
-                prop_name = f"item_{i}_{key}"
+        for item in (self.items):
+            # fetch the item_id for each item in the dictionary
+            item_id = item['item_id']
+
+            for key, value in item.items():                
+                # create a property name prefix for each item, including relevant item_id
+                prop_name = f"item_{item_id}_{key}"
                 if isinstance(value, str):
                     setattr(self.__class__, prop_name, StringProperty(value))
                 elif isinstance(value, (int, float)):
                     setattr(self.__class__, prop_name, NumericProperty(value))
                 print(f"Created property {prop_name} with value {value}")
-        input('Properties created...')
+        print('Properties created...')
 
-    
+
+    def create_stats_view(self):
+        query = '''
+        CREATE OR REPLACE VIEW character_full_stats AS
+        SELECT 
+            characters.character_id,
+            characters.name,
+            characters.species,
+            characters.class,
+            characters.hp,
+            characters.damage,
+            characters.armor,
+            weapon.name AS equipped_weapon,
+            weapon.bonus_value AS weapon_bonus,
+            armor.name AS equipped_armor,
+            armor.bonus_value AS armor_bonus
+        FROM 
+            characters
+        LEFT JOIN 
+            items AS weapon ON characters.equipped_weapon = weapon.item_id
+        LEFT JOIN
+            items AS armor ON characters.equipped_armor = armor.item_id;
+        '''
+        self.cursor.execute(query)
+
+    def display_stats_view(self):
+        query = '''
+        SELECT 
+            name, species, class, hp, damage, armor, equipped_weapon, weapon_bonus, equipped_armor, armor_bonus
+        FROM 
+            character_full_stats
+        WHERE character_id = %s;
+        '''
+        self.cursor.execute(query, (self.character_id,))
+        full_stats = self.cursor.fetchone()
+        
+        if full_stats:
+            print('''
+================================================
+CHARACTER STATISTICS
+''')
+            # Get column names from cursor description
+            column_names = [desc[0] for desc in self.cursor.description]
+            
+            # Create a dictionary of column names and values
+            full_stats_dict = dict(zip(column_names, full_stats))
+            
+            # Print the dictionary
+            for column, value in full_stats_dict.items():
+                print(f'{column}: {value}')
+
+        else:
+            print('\nNo data found for the given character_id.\n')
+
     
     def attack(self, target):
         '''attack enemy'''
