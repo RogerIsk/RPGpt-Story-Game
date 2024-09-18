@@ -787,6 +787,21 @@ ScreenManager:
                     font_size: 20
                     color: (0.8, 0.8, 0.8, 1)
 
+                Label:
+                    text: f"Level: {root.hero_level}"  # Display the hero level
+                    font_size: 20
+                    color: (0.6, 0.6, 1, 1)
+
+                Label:
+                    text: f"XP: {root.hero_xp}"  # Display the current XP
+                    font_size: 20
+                    color: (1, 1, 0, 1)
+
+                Label:
+                    text: f"XP to Next Level: {root.hero_next_level_xp}"  # Display the XP required for the next level
+                    font_size: 20
+                    color: (1, 0.5, 0, 1)
+
             TextInput:
                 id: input_text
                 size_hint: (1, 0.09)

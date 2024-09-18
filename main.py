@@ -18,6 +18,7 @@ from kivy.properties import StringProperty
 from openai import OpenAI
 from stringcolor import *
 from kivy.app import App
+import psycopg2
 import random
 import kivy
 import json
@@ -894,24 +895,24 @@ class MapSelection(Screen):
             db_utils.conn.rollback()
             print(f"Error saving world type: {e}")
 
-        def random_select_map(self):
-            """Randomly select one of the map toggle buttons."""
-            maps = [
-                self.map_1, self.map_2, self.map_3, self.map_4, self.map_5,
-                self.map_6, self.map_7, self.map_8, self.map_9
+    def random_select_map(self):
+        """Randomly select one of the map toggle buttons."""
+        maps = [
+            self.map_1, self.map_2, self.map_3, self.map_4, self.map_5,   
+            self.map_6, self.map_7, self.map_8, self.map_9
             ]
             
-            # Deselect all buttons first
-            self.reset_current_selection()
+        # Deselect all buttons first
+        self.reset_current_selection()
 
-            available_maps = [btn for btn in maps if btn is not None]
+        available_maps = [btn for btn in maps if btn is not None]
 
-            if available_maps:
-                random_choice = random.choice(available_maps)
-                random_choice.state = 'down'
+        if available_maps:
+            random_choice = random.choice(available_maps)
+            random_choice.state = 'down'
 
-            # Update button state after random selection
-            self.update_start_button_state()
+        # Update button state after random selection
+        self.update_start_button_state()
 
 
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
@@ -923,7 +924,10 @@ class InGameScreen(Screen):
     hero_dmg = StringProperty("")
     hero_armor = StringProperty("")
     hero_class = StringProperty("")
-    turns_label = ObjectProperty(None)  # Add reference to the turns label
+    hero_level = StringProperty("")  # Add hero level as StringProperty
+    hero_xp = StringProperty("")  # Add hero XP as StringProperty
+    hero_next_level_xp = StringProperty("")  # Add XP to next level as StringProperty
+    turns_label = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
@@ -931,7 +935,45 @@ class InGameScreen(Screen):
 
         Item.fetch_all_items(db_config)
         globals().update({f'item_{item.item_id}': item for item in Item.items.values()})
+    
+    def get_active_character(self):
+        """Retrieve the active character from the database where is_active is True"""
+        try:
+            # Assuming db_config is a dictionary with the correct connection parameters
+            conn = psycopg2.connect(**db_config)
+            cur = conn.cursor()
 
+            query = """
+            SELECT name, species, class, hp, damage, armor, level, xp, next_level_xp, world_type
+            FROM characters
+            WHERE is_active = TRUE;
+            """
+            
+            cur.execute(query)
+            result = cur.fetchone()
+            
+            if result:
+                # Unpack the result into respective variables
+                (self.hero_name, self.hero_species, self.hero_class, 
+                hp, dmg, armor,  # Store numerical values in local variables
+                level, xp, next_level_xp,  # Store numerical values in local variables
+                self.world_type) = result
+
+                # Convert numerical values to strings for Kivy StringProperties
+                self.hero_hp = str(hp)
+                self.hero_dmg = str(dmg)
+                self.hero_armor = str(armor)
+                self.hero_level = str(level)  # Convert level to string
+                self.hero_xp = str(xp)  # Convert XP to string
+                self.hero_next_level_xp = str(next_level_xp)  # Convert next_level_xp to string
+            else:
+                print("No active character found.")
+                
+            cur.close()
+            conn.close()
+        except psycopg2.Error as e:
+            print(f"Database error occurred: {e}")
+    
     def on_pitch_enter(self, instance):
         global hero_stats
         # Get the pitch text from the input TextInput widget
@@ -986,6 +1028,9 @@ class InGameScreen(Screen):
 
 
     def on_enter(self, *args):
+        """When the screen is entered, fetch the active character and update the display."""
+        self.get_active_character()  # Load the active character from the database
+
         # Print initial stats and prompt to start the game
         self.ids.output_label.text = (
             f"Welcome, {self.hero_name} the {self.hero_species}!\n"
@@ -1021,7 +1066,6 @@ class InGameScreen(Screen):
 
     def toggle_panel(self, *panel_ids):
         '''Toggle and untoggle panel on game screen (inventory, stats...)'''
-        # define panels to toggle/untoggle
         for panel_id in panel_ids:
             panel = self.ids[panel_id]
             if panel.opacity == 0:
@@ -1050,6 +1094,7 @@ class InGameScreen(Screen):
         self.update_display()
 
     def update_display(self):
+        """Update the output label to reflect the current hero stats."""
         self.ids.output_label.text = (
             f"Welcome, {self.hero_name} the {self.hero_class} {self.hero_species}!\n"
             f"HP: {self.hero_hp}, DMG: {self.hero_dmg}, ARMOR: {self.hero_armor}\n\n"
