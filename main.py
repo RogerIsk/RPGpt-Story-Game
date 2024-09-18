@@ -480,7 +480,7 @@ class CharacterCreation(Screen):
 
         self.reset_selections()
         # create an instance of hero using the dedicated function
-        hero = instantiate_hero(db_config, "Sora")
+        hero = instantiate_hero(db_config, self.char_name)
         print(f"Created hero {hero.name}")
         hero.display_stats_view()
 
@@ -749,7 +749,7 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
 class MusicManager:
     def __init__(self):
         pygame.mixer.init()
-        pygame.mixer.music.load("Program_Files/music/placeholder.mp3")
+        pygame.mixer.music.load("Program_Files/music/Medieval Theme.mp3")
         pygame.mixer.music.set_volume(0.2)
 
     def start_music(self):
