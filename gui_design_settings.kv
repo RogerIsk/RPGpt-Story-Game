@@ -717,12 +717,12 @@ ScreenManager:
                 # Position the Label at the bottom without affecting the input text
                 Label:
                     id: output_label
-                    size_hint: (0.16, 0.4)
+                    size_hint: (0.16, 0.6)
                     font_size: 16
                     color: (1, 1, 1, 1)
                     valign: 'bottom'
                     halign: 'left'
-                    pos_hint: {'x': 0, 'y': 0}  # Places the label at the bottom left corner
+                    pos_hint: {'x': 0.08, 'y': -0.6}  # Places the label at the bottom left corner
 
             # Hidden stats panel, initially invisible
             BoxLayout:
@@ -779,6 +779,7 @@ ScreenManager:
                 id: input_text
                 size_hint: (1, 0.09)
                 font_size: 30
+                font_name: 'Program_Files/8_fonts/medieval_font_file.ttf'  # Update this path to your actual font file location
                 multiline: False
                 padding: (15, 10, 15, 10)
                 on_text_validate: root.on_text_enter(self)
