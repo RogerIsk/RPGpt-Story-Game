@@ -14,7 +14,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.lang import Builder
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty
 from openai import OpenAI
 from stringcolor import *
 from kivy.app import App
@@ -26,6 +26,8 @@ import json
 import sys
 import os
 import re
+import pygame
+import threading
 from combat import combat
 from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from items import Item
@@ -74,6 +76,7 @@ db_config = read_json_file(get_full_path("Program_Files/7_json_files/db_config.j
 
 # non-regex strings to display in game window
 enter_end = "PRESS ENTER TO EXIT THE GAME..."
+
 
 # Communicating with ChatGPT ===========================================================================
 def get_response(messages):
@@ -252,6 +255,13 @@ def award_xp(hero_stats, xp_gain):
 def update_ingame_screen():
     """Update the in-game screen with the hero's attributes
     Call this function whenever new information about the hero needs to be displayed"""
+    global hero  # Use global if hero is defined outside the function
+
+    # Debugging: Check if hero is None
+    if hero is None:
+        print("Error: Hero is not defined or is None.")
+        return  # Exit the function early to avoid further errors
+
     # Update the Kivy context with the new hero
     app = App.get_running_app()
     app.root.hero = hero
@@ -262,7 +272,8 @@ def update_ingame_screen():
     ingame_screen.hero_hp = str(hero.hp)
     ingame_screen.hero_dmg = str(hero.dmg)
     ingame_screen.hero_armor = str(hero.armor)
-
+    # Update item properties, similar result as previous lines but for items
+    ingame_screen.update_item_properties()
 
 
 # kivy visual stuff ===========================================================================
@@ -640,6 +651,8 @@ class CharacterCreation(Screen):
 
         self.reset_selections()
         hero = instantiate_hero(db_config, self.char_name)
+        print(f"Created hero {hero.name}")
+        hero.display_stats_view()
         update_ingame_screen()
         self.manager.current = 'map_selection'
 
@@ -763,7 +776,6 @@ class CharacterCreation(Screen):
             f"   HP:       [color=#00ff00]{self.final_hp}[/color]\n"
             f"ARMOR:  [color=#d3d3d3]{self.final_armor}[/color]"
         )
-
 
 
 class MapSelection(Screen):
@@ -919,6 +931,8 @@ class MapSelection(Screen):
 # This is the only thing you need to work with - Anton, Dennis, and Morgane
 class InGameScreen(Screen):
     world_type = StringProperty("")
+    # create empty kivy properties at startup
+    # The actual values will be added after reading character and items data from db
     hero_name = StringProperty("")
     hero_species = StringProperty("")
     hero_hp = StringProperty("")
@@ -933,8 +947,56 @@ class InGameScreen(Screen):
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
-        Item.fetch_all_items(db_config)
-        globals().update({f'item_{item.item_id}': item for item in Item.items.values()})
+        self.create_kivy_properties()
+
+    
+    def create_kivy_properties(self):
+        # Predefine empty kivy properties for up to 64 items
+        # this is a workaround to have the property names existing at startup
+        for i in range(64):
+            setattr(InGameScreen, f"item_{i}_id", NumericProperty(""))
+            setattr(InGameScreen, f"item_{i}_name", StringProperty(""))
+            setattr(InGameScreen, f"item_{i}_type", StringProperty(""))
+            setattr(InGameScreen, f"item_{i}_bonus_type", StringProperty(0))
+            setattr(InGameScreen, f"item_{i}bonus_value", NumericProperty(0))
+            setattr(InGameScreen, f"item_{i}_image_file", StringProperty(""))
+            
+
+    def update_item_properties(self):
+        """
+        Dynamically bind item properties to UI elements.
+        This method iterates over the items in the hero's inventory and creates Kivy properties
+        for each item attribute. It then binds these properties to the corresponding UI elements.
+        """
+        for i, item in enumerate(hero.items):
+            for key, value in item.items():
+                prop_name = f"item_{i}_{key}"
+                if hasattr(self, prop_name):
+                    print(f"Setting {prop_name} to {value}")
+                    setattr(self, prop_name, str(value) if isinstance(value, (int, float)) else value)
+                    print(self.item_3_name)
+
+    def display_item_buttons(self):
+        """
+        Display buttons for each item with the corresponding name and image path.
+        """
+        item_grid = self.ids.item_grid  # Reference the GridLayout by its id
+        item_grid.clear_widgets()  # Clear any existing widgets
+
+        item_name = getattr(self, "item_7_name", "")
+        item_image_file = getattr(self, "item_7_image_file", "")
+
+        if item_name:
+            # Create a button for the item
+            button = Button(
+                text="",
+                size_hint=(None, None),
+                size=(96, 96),
+                background_normal=item_image_file
+            )
+
+            # Add the button to the item_grid layout
+            item_grid.add_widget(button)
 
         # Register save on exit with atexit
         atexit.register(self.save_character_info_in_database)
@@ -1055,6 +1117,10 @@ class InGameScreen(Screen):
             "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         )
         self.messages = []
+        self.display_item_buttons()  # Call the method to display item buttons
+
+    def stats_in_terminal_button(self):
+        hero.display_stats_view()
 
     def on_text_enter(self, instance):
         """Handle user input on pressing Enter."""
@@ -1141,6 +1207,30 @@ class InGameScreen(Screen):
 
 
 
+# MusicManager class
+class MusicManager:
+    def __init__(self):
+        pygame.mixer.init()
+        pygame.mixer.music.load("Program_Files/music/Medieval Theme.mp3")
+        pygame.mixer.music.set_volume(0.2)
+
+    def start_music(self):
+        self.music_thread = threading.Thread(target=self._play_music)
+        self.music_thread.start()
+
+    def _play_music(self):
+        pygame.mixer.music.play(-1)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.mixer.music.stop()
+                    pygame.quit()
+                    return
+
+    def stop_music(self):
+        pygame.mixer.music.stop()
+        pygame.quit()
+
 class RPGApp(App):  # General GUI options
     def build(self):
         Window.size = (1250, 960)
@@ -1154,6 +1244,12 @@ class RPGApp(App):  # General GUI options
     def on_start(self):
         # Set the hero attribute after the root widget is initialized
         self.root.hero = None
+        # initialize  music manager and start playing music
+        self.music_manager = MusicManager()
+        self.music_manager.start_music()
+
+    def on_stop(self):
+        self.music_manager.stop_music()    
 
 if __name__ == '__main__':
     RPGApp().run()

@@ -1,5 +1,6 @@
 import json
 import psycopg2
+from kivy.properties import StringProperty, NumericProperty
 from random import randint
 
 class DatabaseUtils:

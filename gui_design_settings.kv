@@ -633,6 +633,7 @@ ScreenManager:
 
     BoxLayout:
         orientation: 'vertical'
+        size_hint_y: 1
         padding: 20
         canvas.before:
             Rectangle:
@@ -707,101 +708,195 @@ ScreenManager:
                 background_normal: ''
                 on_release: root.exit_app(self)
 
+        # Main content area
         BoxLayout:
             orientation: 'vertical'
-            size_hint: (1, 0.9)
+            size_hint: (1, 1)
+            padding: 20
+            spacing: 10
+            pos_hint: {'x': 0, 'y': 0}
+            # Position the Label at the bottom without affecting the input text
+           
 
-            FloatLayout:
-                # Position the Label at the bottom without affecting the input text
-                Label:
-                    id: output_label
-                    size_hint: (1, None)  # Use full width of the screen and let the height adjust dynamically
-                    height: self.texture_size[1]  # Adjust height based on the text content
-                    font_size: 16
-                    color: (1, 1, 1, 1)
-                    valign: 'bottom'
-                    halign: 'left'
-                    padding: [1, 0]  # 10 pixels padding on left and right
-                    text_size: self.width - 20, None  # Text will wrap within the label, accounting for padding
-                    pos_hint: {'x': 0, 'y': -0.43}  # Keep the label aligned to the bottom left  # Places the label at the bottom left corner
-
-                # Turns count widget in the top-right corner
-                Label:
-                    id: turns_label
-                    text: "Turns: 0"
-                    font_size: 20
-                    color: (1, 1, 1, 1)
-                    size_hint: None, None
-                    size: self.texture_size
-                    pos_hint: {'right': 0.99, 'top': 0.99}
-                    padding: [10, 10]  # 10 pixels padding
-            
-            # Hidden stats panel, initially invisible 'Statistics' button
-            BoxLayout:
-                id: stats_widget
-                orientation: 'vertical'
-                size_hint: (0.6, 0.5)
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                opacity: 0
-                disabled: True
-                canvas.before:
-                    Color:
-                        rgba: (0.8, 0.4, 0, 0.5)  # Dark orange with 50% opacity
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [20]
-
-                Label:
-                    text: f"Name: {root.hero_name}"
-                    font_size: 20
-                    color: (1, 1, 1, 1)
-
-                Label:
-                    text: f"Species: {root.hero_species}"  # Capitalize the species (race)
-                    font_size: 20
-                    color: (1, 1, 1, 1)
-
-                Label:
-                    text: f"Class: {root.hero_class}"  # Capitalize the class
-                    font_size: 20
-                    color: (1, 1, 1, 1)
-
-                Label:
-                    text: f"World Type: {root.world_type}"
-                    font_size: 20
-                    color: (1, 1, 1, 1)
-
-                Label:
-                    text: f"HP: {root.hero_hp}"
-                    font_size: 20
-                    color: (0, 1, 0, 1)
-
-                Label:
-                    text: f"Damage: {root.hero_dmg}"
-                    font_size: 20
-                    color: (1, 0, 0, 1)
-
-                Label:
-                    text: f"Armor: {root.hero_armor}"
-                    font_size: 20
-                    color: (0.8, 0.8, 0.8, 1)
-
-                Label:
-                    text: f"Level: {root.hero_level}"  # Display the hero level
-                    font_size: 20
-                    color: (0.6, 0.6, 1, 1)
-
-                Label:
-                    text: f"{root.hero_next_level_xp} / {root.hero_xp} XP"  # Display the XP as 'hero_xp / hero_next_level_xp XP'
-                    font_size: 20
-                    color: (1, 1, 0, 1)
+            Label:
+                id: output_label
+                size_hint: (1, 0.8)
+                font_size: 16
+                color: (1, 1, 1, 1)
+                outline_width: 0
+                outline_color: (0, 0, 0, 0)
+                text_size: (self.width - 40, None)
+                padding: (0, 600, 0, 0)
+                valign: 'top'
+                halign: 'left'
 
             TextInput:
                 id: input_text
-                size_hint: (1, 0.09)
+                size_hint: (1, 0.045)
                 font_size: 30
-                font_name: 'Program_Files/8_fonts/medieval_font_file.ttf'  # Update this path to your actual font file location
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                background_color: (1, 1, 1, 1)
                 multiline: False
                 padding: (15, 10, 15, 10)
                 on_text_validate: root.on_text_enter(self)
+
+                    
+    # Stats panel (initially hidden)
+    FloatLayout:
+        id: stats
+        size_hint: (0.601, 0.60)
+        pos: (20, 307) # Using pos with fixed value bc pos_hint doesnt work 
+        padding: 10
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 0.7
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        opacity: 0  # Initially hidden
+        disabled: True  # Initially disabled
+
+        # Layout title with character name
+        Label:
+            text: root.hero_name
+            color: (1, 1, 1, 1)
+            font_size: 36
+            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+            size_hint: 1, None
+            size: self.texture_size
+            pos_hint: {'center_x': 0.5, 'top': 1}  # Center horizontally and align to the top
+            padding: [15, 15, 15, 15]
+
+        # Content of equipped tab
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 1  # Take all available space in width and height
+            size: self.minimum_size             
+            pos_hint: {'right': 1, 'top': 1}  # Align to top right
+
+            # BoxLayout for the stats
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                width: 230
+                height: self.minimum_height
+                pos_hint: {'top': 1}  # Align to top
+                Button:
+                    text: 'View stats in terminal'
+                    size_hint: (None, None)
+                    font_size: 14
+                    color: [0.8, 0.8, 0.8, 1]
+                    background_color: [0, 0, 0, 0]
+                    background_normal: ''
+                    padding: [80, 0, 0, 0]
+                    on_press: root.stats_in_terminal_button()  # Call the function when pressed
+                # Label for stats
+                Label:
+                    text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]Armor:[/b] ' + root.hero_armor
+                    markup: True
+                    color: (1, 1, 1, 1)
+                    font_size: 24
+                    font_name: 'Program_Files/fonts/Modesto-Poster-Regular.otf'
+                    size_hint: None, None
+                    size: self.texture_size
+                    pos_hint: {'top': 0.8}  # Center horizontally and align below the title
+                    padding: [30]
+            
+
+            # BoxLayout for the character picture
+            BoxLayout:
+                size_hint: 1, None  # Take all available space in width
+                height: self.minimum_height
+                spos_hint: {'top': 1}  # Align to top
+                Image:
+                    source: 'Program_Files/char_pics/dwarf.png'
+                    size_hint: None, None
+                    size: 333, 512  # Set the size of the image
+                    pos_hint: {'center_x': 0.5}  # Center horizontally
+
+            # Horizontal BoxLayout for equipped items
+            GridLayout:
+                cols: 1  # Set the number of columns to 1
+                size_hint: None, None
+                width: 120  # Set a fixed width for the grid
+                size: self.minimum_size
+                spacing: 30  # Add spacing between the items
+                padding: [30, 30, 30, 30]
+                pos_hint: {'right': 1, 'top': 1}  # Align to top right
+
+                # Item containers
+                BoxLayout:
+                    size_hint: None, None
+                    size: 104, 104  # Set the size of the container
+                    Image:
+                        source: 'Program_Files/items_96p/item-slot.png'
+                        size_hint: None, None
+                        size: 104, 104  # Set the size of the image to 96x96 pixels
+
+                BoxLayout:
+                    size_hint: None, None
+                    size: 104, 104  # Set the size of the container
+                    Image:
+                        source: 'Program_Files/items_96p/item-slot.png'
+                        size_hint: None, None
+                        size: 104, 104  # Set the size of the image to 96x96 pixels
+
+                BoxLayout:
+                    size_hint: None, None
+                    size: 104, 104  # Set the size of the container
+                    Image:
+                        source: 'Program_Files/items_96p/item-slot.png'
+                        size_hint: None, None
+                        size: 104, 104  # Set the size of the image to 96x96 pixels
+
+        
+    
+    # Backpack panel (initially hidden)
+    FloatLayout:  
+        id: backpack
+        size_hint: (0.360, 0.60)
+        pos_hint: {'right': 0.987, 'top': 0.92}
+        orientation: 'vertical'
+        padding: 10
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 0.7
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        opacity: 0  # Initially hidden
+        disabled: True  # Initially disabled
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: self.minimum_size
+            pos_hint: {'x': 0, 'top': 1}  # Align to top left
+
+            Label:
+                text: 'BACKPACK'
+                color: (1, 1, 1, 1)
+                font_size: 24
+                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                size_hint: None, None
+                size: self.texture_size
+                padding: [15, 15, 15, 3]
+                pos_hint: {'center_x': 0.5}  # Center horizontally
+            
+            # Grid Layout for item buttons
+            GridLayout:
+                id: item_grid
+                cols: 4 # Set the number of columns to 4
+                size_hint: None, None
+                size: self.minimum_size
+                spacing: 12  # Add spacing between the items
+                padding: [12]  # Add padding to the left
+
+
+<HoverButton@Button>:
+    background_color: 0, 0, 0, 0
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: self.default_image
