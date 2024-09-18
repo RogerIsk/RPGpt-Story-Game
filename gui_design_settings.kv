@@ -758,12 +758,12 @@ ScreenManager:
                     color: (1, 1, 1, 1)
 
                 Label:
-                    text: f"Species: {root.hero_species}"
+                    text: f"Species: {root.hero_species}"  # Capitalize the species (race)
                     font_size: 20
                     color: (1, 1, 1, 1)
 
                 Label:
-                    text: f"Class: {root.hero_class}"
+                    text: f"Class: {root.hero_class}"  # Capitalize the class
                     font_size: 20
                     color: (1, 1, 1, 1)
 
@@ -793,14 +793,9 @@ ScreenManager:
                     color: (0.6, 0.6, 1, 1)
 
                 Label:
-                    text: f"XP: {root.hero_xp}"  # Display the current XP
+                    text: f"{root.hero_next_level_xp} / {root.hero_xp} XP"  # Display the XP as 'hero_xp / hero_next_level_xp XP'
                     font_size: 20
                     color: (1, 1, 0, 1)
-
-                Label:
-                    text: f"XP to Next Level: {root.hero_next_level_xp}"  # Display the XP required for the next level
-                    font_size: 20
-                    color: (1, 0.5, 0, 1)
 
             TextInput:
                 id: input_text

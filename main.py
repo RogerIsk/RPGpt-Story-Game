@@ -20,6 +20,7 @@ from stringcolor import *
 from kivy.app import App
 import psycopg2
 import random
+import atexit
 import kivy
 import json
 import sys
@@ -932,48 +933,66 @@ class InGameScreen(Screen):
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
-
         Item.fetch_all_items(db_config)
         globals().update({f'item_{item.item_id}': item for item in Item.items.values()})
-    
+
+        # Register save on exit with atexit
+        atexit.register(self.save_character_info_in_database)
+
     def get_active_character(self):
         """Retrieve the active character from the database where is_active is True"""
         try:
-            # Assuming db_config is a dictionary with the correct connection parameters
             conn = psycopg2.connect(**db_config)
             cur = conn.cursor()
-
             query = """
             SELECT name, species, class, hp, damage, armor, level, xp, next_level_xp, world_type
             FROM characters
             WHERE is_active = TRUE;
             """
-            
             cur.execute(query)
             result = cur.fetchone()
             
             if result:
-                # Unpack the result into respective variables
                 (self.hero_name, self.hero_species, self.hero_class, 
-                hp, dmg, armor,  # Store numerical values in local variables
-                level, xp, next_level_xp,  # Store numerical values in local variables
-                self.world_type) = result
+                hp, dmg, armor, level, xp, next_level_xp, self.world_type) = result
 
-                # Convert numerical values to strings for Kivy StringProperties
                 self.hero_hp = str(hp)
                 self.hero_dmg = str(dmg)
                 self.hero_armor = str(armor)
-                self.hero_level = str(level)  # Convert level to string
-                self.hero_xp = str(xp)  # Convert XP to string
-                self.hero_next_level_xp = str(next_level_xp)  # Convert next_level_xp to string
+                self.hero_level = str(level)
+                self.hero_xp = str(xp)
+                self.hero_next_level_xp = str(next_level_xp)
             else:
                 print("No active character found.")
-                
             cur.close()
             conn.close()
         except psycopg2.Error as e:
             print(f"Database error occurred: {e}")
     
+    def save_character_info_in_database(self):
+        """Save current character data to the database before exiting."""
+        try:
+            conn = psycopg2.connect(**db_config)
+            cur = conn.cursor()
+
+            # Update the character information in the database
+            query = """
+            UPDATE characters
+            SET hp = %s, damage = %s, armor = %s, level = %s, xp = %s, next_level_xp = %s, world_type = %s
+            WHERE name = %s AND is_active = TRUE;
+            """
+            cur.execute(query, (
+                int(self.hero_hp), int(self.hero_dmg), int(self.hero_armor), int(self.hero_level), 
+                int(self.hero_xp), int(self.hero_next_level_xp), self.world_type, self.hero_name
+            ))
+
+            conn.commit()
+            cur.close()
+            conn.close()
+            print("Character information saved successfully!")
+        except psycopg2.Error as e:
+            print(f"Error saving character data: {e}")
+
     def on_pitch_enter(self, instance):
         global hero_stats
         # Get the pitch text from the input TextInput widget
@@ -1025,8 +1044,6 @@ class InGameScreen(Screen):
         self.ids.turns_label.text = f"Turns: {hero_stats['turns']}"
         rpg_adventure(pitch="", chat_screen=self, hero_stats=hero_stats, world_type=self.world_type)
 
-
-
     def on_enter(self, *args):
         """When the screen is entered, fetch the active character and update the display."""
         self.get_active_character()  # Load the active character from the database
@@ -1040,6 +1057,7 @@ class InGameScreen(Screen):
         self.messages = []
 
     def on_text_enter(self, instance):
+        """Handle user input on pressing Enter."""
         global hero_stats
         user_input = self.ids.input_text.text
         self.ids.input_text.text = ''
@@ -1052,7 +1070,7 @@ class InGameScreen(Screen):
             elif user_input == "2":
                 self.manager.current = 'main_menu'
             elif user_input == "3":
-                App.get_running_app().stop()
+                self.exit_app(self)  # Exit app
             else:
                 self.ids.output_label.text += "\nInvalid choice. Try again."
         else:
@@ -1101,14 +1119,25 @@ class InGameScreen(Screen):
             "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         )
 
-    def save_character_info_in_database(self):  # 'Save Game' button functionality
-        pass
-
     def load_character_info_from_database(self):  # 'Load Game' button functionality
         pass 
 
-    def exit_app(self, instance):  # 'Exit' button functionality
+    def on_leave(self, *args):
+        """Save the character information when leaving the InGameScreen."""
+        self.save_character_info_in_database()
+        super(InGameScreen, self).on_leave(*args)
+
+    def exit_app(self, instance):
+        """Save character info and then exit the app."""
+        self.save_character_info_in_database()
         App.get_running_app().stop()
+
+
+
+
+
+
+
 
 
 
