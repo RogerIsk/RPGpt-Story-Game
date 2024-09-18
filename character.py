@@ -6,7 +6,8 @@ from random import randint
 from time import sleep
 from utils import read_json_file
 
-image_folder = "Program_Files/items_96p"
+item_image_folder = 'Program_Files/items_96p'
+char_image_folder = 'Program_Files/playable_characters'
 press_enter = 'Press ENTER to continue...\n'
 
 class Character:
@@ -39,7 +40,7 @@ class Character:
             return
         for item in self.items:
             if 'image_file' in item:
-                item['image_file'] = os.path.join(image_folder, item['image_file'])
+                item['image_file'] = os.path.join(item_image_folder, item['image_file'])
             else:
                 print(f"Item {item} does not have an 'image_file' key.")
 
@@ -90,22 +91,22 @@ class Hero(Character):
     # THIS CONTAINS A SUBQUERY ;) ;) ;)
         query = '''
         SELECT 
-            character.*,
+            characters.*,
             ARRAY(
                 SELECT json_build_object(
-                    'item_id', item.item_id,
-                    'name', item.name,
-                    'type', item.type,
-                    'bonus_type', item.bonus_type,
-                    'bonus_value', item.bonus_value,
-                    'image_file', item.image_file
+                    'item_id', items.item_id,
+                    'name', items.name,
+                    'type', items.type,
+                    'bonus_type', items.bonus_type,
+                    'bonus_value', items.bonus_value,
+                    'image_file', items.image_file
                 )
-                FROM items item
-                JOIN inventory inventory ON item.item_id = inventory.item_id
-                WHERE inventory.character_id = character.character_id
+                FROM items
+                JOIN inventory ON items.item_id = inventory.item_id
+                WHERE inventory.character_id = characters.character_id
             ) AS items
-        FROM characters character
-        WHERE character.name = %s;
+        FROM characters 
+        WHERE characters.name = %s;
         '''
         self.cursor.execute(query, (char_name,))
         char_data = self.cursor.fetchone()
@@ -117,8 +118,8 @@ class Hero(Character):
             self.gender = char_data['gender']
             self.char_class = char_data['class']  # Access the 'Class' column
             self.hp = char_data['hp']
-            self.dmg = char_data['damage']
-            self.armor = char_data['armor']
+            self.base_dmg = char_data['damage']
+            self.base_armor = char_data['armor']
             # Save all owned items as a list in self.items
             # Each (python- and game-)item in this list will be a dictionary containing the item data
             self.items = char_data['items']
@@ -126,11 +127,41 @@ class Hero(Character):
             self.add_item_image_path()
             self.eq_weapon = char_data['equipped_weapon']
             self.eq_armor = char_data['equipped_armor']
+            print('\nFetching weapon bonus\n')
+            # fetch equipment bonus for weapon and armor and add it to base damage to get final damage
+            self.dmg = self.base_dmg + self.add_equipment_bonus('equipped_weapon', self.eq_weapon)
+            
+            print('\nFetching armor bonus\n')
+            self.armor = self.base_armor + self.add_equipment_bonus('equipped_armor', self.eq_armor)
+            
+            char_image_name = f'{self.gender}_{self.species}_{self.char_class}.png'
+            self.char_image = os.path.join(char_image_folder, char_image_name)
+
             # create kivy properties for each item attribute. We'll bind them to the InGameScreen in main
             self.create_kivy_properties()
             self.create_stats_view()
         else:
             return None
+        
+    def add_equipment_bonus(self, item_type, item_id):
+        # fetch the bonus data from equipped items
+        # item_type = "equipped_weapon"/"equipped_armor"
+        # item_id = equipped_weapon/equipped_armor
+        query = f'''
+        SELECT
+            items.bonus_value
+        FROM items
+        JOIN characters ON items.item_id = characters.{item_type}
+        WHERE characters.{item_type} = %s;
+        '''
+        self.cursor.execute(query, (item_id,))
+        #bonus_value is returned as a tuple
+        result = self.cursor.fetchone()
+        # extract the bonus_value as integer
+        if result:
+            bonus_value = result[0]  # Extract the integer value from the tuple
+        input(f'\nBONUS VALUE: {bonus_value}')
+        return bonus_value
     
     def create_kivy_properties(self):
         # Dynamically create Kivy properties for each item attribute

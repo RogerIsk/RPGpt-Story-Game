@@ -494,7 +494,7 @@ ScreenManager:
                     on_press: root.stats_in_terminal_button()  # Call the function when pressed
                 # Label for stats
                 Label:
-                    text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]Armor:[/b] ' + root.hero_armor
+                    text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]Class: [/b]' + root.hero_char_class + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]Armor:[/b] ' + root.hero_armor
                     markup: True
                     color: (1, 1, 1, 1)
                     font_size: 24
@@ -511,7 +511,7 @@ ScreenManager:
                 height: self.minimum_height
                 spos_hint: {'top': 1}  # Align to top
                 Image:
-                    source: 'Program_Files/char_pics/dwarf.png'
+                    source: root.hero_char_image
                     size_hint: None, None
                     size: 333, 512  # Set the size of the image
                     pos_hint: {'center_x': 0.5}  # Center horizontally

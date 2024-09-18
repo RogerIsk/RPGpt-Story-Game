@@ -112,9 +112,11 @@ def update_ingame_screen():
     ingame_screen = app.root.get_screen('ingame')
     ingame_screen.hero_name = hero.name
     ingame_screen.hero_species = hero.species
+    ingame_screen.hero_char_class = hero.char_class
     ingame_screen.hero_hp = str(hero.hp)
     ingame_screen.hero_dmg = str(hero.dmg)
     ingame_screen.hero_armor = str(hero.armor)
+    ingame_screen.hero_char_image = str(hero.char_image)
     # Update item properties, similar result as previous lines but for items
     ingame_screen.update_item_properties()
 
@@ -617,9 +619,11 @@ class InGameScreen(Screen):  # This class lets us give functionality to our widg
     # The actual values will be added after reading character and items data from db
     hero_name = StringProperty("")
     hero_species = StringProperty("")
+    hero_char_class = StringProperty("")
     hero_hp = StringProperty("")
     hero_dmg = StringProperty("")
     hero_armor = StringProperty("")
+    hero_char_image = StringProperty("")
     
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
