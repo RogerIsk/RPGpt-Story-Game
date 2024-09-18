@@ -29,6 +29,8 @@ from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from items import Item
 from utils import read_json_file, DatabaseUtils  # Ensure 'utils.py' is correctly placed or referenced
 
+hero_stats = {}
+
 def load_db_config():
     config_path = 'Program_Files/7_json_files/db_config.json'
     with open(config_path, 'r') as file:
@@ -866,11 +868,11 @@ class InGameScreen(Screen):
         globals().update({f'item_{item.item_id}': item for item in Item.items.values()})
 
     def on_pitch_enter(self, instance):
+        global hero_stats
         # Get the pitch text from the input TextInput widget
         pitch = self.ids.input_text.text.strip()  # Ensure pitch is retrieved and trimmed for any whitespace
         if not pitch:
-            pitch = ""  # Set pitch to an empty string if it is None or empty to avoid errors
-
+            pitch = ""  # Set pitch to an empty string if it is None or empty to avoid error
         # Initialize hero_stats with required keys
         hero_stats = {
             'name': self.hero_name,
@@ -996,13 +998,10 @@ class InGameScreen(Screen):
 
     def update_display(self):
         self.ids.output_label.text = (
-            f"Welcome, {self.hero_name} the {self.hero_species}!\n"
+            f"Welcome, {self.hero_name} the {self.hero_class} {self.hero_species}!\n"
             f"HP: {self.hero_hp}, DMG: {self.hero_dmg}, ARMOR: {self.hero_armor}\n\n"
             "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         )
-
-    def send_character_stats(self):  # 'Statistics' button functionality
-        pass
 
     def save_character_info_in_database(self):  # 'Save Game' button functionality
         pass
