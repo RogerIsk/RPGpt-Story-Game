@@ -739,29 +739,26 @@ ScreenManager:
             # Position the Label at the bottom without affecting the input text
             FloatLayout:
                 # Add a canvas background specifically for the output_label's text area
-                FloatLayout:
-                    Label:
-                        id: output_label
-                        size_hint: (1, 1)
-                        font_size: 16
-                        color: (1, 1, 1, 1)
-                        outline_width: 0
-                        outline_color: (0, 0, 0, 0)
-                        text_size: (self.width - 40, None)  # This constrains the text width
-                        padding: (0, 0, 0, 0)
-                        valign: 'bottom'
-                        halign: 'left'
-                
-                        # Use canvas.before to adjust the background only around the text
-                        canvas.before:
-                            Color:
-                                rgba: (0, 0, 0, 0.5)  # Semi-transparent black background
-                            Rectangle:
-                                # Define position and size offsets to easily modify the background's placement
-                                pos: (self.x + background_x_offset, self.y + self.height - self.texture_size[1] + background_y_offset)
-                                size: (self.texture_size[0] + background_width_padding, self.texture_size[1] + background_height_padding)
-                
-
+                Label:
+                    id: output_label
+                    size_hint: (1, 1)
+                    font_size: 16
+                    color: (1, 1, 1, 1)
+                    outline_width: 0
+                    outline_color: (0, 0, 0, 0)
+                    text_size: (self.width - 40, None)  # This constrains the text width
+                    padding: (0, 0, 0, 0)
+                    valign: 'bottom'
+                    halign: 'left'
+                    
+                    # Use canvas.before to adjust the background only around the text
+                    canvas.before:
+                        Color:
+                            rgba: (0, 0, 0, 0.5)  # Semi-transparent black background
+                        Rectangle:
+                            pos: (self.x + 0, self.y + self.height - self.texture_size[1] - 0)  # Adjust position to align with the text
+                            size: (self.texture_size[0] + 0, self.texture_size[1] + 0)  # Size matches the text width and height
+            
             TextInput:
                 id: input_text
                 size_hint: (1, 0.062)
