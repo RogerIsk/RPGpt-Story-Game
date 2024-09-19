@@ -165,6 +165,7 @@ def update_stats_display(chat_screen, hero_stats):
         f"Armor: {hero_stats['armor']}"
     )
 
+
 def extract_stat_changes(response):
     # Example logic to parse response for stat changes; can be adjusted based on response format
     changes = {}
@@ -1132,6 +1133,9 @@ class InGameScreen(Screen):
         # Update turns label
         self.ids.turns_label.text = f"Turns: {hero_stats['turns']}"
         rpg_adventure(pitch="", chat_screen=self, hero_stats=hero_stats, world_type=self.world_type)
+
+    def stats_in_terminal_button(self):
+        hero.display_stats_view()
 
     def on_enter(self, *args):
         """When the screen is entered, fetch the active character and update the display."""

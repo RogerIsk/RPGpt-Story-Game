@@ -87,7 +87,6 @@ class Hero(Character):
     
 
     def _get_hero(self, char_name):
-        input('\nGOING TO GET HERO\n')
     # Query to fetch character data along with associated items
     # THIS CONTAINS A SUBQUERY ;) ;) ;)
         query = '''
@@ -197,7 +196,14 @@ class Hero(Character):
             weapon.name AS equipped_weapon,
             weapon.bonus_value AS weapon_bonus,
             armor.name AS equipped_armor,
-            armor.bonus_value AS armor_bonus
+            armor.bonus_value AS armor_bonus,
+            level,
+            xp,
+            next_level_xp,
+            history,
+            world_type,
+            turns,
+            gold
         FROM 
             characters
         LEFT JOIN 
