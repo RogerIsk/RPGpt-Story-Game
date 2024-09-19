@@ -625,33 +625,46 @@ ScreenManager:
     id: ingame_screen
     hero_name: ""
     hero_species: ""
-    hero_hp: ""
-    hero_dmg: ""
-    hero_armor: ""
     hero_class: ""
+    hero_dmg: ""
+    hero_hp: ""
+    hero_armor: ""
+    hero_level: ""
+    hero_xp: ""
+    hero_next_level_xp: ""
+    hero_gold: ""
     world_type: ""
 
     BoxLayout:
         orientation: 'vertical'
         size_hint_y: 1
-        padding: 20
+        padding: (20,10,20,10)
         canvas.before:
             Rectangle:
                 source: 'Program_Files/4_in_game_images/in_game_background.png'
-                pos: self.pos
-                size: self.size
+                # Calculate size to fill and grow with the screen while maintaining the aspect ratio
+                size: 
+                    (self.width, self.width / 1.777) if self.width / self.height > 1.777 \
+                    else (self.height * 1.777, self.height)
+                # Center the image in the layout
+                pos: 
+                    (self.center_x - (self.width / 2), self.center_y - (self.width / 1.777) / 2) if self.width / self.height > 1.777 \
+                    else (self.center_x - (self.height * 1.777) / 2, self.center_y - self.height / 2)
+
+
+
 
         BoxLayout:
             size_hint_y: None
-            height: 40
+            height: 54
             padding: 0
             spacing: 10
             pos_hint: {'top': 1}
 
             HoverButtonRounded:
                 text: 'Back'
-                size_hint: (None, None)
-                size: (120, 50)
+                size_hint_x: 1  # Each button will take equal width
+                size: (120, 75)
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
@@ -659,8 +672,8 @@ ScreenManager:
 
             HoverButtonRounded:
                 text: 'Statistics'
-                size_hint: (None, None)
-                size: (120, 50)
+                size_hint_x: 1 
+                size: (120, 75)
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
@@ -668,8 +681,8 @@ ScreenManager:
 
             HoverButtonRounded:
                 text: 'Inventory'
-                size_hint: (None, None)
-                size: (120, 50)
+                size_hint_x: 1  
+                size: (120, 75)
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
@@ -677,73 +690,92 @@ ScreenManager:
 
             HoverButtonRounded:
                 text: 'History'
-                size_hint: (None, None)
-                size: (120, 50)
+                size_hint_x: 1  
+                size: (120, 75)
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
 
             HoverButtonRounded:
                 text: 'Load'
-                size_hint: (None, None)
-                size: (120, 50)
+                size_hint_x: 1  
+                size: (120, 75)
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
 
             HoverButtonRounded:
                 text: 'Save'
-                size_hint: (None, None)
-                size: (120, 50)
+                size_hint_x: 1 
+                size: (120, 75)
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
 
             HoverButtonRounded:
                 text: 'Exit'
-                size_hint: (None, None)
-                size: (120, 50)
+                size_hint_x: 1 
+                size: (120, 75)
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
                 on_release: root.exit_app(self)
 
+            Label:
+                id: turns_label
+                text: 'Turns: 0'
+                font_size: 20
+                color: (1, 1, 1, 1)
+                size_hint_x: 1
+                size: (120, 75)
+
         # Main content area
         BoxLayout:
             orientation: 'vertical'
             size_hint: (1, 1)
-            padding: 20
+            padding: (10)
             spacing: 10
             pos_hint: {'x': 0, 'y': 0}
             # Position the Label at the bottom without affecting the input text
-           
-
-            Label:
-                id: output_label
-                size_hint: (1, 0.8)
-                font_size: 16
-                color: (1, 1, 1, 1)
-                outline_width: 0
-                outline_color: (0, 0, 0, 0)
-                text_size: (self.width - 40, None)
-                padding: (0, 600, 0, 0)
-                valign: 'top'
-                halign: 'left'
+            FloatLayout:
+                # Add a canvas background specifically for the output_label's text area
+                FloatLayout:
+                    Label:
+                        id: output_label
+                        size_hint: (1, 1)
+                        font_size: 16
+                        color: (1, 1, 1, 1)
+                        outline_width: 0
+                        outline_color: (0, 0, 0, 0)
+                        text_size: (self.width - 40, None)  # This constrains the text width
+                        padding: (0, 0, 0, 0)
+                        valign: 'bottom'
+                        halign: 'left'
+                
+                        # Use canvas.before to adjust the background only around the text
+                        canvas.before:
+                            Color:
+                                rgba: (0, 0, 0, 0.5)  # Semi-transparent black background
+                            Rectangle:
+                                # Define position and size offsets to easily modify the background's placement
+                                pos: (self.x + background_x_offset, self.y + self.height - self.texture_size[1] + background_y_offset)
+                                size: (self.texture_size[0] + background_width_padding, self.texture_size[1] + background_height_padding)
+                
 
             TextInput:
                 id: input_text
-                size_hint: (1, 0.045)
+                size_hint: (1, 0.062)
                 font_size: 30
-                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
                 background_color: (1, 1, 1, 1)
                 multiline: False
-                padding: (15, 10, 15, 10)
+                padding: (10, 5, 10, 5)
                 on_text_validate: root.on_text_enter(self)
 
                     
     # Stats panel (initially hidden)
     FloatLayout:
-        id: stats
+        id: stats_widget
         size_hint: (0.601, 0.60)
         pos: (20, 307) # Using pos with fixed value bc pos_hint doesnt work 
         padding: 10
@@ -761,7 +793,7 @@ ScreenManager:
             text: root.hero_name
             color: (1, 1, 1, 1)
             font_size: 36
-            font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+            font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
             size_hint: 1, None
             size: self.texture_size
             pos_hint: {'center_x': 0.5, 'top': 1}  # Center horizontally and align to the top
@@ -781,26 +813,18 @@ ScreenManager:
                 width: 230
                 height: self.minimum_height
                 pos_hint: {'top': 1}  # Align to top
-                Button:
-                    text: 'View stats in terminal'
-                    size_hint: (None, None)
-                    font_size: 14
-                    color: [0.8, 0.8, 0.8, 1]
-                    background_color: [0, 0, 0, 0]
-                    background_normal: ''
-                    padding: [80, 0, 0, 0]
-                    on_press: root.stats_in_terminal_button()  # Call the function when pressed
                 # Label for stats
                 Label:
-                    text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]Armor:[/b] ' + root.hero_armor
+                    text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Armor:[/b] ' + root.hero_armor + '\n\n[b]Level:[/b] ' + root.hero_level + '\n\n[b]XP:[/b] ' + '\n\n[b]XP:[/b] ' + root.hero_next_level_xp + ' / ' + root.hero_xp + '\n\n[b]Gold:[/b] ' + root.hero_gold + '\n\n[b]World:[/b]\n ' + root.world_type
                     markup: True
                     color: (1, 1, 1, 1)
                     font_size: 24
-                    font_name: 'Program_Files/fonts/Modesto-Poster-Regular.otf'
+                    font_name: 'Program_Files/8_fonts/Modesto-Poster-Regular.otf'
                     size_hint: None, None
                     size: self.texture_size
                     pos_hint: {'top': 0.8}  # Center horizontally and align below the title
                     padding: [30]
+                    
             
 
             # BoxLayout for the character picture
@@ -809,7 +833,7 @@ ScreenManager:
                 height: self.minimum_height
                 spos_hint: {'top': 1}  # Align to top
                 Image:
-                    source: 'Program_Files/char_pics/dwarf.png'
+                    source: 'Program_Files/5_playable_characters/female_elf_ranger.png'
                     size_hint: None, None
                     size: 333, 512  # Set the size of the image
                     pos_hint: {'center_x': 0.5}  # Center horizontally
@@ -829,7 +853,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/items_96p/item-slot.png'
+                        source: 'Program_Files/9_items_96p/item-slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image to 96x96 pixels
 
@@ -837,7 +861,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/items_96p/item-slot.png'
+                        source: 'Program_Files/9_items_96p/item-slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image to 96x96 pixels
 
@@ -845,7 +869,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/items_96p/item-slot.png'
+                        source: 'Program_Files/9_items_96p/item-slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image to 96x96 pixels
 
@@ -853,7 +877,7 @@ ScreenManager:
     
     # Backpack panel (initially hidden)
     FloatLayout:  
-        id: backpack
+        id: stats_panel
         size_hint: (0.360, 0.60)
         pos_hint: {'right': 0.987, 'top': 0.92}
         orientation: 'vertical'
@@ -877,7 +901,7 @@ ScreenManager:
                 text: 'BACKPACK'
                 color: (1, 1, 1, 1)
                 font_size: 24
-                font_name: 'Program_Files/fonts/medieval_font_file_2.ttf'
+                font_name: 'Program_Files/8_fonts/medieval_font_file_2.ttf'
                 size_hint: None, None
                 size: self.texture_size
                 padding: [15, 15, 15, 3]
@@ -900,3 +924,7 @@ ScreenManager:
             pos: self.pos
             size: self.size
             source: self.default_image
+
+
+
+

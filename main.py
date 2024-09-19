@@ -1,8 +1,9 @@
-from kivy.properties import ObjectProperty, BooleanProperty
+from kivy.properties import ObjectProperty, BooleanProperty, StringProperty, NumericProperty
+from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, RoundedRectangle
+from utils import read_json_file, DatabaseUtils
 from kivy.core.text import Label as CoreLabel
-from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.animation import Animation
@@ -14,11 +15,14 @@ from kivy.uix.popup import Popup
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.lang import Builder
-from kivy.properties import StringProperty, NumericProperty
 from openai import OpenAI
+from combat import combat
 from stringcolor import *
 from kivy.app import App
+from items import Item
+import threading
 import psycopg2
+import pygame
 import random
 import atexit
 import kivy
@@ -26,12 +30,8 @@ import json
 import sys
 import os
 import re
-import pygame
-import threading
-from combat import combat
-from character import Hero, Enemy, instantiate_hero, instantiate_enemy
-from items import Item
-from utils import read_json_file, DatabaseUtils  # Ensure 'utils.py' is correctly placed or referenced
+
+
 
 hero_stats = {}
 
@@ -109,8 +109,8 @@ Refer to the player as 'you' throughout the story. The player is the center of t
 DO NOT MESS THIS UP. IF YOU GET THIS WRONG, YOU ARE BREAKING THE RULES. FOLLOW THIS TO THE LETTER.
 You are the Game Master of a role-playing game. The player will interact with the game world as their chosen character with the following stats:
 Character Details: Name: {hero_stats.get('name', 'Unknown')} Species: {hero_stats.get('species', 'Unknown')} Gender: {hero_stats.get('gender', 'Unknown')} 
-Class: {hero_stats.get('class', 'Unknown')} HP: {hero_stats.get('hp', 'Unknown')} Damage: {hero_stats.get('dmg', 'Unknown')} 
-Armor: {hero_stats.get('armor', 'Unknown')} Level: {hero_stats.get('level', 1)} XP: {hero_stats.get('xp', 0)} / {hero_stats.get('next_level_xp', 50)}
+Class: {hero_stats.get('class', 'Unknown')} HP: {hero_stats.get('hp', 'Unknown')} Damage: {hero_stats.get('dmg', 'Unknown')} Gold: {hero_stats.get('gold', 'Unknown')}
+Armor: {hero_stats.get('armor', 'Unknown')} Level: {hero_stats.get('level', 1)} XP: {hero_stats.get('xp', 0)} / {hero_stats.get('next_level_xp', 50)} 
 
 World Type: {world_type}
 
@@ -137,7 +137,7 @@ Start the game using the provided character and world setup. Provide a brief des
 
     # Update character stats and save to the database if changes are detected
     if stat_changes or level_up:
-        update_character_stats(chat_screen, hero_stats, stat_changes, level_up)
+        character_level_up(chat_screen, hero_stats, stat_changes, level_up)
         save_stats_to_database(hero_stats, world_type)  # Save stats with world type
 
     # Append the response to the messages list
@@ -194,7 +194,7 @@ def mark_character_as_active(char_name):
         db_utils.conn.rollback()
         print(f"Error marking character as active: {e}")
 
-def update_character_stats(chat_screen, hero_stats, stat_changes, level_up):
+def character_level_up(chat_screen, hero_stats, stat_changes, level_up):
     # Update hero stats with changes
     for stat, (old_value, new_value) in stat_changes.items():
         hero_stats[stat.lower()] = new_value  # Ensure the correct stat is updated
@@ -208,14 +208,14 @@ def update_character_stats(chat_screen, hero_stats, stat_changes, level_up):
 def save_stats_to_database(hero_stats):
     update_query = """
     UPDATE characters
-    SET hp = %s, damage = %s, armor = %s, level = %s, xp = %s, next_level_xp = %s, world_type = %s, turns = %s, game_history = %s
+    SET hp = %s, damage = %s, armor = %s, level = %s, xp = %s, next_level_xp = %s, world_type = %s, turns = %s, history = %s, gold = %s
     WHERE name = %s
     """
     values = (
         hero_stats['hp'], hero_stats['dmg'], hero_stats['armor'],
         hero_stats['level'], hero_stats['xp'], hero_stats['next_level_xp'],
         hero_stats['world_type'], hero_stats['turns'],  # Include world_type and turns
-        hero_stats['history'], hero_stats['name']
+        hero_stats['history'], hero_stats['name'], hero_stats['gold']
     )
     try:
         db_utils.cursor.execute(update_query, values)
@@ -257,23 +257,25 @@ def update_ingame_screen():
     Call this function whenever new information about the hero needs to be displayed"""
     global hero  # Use global if hero is defined outside the function
 
-    # Debugging: Check if hero is None
-    if hero is None:
-        print("Error: Hero is not defined or is None.")
-        return  # Exit the function early to avoid further errors
-
-    # Update the Kivy context with the new hero
-    app = App.get_running_app()
-    app.root.hero = hero
-    # Set the StringProperty values so we can use values in ingame screen
-    ingame_screen = app.root.get_screen('ingame')
-    ingame_screen.hero_name = hero.name
-    ingame_screen.hero_species = hero.species
-    ingame_screen.hero_hp = str(hero.hp)
-    ingame_screen.hero_dmg = str(hero.dmg)
-    ingame_screen.hero_armor = str(hero.armor)
-    # Update item properties, similar result as previous lines but for items
-    ingame_screen.update_item_properties()
+    # Ensure hero is not None before proceeding
+    if hero is not None:
+        # Update the Kivy context with the new hero
+        app = App.get_running_app()
+        app.root.hero = hero
+        
+        # Set the StringProperty values so we can use values in the in-game screen
+        ingame_screen = app.root.get_screen('ingame')
+        ingame_screen.hero_name = hero.name
+        ingame_screen.hero_species = hero.species
+        ingame_screen.hero_hp = str(hero.hp)
+        ingame_screen.hero_dmg = str(hero.dmg)
+        ingame_screen.hero_armor = str(hero.armor)
+        
+        # Update item properties, similar result as previous lines but for items
+        ingame_screen.update_item_properties()
+    else:
+        # Log an error message if hero is None
+        print("Error: Hero object is None. Cannot update in-game screen.")
 
 
 # kivy visual stuff ===========================================================================
@@ -651,8 +653,6 @@ class CharacterCreation(Screen):
 
         self.reset_selections()
         hero = instantiate_hero(db_config, self.char_name)
-        print(f"Created hero {hero.name}")
-        hero.display_stats_view()
         update_ingame_screen()
         self.manager.current = 'map_selection'
 
@@ -853,9 +853,9 @@ class MapSelection(Screen):
         elif self.map_7.state == 'down':
             self.selected_world_type = "Classic Medieval"
         elif self.map_8.state == 'down':
-            self.selected_world_type = "Dark Fantasy"
+            self.selected_world_type = "Fantasy"
         elif self.map_9.state == 'down':
-            self.selected_world_type = "Dark Fantasy - Hard Mode"
+            self.selected_world_type = "Dark Fantasy - Hard"
 
     def on_start_story(self):
         """Fetch the active character names from the database, save the selected world type, and proceed to the game."""
@@ -928,7 +928,6 @@ class MapSelection(Screen):
         self.update_start_button_state()
 
 
-# This is the only thing you need to work with - Anton, Dennis, and Morgane
 class InGameScreen(Screen):
     world_type = StringProperty("")
     # create empty kivy properties at startup
@@ -942,13 +941,15 @@ class InGameScreen(Screen):
     hero_level = StringProperty("")  # Add hero level as StringProperty
     hero_xp = StringProperty("")  # Add hero XP as StringProperty
     hero_next_level_xp = StringProperty("")  # Add XP to next level as StringProperty
-    turns_label = ObjectProperty(None)
+    hero_gold = StringProperty("")
+    turns_label = StringProperty("")
+    hero_history = StringProperty("")
 
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
         self.create_kivy_properties()
-
+        atexit.register(self.save_character_info_in_database)
     
     def create_kivy_properties(self):
         # Predefine empty kivy properties for up to 64 items
@@ -961,7 +962,6 @@ class InGameScreen(Screen):
             setattr(InGameScreen, f"item_{i}bonus_value", NumericProperty(0))
             setattr(InGameScreen, f"item_{i}_image_file", StringProperty(""))
             
-
     def update_item_properties(self):
         """
         Dynamically bind item properties to UI elements.
@@ -983,8 +983,8 @@ class InGameScreen(Screen):
         item_grid = self.ids.item_grid  # Reference the GridLayout by its id
         item_grid.clear_widgets()  # Clear any existing widgets
 
-        item_name = getattr(self, "item_7_name", "")
-        item_image_file = getattr(self, "item_7_image_file", "")
+        item_name = getattr(self, "potion_health.png", "")
+        item_image_file = getattr(self, "Program_Files/9_items_96p/potion_health.png", "")
 
         if item_name:
             # Create a button for the item
@@ -1007,23 +1007,29 @@ class InGameScreen(Screen):
             conn = psycopg2.connect(**db_config)
             cur = conn.cursor()
             query = """
-            SELECT name, species, class, hp, damage, armor, level, xp, next_level_xp, world_type
+            SELECT name, species, class, hp, damage, armor, level, xp, next_level_xp, world_type, turns, gold, history
             FROM characters
             WHERE is_active = TRUE;
             """
             cur.execute(query)
             result = cur.fetchone()
-            
-            if result:
-                (self.hero_name, self.hero_species, self.hero_class, 
-                hp, dmg, armor, level, xp, next_level_xp, self.world_type) = result
 
-                self.hero_hp = str(hp)
-                self.hero_dmg = str(dmg)
-                self.hero_armor = str(armor)
-                self.hero_level = str(level)
-                self.hero_xp = str(xp)
-                self.hero_next_level_xp = str(next_level_xp)
+            if result:
+                (self.hero_name, self.hero_species, self.hero_class,
+                hp, dmg, armor, level, xp, next_level_xp, world_type, turns, gold, history) = result
+
+                # Convert values to strings and avoid setting empty values
+                self.hero_hp = str(hp) if hp is not None else '0'
+                self.hero_dmg = str(dmg) if dmg is not None else '0'
+                self.hero_armor = str(armor) if armor is not None else '0'
+                self.hero_level = str(level) if level is not None else '1'
+                self.hero_xp = str(xp) if xp is not None else '0'
+                self.hero_next_level_xp = str(next_level_xp) if next_level_xp is not None else '50'
+                self.world_type = str(world_type) if world_type is not None else '' 
+                self.turns_label = str(turns) if turns is not None else '0'
+                self.hero_gold = str(gold) if gold is not None else '50'
+                self.hero_history = history if history is not None else ''
+
             else:
                 print("No active character found.")
             cur.close()
@@ -1037,15 +1043,25 @@ class InGameScreen(Screen):
             conn = psycopg2.connect(**db_config)
             cur = conn.cursor()
 
+            # Ensure numeric values are not empty, defaulting to 0 if they are
+            hero_hp = int(self.hero_hp) if self.hero_hp.isdigit() else 0
+            hero_dmg = int(self.hero_dmg) if self.hero_dmg.isdigit() else 0
+            hero_armor = int(self.hero_armor) if self.hero_armor.isdigit() else 0
+            hero_level = int(self.hero_level) if self.hero_level.isdigit() else 1  # default to level 1
+            hero_xp = int(self.hero_xp) if self.hero_xp.isdigit() else 0
+            hero_next_level_xp = int(self.hero_next_level_xp) if self.hero_next_level_xp.isdigit() else 50  # default to 50
+            turns_label = int(self.turns_label) if self.turns_label.isdigit() else 0
+            hero_gold = int(self.hero_gold) if self.hero_gold.isdigit() else 50
+
             # Update the character information in the database
             query = """
             UPDATE characters
-            SET hp = %s, damage = %s, armor = %s, level = %s, xp = %s, next_level_xp = %s, world_type = %s
+            SET hp = %s, damage = %s, armor = %s, level = %s, xp = %s, next_level_xp = %s, world_type = %s, history = %s, turns = %s, gold = %s
             WHERE name = %s AND is_active = TRUE;
             """
             cur.execute(query, (
-                int(self.hero_hp), int(self.hero_dmg), int(self.hero_armor), int(self.hero_level), 
-                int(self.hero_xp), int(self.hero_next_level_xp), self.world_type, self.hero_name
+                hero_hp, hero_dmg, hero_armor, hero_level, 
+                hero_xp, hero_next_level_xp, self.world_type, self.hero_history, turns_label, hero_gold, self.hero_name
             ))
 
             conn.commit()
@@ -1067,14 +1083,16 @@ class InGameScreen(Screen):
             'species': self.hero_species,
             'gender': 'male' if 'male' in self.hero_species.lower() else 'female',
             'class': self.hero_class,
-            'hp': int(self.hero_hp),
             'dmg': int(self.hero_dmg),
+            'hp': int(self.hero_hp),
             'armor': int(self.hero_armor),
             'level': hero_stats.get('level', 1),
             'xp': hero_stats.get('xp', 0),
             'next_level_xp': hero_stats.get('next_level_xp', 50),
             'turns': hero_stats.get('turns', 0),  # Initialize turns if not present
-            'history': hero_stats.get('history', '')
+            'history': hero_stats.get('history', ''),
+            'gold': hero_stats.get('gold', ''),
+            'world_type': hero_stats.get('world_type','')
         }
 
         # Get the selected world type; ensure it's properly set before this function call
@@ -1099,7 +1117,10 @@ class InGameScreen(Screen):
             "level": 1,  # Default values or fetched from saved data
             "xp": 0,
             "next_level_xp": 50,
-            "turns": 0  # Initialize turns to 0
+            "turns": 0,  # Initialize turns to 0
+            "history": 'Your adventure starts here',
+            "gold": 50,
+            'world_type': ''
         }
 
         # Update turns label
@@ -1118,9 +1139,6 @@ class InGameScreen(Screen):
         )
         self.messages = []
         self.display_item_buttons()  # Call the method to display item buttons
-
-    def stats_in_terminal_button(self):
-        hero.display_stats_view()
 
     def on_text_enter(self, instance):
         """Handle user input on pressing Enter."""
@@ -1151,19 +1169,22 @@ class InGameScreen(Screen):
     def toggle_panel(self, *panel_ids):
         '''Toggle and untoggle panel on game screen (inventory, stats...)'''
         for panel_id in panel_ids:
-            panel = self.ids[panel_id]
-            if panel.opacity == 0:
-                panel.opacity = 1
-                panel.disabled = False
-                for child in panel.children:
-                    child.opacity = 1
-                    child.disabled = False
+            if panel_id in self.ids:
+                panel = self.ids[panel_id]
+                if panel.opacity == 0:
+                    panel.opacity = 1
+                    panel.disabled = False
+                    for child in panel.children:
+                        child.opacity = 1
+                        child.disabled = False
+                else:
+                    panel.opacity = 0
+                    panel.disabled = True
+                    for child in panel.children:
+                        child.opacity = 0
+                        child.disabled = True
             else:
-                panel.opacity = 0
-                panel.disabled = True
-                for child in panel.children:
-                    child.opacity = 0
-                    child.disabled = True
+                print(f"Warning: Panel with id '{panel_id}' not found.")
 
     def update_hero_hp(self, hp_change):
         self.hero_hp = str(int(self.hero_hp) + hp_change)
@@ -1227,7 +1248,7 @@ class MusicManager:
                     pygame.quit()
                     return
 
-    def stop_music(self):
+    def stop_music(self):   
         pygame.mixer.music.stop()
         pygame.quit()
 
