@@ -686,7 +686,7 @@ ScreenManager:
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
-                on_release: root.toggle_panel('backpack', 'stats_panel')
+                on_release: root.toggle_panel('backpack', 'stats_widget')
 
             HoverButtonRounded:
                 text: 'History'
@@ -821,7 +821,7 @@ ScreenManager:
                 height: self.minimum_height
                 spos_hint: {'top': 1}  # Align to top
                 Image:
-                    source: 'Program_Files/5_playable_characters/female_elf_ranger.png'
+                    source: root.hero_char_image
                     size_hint: None, None
                     size: 333, 512  # Set the size of the image
                     pos_hint: {'center_x': 0.5}  # Center horizontally
@@ -865,7 +865,7 @@ ScreenManager:
     
     # Backpack panel (initially hidden)
     FloatLayout:  
-        id: stats_panel
+        id: backpack
         size_hint: (0.360, 0.60)
         pos_hint: {'right': 0.987, 'top': 0.92}
         orientation: 'vertical'

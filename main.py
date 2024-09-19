@@ -267,9 +267,11 @@ def update_ingame_screen():
         ingame_screen = app.root.get_screen('ingame')
         ingame_screen.hero_name = hero.name
         ingame_screen.hero_species = hero.species
+        ingame_screen.hero_char_class = hero.char_class
         ingame_screen.hero_hp = str(hero.hp)
         ingame_screen.hero_dmg = str(hero.dmg)
         ingame_screen.hero_armor = str(hero.armor)
+        ingame_screen.hero_char_image = str(hero.char_image)
         
         # Update item properties, similar result as previous lines but for items
         ingame_screen.update_item_properties()
@@ -646,6 +648,7 @@ class CharacterCreation(Screen):
         ingame_screen = self.manager.get_screen('ingame')
         ingame_screen.hero_name = self.char_name
         ingame_screen.hero_species = self.selected_species
+        ingame_screen.hero_species = self.selected_class
         ingame_screen.hero_hp = str(self.final_hp)
         ingame_screen.hero_dmg = str(self.final_dmg)
         ingame_screen.hero_armor = str(self.final_armor)
@@ -653,6 +656,7 @@ class CharacterCreation(Screen):
 
         self.reset_selections()
         hero = instantiate_hero(db_config, self.char_name)
+        print(f'\nHERO INSTANTIATED: {hero.name}\n')
         update_ingame_screen()
         self.manager.current = 'map_selection'
 
@@ -945,6 +949,7 @@ class InGameScreen(Screen):
     hero_gold = StringProperty("")
     turns_label = StringProperty("")
     hero_history = StringProperty("")
+    hero_char_image = StringProperty("")
 
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)

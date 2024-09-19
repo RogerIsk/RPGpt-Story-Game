@@ -6,8 +6,8 @@ from random import randint
 from time import sleep
 from utils import read_json_file
 
-item_image_folder = 'Program_Files/items_96p'
-char_image_folder = 'Program_Files/playable_characters'
+item_image_folder = 'Program_Files/9_items_96p'
+char_image_folder = 'Program_Files/5_playable_characters'
 press_enter = 'Press ENTER to continue...\n'
 
 class Character:
@@ -87,6 +87,7 @@ class Hero(Character):
     
 
     def _get_hero(self, char_name):
+        input('\nGOING TO GET HERO\n')
     # Query to fetch character data along with associated items
     # THIS CONTAINS A SUBQUERY ;) ;) ;)
         query = '''
@@ -140,6 +141,7 @@ class Hero(Character):
             # create kivy properties for each item attribute. We'll bind them to the InGameScreen in main
             self.create_kivy_properties()
             self.create_stats_view()
+
         else:
             return None
         
@@ -160,7 +162,8 @@ class Hero(Character):
         # extract the bonus_value as integer
         if result:
             bonus_value = result[0]  # Extract the integer value from the tuple
-        input(f'\nBONUS VALUE: {bonus_value}')
+        else:
+            bonus_value = 0
         return bonus_value
     
     def create_kivy_properties(self):
