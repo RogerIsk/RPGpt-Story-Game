@@ -86,8 +86,7 @@ class Hero(Character):
     
 
     def _get_hero(self, char_name):
-    # Query to fetch character data along with associated items
-    # THIS CONTAINS A SUBQUERY ;) ;) ;)
+        # Query to fetch character data along with associated items
         query = '''
         SELECT 
             character.*,
@@ -109,27 +108,28 @@ class Hero(Character):
         '''
         self.cursor.execute(query, (char_name,))
         char_data = self.cursor.fetchone()
+
+        # Print the retrieved character data to ensure species exists
+        print(f"Character Data: {char_data}")
+
         self.name = char_name
-        # Importing the hero stats to instance attributes
+
         if char_data:
             self.character_id = char_data['character_id']
-            self.species = char_data['species']  # Access the 'species' column
+            self.species = char_data['species']  # Make sure this key exists
             self.gender = char_data['gender']
-            self.char_class = char_data['class']  # Access the 'Class' column
+            self.char_class = char_data['class']  # Access the 'class' column
             self.hp = char_data['hp']
             self.dmg = char_data['damage']
             self.armor = char_data['armor']
-            # Save all owned items as a list in self.items
-            # Each (python- and game-)item in this list will be a dictionary containing the item data
             self.items = char_data['items']
-            # Update self.items by adding full path to item images
             self.add_item_image_path()
             self.eq_weapon = char_data['equipped_weapon']
             self.eq_armor = char_data['equipped_armor']
-            # create kivy properties for each item attribute. We'll bind them to the InGameScreen in main
             self.create_kivy_properties()
             self.create_stats_view()
         else:
+            print("No character data found for this character name.")
             return None
     
     def create_kivy_properties(self):
@@ -253,16 +253,13 @@ class Enemy(Character):
 
 # Character stuff
 def instantiate_hero(db_config, char_name):
-    '''Instantiate hero with character name'''
-    # PLEASE DECLARE hero AS GLOBAL VARIABLE WHEN CALLED IN MAIN CODE
     try:
+        # Create a new hero object by passing the config and character name
         hero = Hero(db_config, char_name)
         return hero
     except Exception as e:
-        print('Character not found in database!')
-        print(f'Error: {e}')
+        print(f"Error instantiating Hero: {e}")
         return None
-
 
 def instantiate_enemy(db_config, enemy_name):
     '''Instantiate enemy with character name'''

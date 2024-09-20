@@ -253,28 +253,30 @@ def award_xp(hero_stats, xp_gain):
 
 # General methods to use in kivy app ===========================================================================
 def update_ingame_screen():
-    """Update the in-game screen with the hero's attributes
-    Call this function whenever new information about the hero needs to be displayed"""
-    global hero  # Use global if hero is defined outside the function
+    global hero
 
-    # Ensure hero is not None before proceeding
     if hero is not None:
-        # Update the Kivy context with the new hero
+        # Get the current app instance and in-game screen
         app = App.get_running_app()
-        app.root.hero = hero
-        
-        # Set the StringProperty values so we can use values in the in-game screen
         ingame_screen = app.root.get_screen('ingame')
+
+        # Assign hero stats to the in-game screen
         ingame_screen.hero_name = hero.name
-        ingame_screen.hero_species = hero.species
+        ingame_screen.hero_species = hero.species  # This will now reference the species from Hero
         ingame_screen.hero_hp = str(hero.hp)
         ingame_screen.hero_dmg = str(hero.dmg)
         ingame_screen.hero_armor = str(hero.armor)
-        
-        # Update item properties, similar result as previous lines but for items
+        ingame_screen.hero_class = hero.char_class  # Assign class to the in-game screen
+        ingame_screen.hero_level = str(hero.level)  # Make sure 'level' exists in the Hero class
+        ingame_screen.hero_xp = str(hero.xp)  # Assign XP
+        ingame_screen.hero_next_level_xp = str(hero.next_level_xp)
+        ingame_screen.hero_gold = str(hero.gold)
+
+        # Update any additional Kivy properties for items if needed
         ingame_screen.update_item_properties()
+
+        print("In-game screen updated successfully.")
     else:
-        # Log an error message if hero is None
         print("Error: Hero object is None. Cannot update in-game screen.")
 
 
