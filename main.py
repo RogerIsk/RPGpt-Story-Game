@@ -793,21 +793,21 @@ class MapSelection(Screen):
 
     is_map_selected = BooleanProperty(False)
     selected_world_type = StringProperty("")
-    background_image = StringProperty("Program_Files/3_world_selection_images/default_background_image.png")
+    background_image = StringProperty("Program_Files/3_world_selection_images/world_selection_background.png")
 
 
     def update_background_image(self):
         """Update the background image based on the selected world type."""
         world_backgrounds = {
-            "Anime": "Program_Files/3_world_selection_images/anime_background.png",
-            "Cyberpunk": "Program_Files/3_world_selection_images/cyberpunk_background.png",
-            "Post-Apocalyptic Zombies": "Program_Files/3_world_selection_images/post_apocalyptic_zombies_background.png",
-            "Post-Apocalyptic Fallout": "Program_Files/3_world_selection_images/post_apocalyptic_fallout_background.png",
-            "Feudal Japan": "Program_Files/3_world_selection_images/feudal_japan_background.png",
-            "Game of Thrones": "Program_Files/3_world_selection_images/game_of_thrones_background.png",
-            "Classic Medieval": "Program_Files/3_world_selection_images/classic_medieval_background.png",
-            "Fantasy": "Program_Files/3_world_selection_images/fantasy_background.png",
-            "Dark Fantasy - Hard": "Program_Files/3_world_selection_images/dark_fantasy_hard_background.png"
+            "Anime": "Program_Files/3_world_selection_images/1_anime_modern_japan_background.jpeg",
+            "Cyberpunk": "Program_Files/3_world_selection_images/2_cyberpunk_background.jpeg",
+            "Post-Apocalyptic Zombies": "Program_Files/3_world_selection_images/3_zombie_apocalypse_background.png",
+            "Post-Apocalyptic Fallout": "Program_Files/3_world_selection_images/4_fallout_apocalypse_background.jpeg",
+            "Feudal Japan": "Program_Files/3_world_selection_images/5_feudal_japan_background.png",
+            "Game of Thrones": "Program_Files/3_world_selection_images/6_got_background.jpg",
+            "Classic Medieval": "Program_Files/3_world_selection_images/7_medieval_background.png",
+            "Fantasy": "Program_Files/3_world_selection_images/8_fantasy_background.jpg",
+            "Dark Fantasy - Hard": "Program_Files/3_world_selection_images/9_dark_fantasy_background.png"
         }
 
         self.background_image = world_backgrounds.get(self.selected_world_type, "Program_Files/3_world_selection_images/default_background_image.png")
