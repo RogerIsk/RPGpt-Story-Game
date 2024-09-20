@@ -686,7 +686,7 @@ ScreenManager:
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
-                on_release: root.toggle_panel('backpack', 'stats_panel')
+                on_release: root.toggle_panel('backpack', 'stats_widget')
 
             HoverButtonRounded:
                 text: 'History'
@@ -801,6 +801,17 @@ ScreenManager:
                 width: 230
                 height: self.minimum_height
                 pos_hint: {'top': 1}  # Align to top
+                Button:
+                    text: 'View stats in terminal'
+                    size_hint: (None, None)
+                    width: 150
+                    height:30
+                    font_size: 14
+                    color: [0.8, 0.8, 0.8, 1]
+                    background_color: [0, 0, 0, 0]
+                    background_normal: ''
+                    padding: [80, 0, 0, 0]
+                    on_press: root.stats_in_terminal_button()  # Call the function when pressed
                 # Label for stats
                 Label:
                     text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Armor:[/b] ' + root.hero_armor + '\n\n[b]Level:[/b] ' + root.hero_level + '\n\n[b]XP:[/b] ' + '\n\n[b]XP:[/b] ' + root.hero_next_level_xp + ' / ' + root.hero_xp + '\n\n[b]Gold:[/b] ' + root.hero_gold + '\n\n[b]World:[/b]\n ' + root.world_type
@@ -812,7 +823,6 @@ ScreenManager:
                     size: self.texture_size
                     pos_hint: {'top': 0.8}  # Center horizontally and align below the title
                     padding: [30]
-                    
             
 
             # BoxLayout for the character picture
@@ -821,7 +831,7 @@ ScreenManager:
                 height: self.minimum_height
                 spos_hint: {'top': 1}  # Align to top
                 Image:
-                    source: 'Program_Files/5_playable_characters/female_elf_ranger.png'
+                    source: root.hero_char_image
                     size_hint: None, None
                     size: 333, 512  # Set the size of the image
                     pos_hint: {'center_x': 0.5}  # Center horizontally
@@ -841,7 +851,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/9_items_96p/item-slot.png'
+                        source: 'Program_Files/items_96p/item-slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image to 96x96 pixels
 
@@ -849,23 +859,23 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/9_items_96p/item-slot.png'
+                        source: 'Program_Files/items_96p/item-slot.png'
                         size_hint: None, None
-                        size: 104, 104  # Set the size of the image to 96x96 pixels
+                        size: 104, 104  # Set the size of the image
 
                 BoxLayout:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/9_items_96p/item-slot.png'
+                        source: 'Program_Files/items_96p/item-slot.png'
                         size_hint: None, None
-                        size: 104, 104  # Set the size of the image to 96x96 pixels
+                        size: 104, 104  # Set the size of the image                    
 
         
     
     # Backpack panel (initially hidden)
     FloatLayout:  
-        id: stats_panel
+        id: backpack
         size_hint: (0.360, 0.60)
         pos_hint: {'right': 0.987, 'top': 0.92}
         orientation: 'vertical'

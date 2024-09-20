@@ -165,6 +165,7 @@ def update_stats_display(chat_screen, hero_stats):
         f"Armor: {hero_stats['armor']}"
     )
 
+
 def extract_stat_changes(response):
     # Example logic to parse response for stat changes; can be adjusted based on response format
     changes = {}
@@ -262,17 +263,14 @@ def update_ingame_screen():
 
         # Assign hero stats to the in-game screen
         ingame_screen.hero_name = hero.name
-        ingame_screen.hero_species = hero.species  # This will now reference the species from Hero
+        ingame_screen.hero_species = hero.species
+        ingame_screen.hero_char_class = hero.char_class
         ingame_screen.hero_hp = str(hero.hp)
         ingame_screen.hero_dmg = str(hero.dmg)
         ingame_screen.hero_armor = str(hero.armor)
-        ingame_screen.hero_class = hero.char_class  # Assign class to the in-game screen
-        ingame_screen.hero_level = str(hero.level)  # Make sure 'level' exists in the Hero class
-        ingame_screen.hero_xp = str(hero.xp)  # Assign XP
-        ingame_screen.hero_next_level_xp = str(hero.next_level_xp)
-        ingame_screen.hero_gold = str(hero.gold)
-
-        # Update any additional Kivy properties for items if needed
+        ingame_screen.hero_char_image = str(hero.char_image)
+        
+        # Update item properties, similar result as previous lines but for items
         ingame_screen.update_item_properties()
 
         print("In-game screen updated successfully.")
@@ -648,6 +646,7 @@ class CharacterCreation(Screen):
         ingame_screen = self.manager.get_screen('ingame')
         ingame_screen.hero_name = self.char_name
         ingame_screen.hero_species = self.selected_species
+        ingame_screen.hero_species = self.selected_class
         ingame_screen.hero_hp = str(self.final_hp)
         ingame_screen.hero_dmg = str(self.final_dmg)
         ingame_screen.hero_armor = str(self.final_armor)
@@ -655,6 +654,7 @@ class CharacterCreation(Screen):
 
         self.reset_selections()
         hero = instantiate_hero(db_config, self.char_name)
+        print(f'\nHERO INSTANTIATED: {hero.name}\n')
         update_ingame_screen()
         self.manager.current = 'map_selection'
 
@@ -936,6 +936,7 @@ class InGameScreen(Screen):
     # The actual values will be added after reading character and items data from db
     hero_name = StringProperty("")
     hero_species = StringProperty("")
+    hero_char_class = StringProperty("")
     hero_hp = StringProperty("")
     hero_dmg = StringProperty("")
     hero_armor = StringProperty("")
@@ -946,6 +947,7 @@ class InGameScreen(Screen):
     hero_gold = StringProperty("")
     turns_label = StringProperty("")
     hero_history = StringProperty("")
+    hero_char_image = StringProperty("")
 
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
@@ -1128,6 +1130,9 @@ class InGameScreen(Screen):
         # Update turns label
         self.ids.turns_label.text = f"Turns: {hero_stats['turns']}"
         rpg_adventure(pitch="", chat_screen=self, hero_stats=hero_stats, world_type=self.world_type)
+
+    def stats_in_terminal_button(self):
+        hero.display_stats_view()
 
     def on_enter(self, *args):
         """When the screen is entered, fetch the active character and update the display."""
