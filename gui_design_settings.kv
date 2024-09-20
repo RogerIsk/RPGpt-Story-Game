@@ -641,7 +641,7 @@ ScreenManager:
         padding: (20,10,20,10)
         canvas.before:
             Rectangle:
-                source: 'Program_Files/4_in_game_images/in_game_background.png'
+                source: root.background_image  # Bind the image source to the background_image property
                 # Calculate size to fill and grow with the screen while maintaining the aspect ratio
                 size: 
                     (self.width, self.width / 1.777) if self.width / self.height > 1.777 \
@@ -650,9 +650,6 @@ ScreenManager:
                 pos: 
                     (self.center_x - (self.width / 2), self.center_y - (self.width / 1.777) / 2) if self.width / self.height > 1.777 \
                     else (self.center_x - (self.height * 1.777) / 2, self.center_y - self.height / 2)
-
-
-
 
         BoxLayout:
             size_hint_y: None
@@ -851,7 +848,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/items_96p/item-slot.png'
+                        source: 'Program_Files/9_items_96p/item-slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image to 96x96 pixels
 
@@ -859,7 +856,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/items_96p/item-slot.png'
+                        source: 'Program_Files/9_items_96p/item-slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image
 
@@ -867,7 +864,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/items_96p/item-slot.png'
+                        source: 'Program_Files/9_items_96p/item-slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image                    
 

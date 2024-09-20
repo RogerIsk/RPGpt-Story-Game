@@ -968,6 +968,8 @@ class InGameScreen(Screen):
     turns_label = StringProperty("")
     hero_history = StringProperty("")
     hero_char_image = StringProperty("")
+    background_image = StringProperty("Program_Files/4_in_game_images/in_game_background.png")  # Default background
+
 
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
@@ -986,6 +988,24 @@ class InGameScreen(Screen):
             setattr(InGameScreen, f"item_{i}bonus_value", NumericProperty(0))
             setattr(InGameScreen, f"item_{i}_image_file", StringProperty(""))
             
+    def update_background_image(self):
+        """Update the background image based on the selected world type."""
+        base_path = "Program_Files/3_world_selection_images"
+        world_backgrounds = {
+            "Anime": f"{base_path}/1_anime_modern_japan_background.jpeg",
+            "Cyberpunk": f"{base_path}/2_cyberpunk_background.jpeg",
+            "Post-Apocalyptic Zombies": f"{base_path}/33.png",
+            "Post-Apocalyptic Fallout": f"{base_path}/4_fallout_apocalypse_background.jpg",
+            "Feudal Japan": f"{base_path}/5_feudal_japan_background.png",
+            "Game of Thrones": f"{base_path}/6_got_background.jpg",
+            "Classic Medieval": f"{base_path}/7_medieval_background.png",
+            "Fantasy": f"{base_path}/8_fantasy_background.jpg",
+            "Dark Fantasy - Hard": f"{base_path}/9_dark_fantasy_background.png"
+        }
+
+        # Set the background image according to the world type
+        self.background_image = world_backgrounds.get(self.world_type, "Program_Files/4_in_game_images/in_game_background.png")
+    
     def update_item_properties(self):
         """
         Dynamically bind item properties to UI elements.
@@ -1007,8 +1027,8 @@ class InGameScreen(Screen):
         item_grid = self.ids.item_grid  # Reference the GridLayout by its id
         item_grid.clear_widgets()  # Clear any existing widgets
 
-        item_name = getattr(self, "potion_health.png", "")
-        item_image_file = getattr(self, "Program_Files/9_items_96p/potion_health.png", "")
+        item_name = getattr(self, "potion-health.png", "")
+        item_image_file = getattr(self, "Program_Files/9_items_96p/potion-health.png", "")
 
         if item_name:
             # Create a button for the item
@@ -1157,6 +1177,9 @@ class InGameScreen(Screen):
     def on_enter(self, *args):
         """When the screen is entered, fetch the active character and update the display."""
         self.get_active_character()  # Load the active character from the database
+
+        # Update the background image based on the world type
+        self.update_background_image()
 
         # Print initial stats and prompt to start the game
         self.ids.output_label.text = (
