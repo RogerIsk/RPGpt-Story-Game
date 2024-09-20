@@ -793,6 +793,24 @@ class MapSelection(Screen):
 
     is_map_selected = BooleanProperty(False)
     selected_world_type = StringProperty("")
+    background_image = StringProperty("Program_Files/3_world_selection_images/default_background_image.png")
+
+
+    def update_background_image(self):
+        """Update the background image based on the selected world type."""
+        world_backgrounds = {
+            "Anime": "Program_Files/3_world_selection_images/anime_background.png",
+            "Cyberpunk": "Program_Files/3_world_selection_images/cyberpunk_background.png",
+            "Post-Apocalyptic Zombies": "Program_Files/3_world_selection_images/post_apocalyptic_zombies_background.png",
+            "Post-Apocalyptic Fallout": "Program_Files/3_world_selection_images/post_apocalyptic_fallout_background.png",
+            "Feudal Japan": "Program_Files/3_world_selection_images/feudal_japan_background.png",
+            "Game of Thrones": "Program_Files/3_world_selection_images/game_of_thrones_background.png",
+            "Classic Medieval": "Program_Files/3_world_selection_images/classic_medieval_background.png",
+            "Fantasy": "Program_Files/3_world_selection_images/fantasy_background.png",
+            "Dark Fantasy - Hard": "Program_Files/3_world_selection_images/dark_fantasy_hard_background.png"
+        }
+
+        self.background_image = world_backgrounds.get(self.selected_world_type, "Program_Files/3_world_selection_images/default_background_image.png")
 
     def reset_current_selection(self):
         """Deselect any currently selected toggle button and reset its image."""
@@ -813,11 +831,10 @@ class MapSelection(Screen):
                     label_widget.opacity = 0  # Hide the label when deselected
 
         self.update_start_button_state()
+        self.update_background_image()
 
     def update_map_image(self, toggle_button, gif_source, image_widget, label_widget, world_type):
-        """Update the image source and label visibility when a toggle button is selected or deselected.
-        Set the selected world type when a map is chosen."""
-        
+        """Update the image source and label visibility when a toggle button is selected or deselected."""
         if toggle_button.state == 'down':
             image_widget.source = gif_source
             image_widget.anim_delay = 0.05
@@ -829,6 +846,7 @@ class MapSelection(Screen):
             label_widget.opacity = 0  # Hide the label when deselected
 
         self.update_start_button_state()
+        self.update_background_image()
 
     def update_start_button_state(self):
         """Enable or disable the 'Start Story' button based on map selection, and set the selected world type."""
@@ -845,9 +863,9 @@ class MapSelection(Screen):
         elif self.map_2.state == 'down':
             self.selected_world_type = "Cyberpunk"
         elif self.map_3.state == 'down':
-            self.selected_world_type = "Post-Apocalyptic Zombies"
+            self.selected_world_type = "Post-Apocalyptic\nZombies"
         elif self.map_4.state == 'down':
-            self.selected_world_type = "Post-Apocalyptic Fallout"
+            self.selected_world_type = "Post-Apocalyptic\nFallout"
         elif self.map_5.state == 'down':
             self.selected_world_type = "Feudal Japan"
         elif self.map_6.state == 'down':
@@ -857,7 +875,7 @@ class MapSelection(Screen):
         elif self.map_8.state == 'down':
             self.selected_world_type = "Fantasy"
         elif self.map_9.state == 'down':
-            self.selected_world_type = "Dark Fantasy - Hard"
+            self.selected_world_type = "Dark Fantasy\n - Hard"
 
     def on_start_story(self):
         """Fetch the active character names from the database, save the selected world type, and proceed to the game."""

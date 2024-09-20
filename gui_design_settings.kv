@@ -341,7 +341,7 @@ ScreenManager:
     RelativeLayout:
         # Background image for the world selection screen
         Image:
-            source: 'Program_Files/3_world_selection_images/world_selection_background_image.gif'
+            source: root.background_image
             allow_stretch: True
             keep_ratio: False  # Fills the entire screen
             color: (1, 1, 1, 0.5)  # Set the color with lower alpha (0.5) for transparency
@@ -548,7 +548,7 @@ ScreenManager:
                         on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/8_fantasy_active.gif', map_8_image, map_8_label, "Dark Fantasy")
                     Label:
                         id: map_8_label
-                        text: 'Dark Fantasy'
+                        text: 'Fantasy'
                         font_size: 20
                         bold: True
                         color: (1, 1, 1, 1)
