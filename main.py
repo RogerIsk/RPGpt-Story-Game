@@ -798,19 +798,21 @@ class MapSelection(Screen):
 
     def update_background_image(self):
         """Update the background image based on the selected world type."""
+        base_path = "Program_Files/3_world_selection_images"
+        
         world_backgrounds = {
-            "Anime": "Program_Files/3_world_selection_images/1_anime_modern_japan_background.jpeg",
-            "Cyberpunk": "Program_Files/3_world_selection_images/2_cyberpunk_background.jpeg",
-            "Post-Apocalyptic Zombies": "Program_Files/3_world_selection_images/3_zombie_apocalypse_background.png",
-            "Post-Apocalyptic Fallout": "Program_Files/3_world_selection_images/4_fallout_apocalypse_background.jpeg",
-            "Feudal Japan": "Program_Files/3_world_selection_images/5_feudal_japan_background.png",
-            "Game of Thrones": "Program_Files/3_world_selection_images/6_got_background.jpg",
-            "Classic Medieval": "Program_Files/3_world_selection_images/7_medieval_background.png",
-            "Fantasy": "Program_Files/3_world_selection_images/8_fantasy_background.jpg",
-            "Dark Fantasy - Hard": "Program_Files/3_world_selection_images/9_dark_fantasy_background.png"
+            "Anime": f"{base_path}/1_anime_modern_japan_background.jpeg",
+            "Cyberpunk": f"{base_path}/2_cyberpunk_background.jpeg",
+            "Post-Apocalyptic\n Zombies": f"{base_path}/33.png",
+            "Post-Apocalyptic\n Fallout": f"{base_path}/4_fallout_apocalypse_background.jpg",
+            "Feudal Japan": f"{base_path}/5_feudal_japan_background.png",
+            "Game of Thrones": f"{base_path}/6_got_background.jpg",
+            "Classic Medieval": f"{base_path}/7_medieval_background.png",
+            "Fantasy": f"{base_path}/8_fantasy_background.jpg",
+            "Dark Fantasy\n - Hard": f"{base_path}/9_dark_fantasy_background.png"
         }
 
-        self.background_image = world_backgrounds.get(self.selected_world_type, "Program_Files/3_world_selection_images/default_background_image.png")
+        self.background_image = world_backgrounds.get(self.selected_world_type, "Program_Files/3_world_selection_images/world_selection_background_image.png")
 
     def reset_current_selection(self):
         """Deselect any currently selected toggle button and reset its image."""
@@ -863,9 +865,9 @@ class MapSelection(Screen):
         elif self.map_2.state == 'down':
             self.selected_world_type = "Cyberpunk"
         elif self.map_3.state == 'down':
-            self.selected_world_type = "Post-Apocalyptic\nZombies"
+            self.selected_world_type = "Post-Apocalyptic\n Zombies"
         elif self.map_4.state == 'down':
-            self.selected_world_type = "Post-Apocalyptic\nFallout"
+            self.selected_world_type = "Post-Apocalyptic\n Fallout"
         elif self.map_5.state == 'down':
             self.selected_world_type = "Feudal Japan"
         elif self.map_6.state == 'down':
