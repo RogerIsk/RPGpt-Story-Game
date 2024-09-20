@@ -812,7 +812,7 @@ class MapSelection(Screen):
             "Dark Fantasy\n - Hard": f"{base_path}/9_dark_fantasy_background.png"
         }
 
-        self.background_image = world_backgrounds.get(self.selected_world_type, "Program_Files/3_world_selection_images/world_selection_background_image.png")
+        self.background_image = world_backgrounds.get(self.selected_world_type, "Program_Files/3_world_selection_images/world_selection_background.png")
 
     def reset_current_selection(self):
         """Deselect any currently selected toggle button and reset its image."""
@@ -887,6 +887,15 @@ class MapSelection(Screen):
             # Save the selected world type for all active characters
             for hero_name in active_characters:
                 self.save_world_type_to_database(hero_name, self.selected_world_type)
+
+            # Get the in-game screen from the screen manager
+            ingame_screen = self.manager.get_screen('ingame')
+
+            # Pass the selected background image to the in-game screen
+            ingame_screen.background_image = self.background_image
+
+            # Preload the background image
+            ingame_screen.update_background_image()
 
             # Navigate to the in-game screen
             self.manager.current = 'ingame'
@@ -989,22 +998,9 @@ class InGameScreen(Screen):
             setattr(InGameScreen, f"item_{i}_image_file", StringProperty(""))
             
     def update_background_image(self):
-        """Update the background image based on the selected world type."""
-        base_path = "Program_Files/3_world_selection_images"
-        world_backgrounds = {
-            "Anime": f"{base_path}/1_anime_modern_japan_background.jpeg",
-            "Cyberpunk": f"{base_path}/2_cyberpunk_background.jpeg",
-            "Post-Apocalyptic Zombies": f"{base_path}/33.png",
-            "Post-Apocalyptic Fallout": f"{base_path}/4_fallout_apocalypse_background.jpg",
-            "Feudal Japan": f"{base_path}/5_feudal_japan_background.png",
-            "Game of Thrones": f"{base_path}/6_got_background.jpg",
-            "Classic Medieval": f"{base_path}/7_medieval_background.png",
-            "Fantasy": f"{base_path}/8_fantasy_background.jpg",
-            "Dark Fantasy - Hard": f"{base_path}/9_dark_fantasy_background.png"
-        }
-
-        # Set the background image according to the world type
-        self.background_image = world_backgrounds.get(self.world_type, "Program_Files/4_in_game_images/in_game_background.png")
+        """Update the background image before entering the in-game screen."""
+        # The background_image is passed from the MapSelection screen
+        print(f"Preloading background image: {self.background_image}")  # Ensure the image is preloaded
     
     def update_item_properties(self):
         """
