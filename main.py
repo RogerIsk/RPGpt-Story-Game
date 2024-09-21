@@ -784,6 +784,8 @@ class CharacterCreation(Screen):
         )
 
 
+import os
+
 class MapSelection(Screen):
     map_1 = ObjectProperty(None)
     map_2 = ObjectProperty(None)
@@ -818,27 +820,6 @@ class MapSelection(Screen):
 
         self.background_image = world_backgrounds.get(self.selected_world_type, "Program_Files/3_world_selection_images/background_images/world_selection_background.png")
 
-    def reset_current_selection(self):
-        """Deselect any currently selected toggle button and reset its image."""
-        maps = [
-            self.map_1, self.map_2, self.map_3, self.map_4, self.map_5,
-            self.map_6, self.map_7, self.map_8, self.map_9
-        ]
-
-        for index, map_button in enumerate(maps, start=1):
-            if map_button is not None and map_button.state == 'down':
-                map_button.state = 'normal'
-                image_widget = self.ids.get(f"map_{index}_image")
-                label_widget = self.ids.get(f"map_{index}_label")
-                if image_widget:
-                    image_widget.source = image_widget.source.replace('_active.gif', '_inactive.png')
-                    image_widget.anim_delay = -1
-                if label_widget:
-                    label_widget.opacity = 0  # Hide the label when deselected
-
-        self.update_start_button_state()
-        self.update_background_image()
-
     def preload_ingame_images(self):
         """Preload additional in-game images based on the selected world type."""
         base_path = "Program_Files/4_in_game_images/background_images"
@@ -847,7 +828,7 @@ class MapSelection(Screen):
             "Anime": f"{base_path}/1_anime_modern_japan_background.jpeg",
             "Cyberpunk": f"{base_path}/2_cyberpunk_background.jpeg",
             "Post-Apocalyptic\n Zombies": f"{base_path}/3_zombie_apocalypse_background.png",
-            "Post-Apocalyptic\n Fallout": f"{base_path}/4_fallout_apocalypse_background.jpeg",
+            "Post-Apocalyptic\n Fallout": f"{base_path}/4_fallout_apocalypse_background.jpg",
             "Feudal Japan": f"{base_path}/5_feudal_japan_background.png",
             "Game of Thrones": f"{base_path}/6_got_background.jpg",
             "Classic Medieval": f"{base_path}/7_medieval_background.png",
@@ -859,12 +840,14 @@ class MapSelection(Screen):
         ingame_image = ingame_backgrounds.get(self.selected_world_type)
 
         if ingame_image:
-            print(f"Preloading in-game image for next screen: {ingame_image}")
-            # Store the preloaded image path
-            self.preloaded_ingame_image = ingame_image
-            # Preload the in-game image into memory
-            preloaded_image = Image(source=ingame_image)
-            preloaded_image.texture  # This ensures the image is preloaded into memory
+            if os.path.exists(ingame_image):
+                print(f"Preloading in-game image for next screen: {ingame_image}")
+                self.preloaded_ingame_image = ingame_image
+                # Preload the in-game image into memory
+                preloaded_image = Image(source=ingame_image)
+                preloaded_image.texture  # Ensures the image is preloaded into memory
+            else:
+                print(f"Warning: In-game image file not found: {ingame_image}")
 
     def update_map_image(self, toggle_button, gif_source, image_widget, label_widget, world_type):
         """Update the image source and label visibility when a toggle button is selected or deselected."""
