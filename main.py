@@ -798,7 +798,7 @@ class MapSelection(Screen):
     is_map_selected = BooleanProperty(False)
     selected_world_type = StringProperty("")
     background_image = StringProperty("Program_Files/3_world_selection_images/background_images/world_selection_background.png")
-
+    preloaded_ingame_image = StringProperty("")  # New variable to store preloaded in-game image
 
     def update_background_image(self):
         """Update the background image based on the selected world type."""
@@ -839,6 +839,33 @@ class MapSelection(Screen):
         self.update_start_button_state()
         self.update_background_image()
 
+    def preload_ingame_images(self):
+        """Preload additional in-game images based on the selected world type."""
+        base_path = "Program_Files/4_in_game_images/background_images"
+        
+        ingame_backgrounds = {
+            "Anime": f"{base_path}/1_anime_modern_japan_background.jpeg",
+            "Cyberpunk": f"{base_path}/2_cyberpunk_background.jpeg",
+            "Post-Apocalyptic\n Zombies": f"{base_path}/3_zombie_apocalypse_background.png",
+            "Post-Apocalyptic\n Fallout": f"{base_path}/4_fallout_apocalypse_background.jpeg",
+            "Feudal Japan": f"{base_path}/5_feudal_japan_background.png",
+            "Game of Thrones": f"{base_path}/6_got_background.jpg",
+            "Classic Medieval": f"{base_path}/7_medieval_background.png",
+            "Fantasy": f"{base_path}/8_fantasy_background.jpeg",
+            "Dark Fantasy\n - Hard": f"{base_path}/9_dark_fantasy_background.png"
+        }
+
+        # Get the additional image for the selected world type
+        ingame_image = ingame_backgrounds.get(self.selected_world_type)
+
+        if ingame_image:
+            print(f"Preloading in-game image for next screen: {ingame_image}")
+            # Store the preloaded image path
+            self.preloaded_ingame_image = ingame_image
+            # Preload the in-game image into memory
+            preloaded_image = Image(source=ingame_image)
+            preloaded_image.texture  # This ensures the image is preloaded into memory
+
     def update_map_image(self, toggle_button, gif_source, image_widget, label_widget, world_type):
         """Update the image source and label visibility when a toggle button is selected or deselected."""
         if toggle_button.state == 'down':
@@ -846,6 +873,10 @@ class MapSelection(Screen):
             image_widget.anim_delay = 0.05
             label_widget.opacity = 1  # Show the label when selected
             self.selected_world_type = world_type  # Set the selected world type when a map is chosen
+            
+            # Preload the in-game images for the next screen based on the selected world type
+            self.preload_ingame_images()
+
         else:
             image_widget.source = gif_source.replace('_active.gif', '_inactive.png')
             image_widget.anim_delay = -1
@@ -895,11 +926,8 @@ class MapSelection(Screen):
             # Get the in-game screen from the screen manager
             ingame_screen = self.manager.get_screen('ingame')
 
-            # Pass the selected background image to the in-game screen
-            ingame_screen.background_image = self.background_image
-
-            # Preload the background image
-            ingame_screen.update_background_image()
+            # Pass the preloaded in-game background image to the in-game screen (not the map selection background)
+            ingame_screen.background_image = self.preloaded_ingame_image
 
             # Navigate to the in-game screen
             self.manager.current = 'ingame'
@@ -948,7 +976,7 @@ class MapSelection(Screen):
         maps = [
             self.map_1, self.map_2, self.map_3, self.map_4, self.map_5,   
             self.map_6, self.map_7, self.map_8, self.map_9
-            ]
+        ]
             
         # Deselect all buttons first
         self.reset_current_selection()
