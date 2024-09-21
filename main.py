@@ -668,7 +668,7 @@ class CharacterCreation(Screen):
 
         # Ensure selected_world_type is not None
         if self.selected_world_type is None:
-            self.selected_world_type = "Fantasy"  # Provide a default world type
+            self.selected_world_type = "Not selected"  # Provide a default world type
 
         # Save new character stats to the character database
         insert_query = """
@@ -864,18 +864,18 @@ class MapSelection(Screen):
 
     def preload_ingame_images(self):
         """Preload additional in-game images based on the selected world type."""
-        base_path = "Program_Files/4_in_game_images/background_images"
+        base_path = "Program_Files/3_world_selection_images/background_images"
         
         ingame_backgrounds = {
             "Anime": f"{base_path}/1_anime_modern_japan_background.jpeg",
             "Cyberpunk": f"{base_path}/2_cyberpunk_background.jpeg",
-            "Post-Apocalyptic\n Zombies": f"{base_path}/3_zombie_apocalypse_background.png",
-            "Post-Apocalyptic\n Fallout": f"{base_path}/4_fallout_apocalypse_background.jpg",
+            "Post-Apocalyptic\n Zombies": f"{base_path}/3_zombie_apocalypse_background.jpeg",
+            "Post-Apocalyptic\n Fallout": f"{base_path}/4_fallout_apocalypse_background.jpeg",
             "Feudal Japan": f"{base_path}/5_feudal_japan_background.png",
             "Game of Thrones": f"{base_path}/6_got_background.jpg",
             "Classic Medieval": f"{base_path}/7_medieval_background.png",
             "Fantasy": f"{base_path}/8_fantasy_background.jpeg",
-            "Dark Fantasy\n - Hard": f"{base_path}/9_dark_fantasy_background.png"
+            "Dark Fantasy\n - Hard": f"{base_path}/9_dark_fantasy_background.jpeg"
         }
 
         # Get the additional image for the selected world type
