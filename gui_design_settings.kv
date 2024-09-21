@@ -630,8 +630,8 @@ ScreenManager:
     hero_hp: ""
     hero_armor: ""
     hero_level: ""
-    hero_xp: ""
-    hero_next_level_xp: ""
+    xp_for_next_level: ""
+    hero_current_xp: ""
     hero_gold: ""
     world_type: ""
 
@@ -683,7 +683,7 @@ ScreenManager:
                 font_size: 20
                 background_color: [0, 0, 0, 0]
                 background_normal: ''
-                on_release: root.toggle_panel('backpack', 'stats_widget')
+                on_release: root.toggle_panel('backpack')
 
             HoverButtonRounded:
                 text: 'History'
@@ -789,7 +789,7 @@ ScreenManager:
             orientation: 'horizontal'
             size_hint: 1, 1  # Take all available space in width and height
             size: self.minimum_size             
-            pos_hint: {'right': 1, 'top': 1}  # Align to top right
+            pos_hint: {'left': 1, 'top': 1} 
 
             # BoxLayout for the stats
             BoxLayout:
@@ -800,6 +800,7 @@ ScreenManager:
                 pos_hint: {'top': 1}  # Align to top
                 Button:
                     text: 'View stats in terminal'
+                    pos_hint: {'left': 0, 'top': 0} 
                     size_hint: (None, None)
                     width: 150
                     height:30
@@ -807,11 +808,11 @@ ScreenManager:
                     color: [0.8, 0.8, 0.8, 1]
                     background_color: [0, 0, 0, 0]
                     background_normal: ''
-                    padding: [80, 0, 0, 0]
+                    padding: [40, 0, 0, 0]
                     on_press: root.stats_in_terminal_button()  # Call the function when pressed
                 # Label for stats
                 Label:
-                    text: '[b]Species:[/b] ' + root.hero_species + '\n\n[b]Damage:[/b] ' + root.hero_dmg + '\n\n[b]HP:[/b] ' + root.hero_hp + '\n\n[b]Armor:[/b] ' + root.hero_armor + '\n\n[b]Level:[/b] ' + root.hero_level + '\n\n[b]XP:[/b] ' + '\n\n[b]XP:[/b] ' + root.hero_next_level_xp + ' / ' + root.hero_xp + '\n\n[b]Gold:[/b] ' + root.hero_gold + '\n\n[b]World:[/b]\n ' + root.world_type
+                    text: '[b]Species:[/b] ' + root.hero_species + '[b]\n\nClass:[/b] ' + root.hero_class + '\n\n[b]Damage:[/b] [color=FF0000]' + root.hero_dmg + '[/color]' + '\n\n[b]HP:[/b] [color=00FF00]' + root.hero_hp + '[/color]' + '\n\n[b]Armor:[/b] [color=D3D3D3]' + root.hero_armor + '[/color]' + '\n\n[b]Level:[/b] ' + root.hero_level + '\n\n[b]XP:[/b] ' + root.hero_current_xp + ' / ' + root.xp_for_next_level + '\n\n[b]Gold:[/b] [color=FFD700]' + root.hero_gold + '[/color]' + '\n\n[b]World:[/b]\n ' + root.world_type
                     markup: True
                     color: (1, 1, 1, 1)
                     font_size: 24

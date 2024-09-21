@@ -15,7 +15,7 @@ class Character:
     # This class is used for every character, Hero and Enemys
 
     def __init__(self, db_config, char_name):
-        '''intitialise a cursor to interact with db'''
+        '''initialize a cursor to interact with db'''
         self.conn = psycopg2.connect(**db_config)
         self.conn.autocommit = True  # Set autocommit to True
         # Use a dictionary cursor, so we can extract the char data as a dictionary for readability
@@ -25,13 +25,14 @@ class Character:
         '''close the database connection'''
         self.cursor.close()
         self.conn.close()
-    
-    
-    def print_attributes(self):
-        print(f"{self.name} attributes:")
-        for attr, value in vars(self).items():
-            print(f"{attr}: {value}")
 
+    def print_attributes(self):
+        if self.name:
+            print(f"{self.name} attributes:")
+            for attr, value in vars(self).items():
+                print(f"{attr}: {value}")
+        else:
+            print("Character data not initialized properly.")
 
     def add_item_image_path(self):
         '''Update the image_file field of each item with the full image path'''
@@ -44,28 +45,19 @@ class Character:
             else:
                 print(f"Item {item} does not have an 'image_file' key.")
 
-
     def calc_dmg(self):
         '''randomize the attack damage by applying a percentage modifier to character's dmg stat'''
-        # roll for random percentage
         dmg_modifier = randint(75, 125) / 100
-        # apply percentage to attack stat
         dmg = self.dmg * dmg_modifier
-        # Round and convert to integer
         dmg = int(round(dmg))
-        return dmg    
-
+        return dmg
 
     def take_damage(self, dmg):
         '''Apply damage to character when hit'''
-        # substract armor stat from the damge received
         final_dmg = dmg - (dmg * self.armor / 100)
-        # Round and convert to integer
         final_dmg = int(round(final_dmg))
-        # remove the number of dmg points from the hit character's HP
         self.hp -= final_dmg
         print(f'{self.name} takes {final_dmg} damage')
-        # if character has 0 HP, pronounce them DEAD!! (shouldn't have messed with opponent)
         if self.hp <= 0:
             sleep(1)
             print(f'{self.name} is dead!\n')
@@ -186,8 +178,15 @@ class Hero(Character):
 
 
     def create_stats_view(self):
-        query = '''
-        CREATE OR REPLACE VIEW character_full_stats AS
+        # Drop the existing view if it exists
+        drop_view_query = '''
+        DROP VIEW IF EXISTS character_full_stats;
+        '''
+        self.cursor.execute(drop_view_query)
+
+        # Recreate the view without renaming any columns
+        create_view_query = '''
+        CREATE VIEW character_full_stats AS
         SELECT 
             characters.character_id,
             characters.name,
@@ -201,8 +200,8 @@ class Hero(Character):
             armor.name AS equipped_armor,
             armor.bonus_value AS armor_bonus,
             level,
-            xp,
-            next_level_xp,
+            xp_for_next_level,  -- Directly reference xp_for_next_level
+            current_xp,
             history,
             world_type,
             turns,
@@ -214,12 +213,12 @@ class Hero(Character):
         LEFT JOIN
             items AS armor ON characters.equipped_armor = armor.item_id;
         '''
-        self.cursor.execute(query)
+        self.cursor.execute(create_view_query)
 
     def display_stats_view(self):
         query = '''
         SELECT 
-            name, species, class, hp, damage, armor, equipped_weapon, weapon_bonus, equipped_armor, armor_bonus
+            name, species, class, hp, damage, armor, equipped_weapon, weapon_bonus, equipped_armor, armor_bonus, level, xp_for_next_level, current_xp, gold, world_type, turns
         FROM 
             character_full_stats
         WHERE character_id = %s;
