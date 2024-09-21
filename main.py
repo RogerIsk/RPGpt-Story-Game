@@ -899,7 +899,7 @@ class MapSelection(Screen):
 
     def on_start_story(self):
         """Fetch the active character names from the database, save the selected world type, and proceed to the game."""
-        active_characters = self.get_active_characters_from_db()  # Get active character names from the database
+        active_characters = self.get_active_characters_from_db()
 
         if active_characters:
             # Save the selected world type for all active characters
@@ -914,6 +914,9 @@ class MapSelection(Screen):
 
             # Navigate to the in-game screen
             self.manager.current = 'ingame'
+
+            # Reset map selection and background after starting the story
+            self.reset_current_selection()
         else:
             print("Error: No active characters found in the database.")
 
@@ -972,6 +975,26 @@ class MapSelection(Screen):
 
         # Update button state after random selection
         self.update_start_button_state()
+
+    def reset_current_selection(self):
+        """Deselect all toggle buttons to reset the selection."""
+        # Set the state of all map buttons to 'normal' (unselected)
+        self.map_1.state = 'normal'
+        self.map_2.state = 'normal'
+        self.map_3.state = 'normal'
+        self.map_4.state = 'normal'
+        self.map_5.state = 'normal'
+        self.map_6.state = 'normal'
+        self.map_7.state = 'normal'
+        self.map_8.state = 'normal'
+        self.map_9.state = 'normal'
+        
+        # Reset the selected world type and the start button state
+        self.selected_world_type = ""
+        self.is_map_selected = False
+
+        # Reset the background image to the default background
+        self.background_image = "Program_Files/3_world_selection_images/background_images/world_selection_background.png"
 
 
 class InGameScreen(Screen):
