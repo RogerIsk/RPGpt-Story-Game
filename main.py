@@ -1269,9 +1269,8 @@ class InGameScreen(Screen):
     def on_enter(self, *args):
         """When the screen is entered, fetch the active character and update the display."""
         self.get_active_character()  # Load the active character from the database
-
-        # Update the background image based on the world type
-        self.update_background_image()
+        self.update_background_image()  # Update the background image based on the world type
+        self.refresh_stats_display()  # Refresh the stats display with the latest data
 
         # Print initial stats and prompt to start the game
         self.ids.output_label.text = (
@@ -1281,6 +1280,23 @@ class InGameScreen(Screen):
         )
         self.messages = []
         self.display_item_buttons()  # Call the method to display item buttons
+
+    def refresh_stats_display(self):
+        """Fetch the latest stats from the database and update the display."""
+        self.get_active_character()  # Re-fetch the latest data from the database
+
+        # Update the stats_widget label with the latest stats
+        self.ids.stats_widget.text = (
+            f"Species: {self.hero_species}\n"
+            f"Class: {self.hero_class}\n"
+            f"Damage: {self.hero_dmg}\n"
+            f"HP: {self.hero_hp}\n"
+            f"Armor: {self.hero_armor}\n"
+            f"Level: {self.hero_level}\n"
+            f"XP: {self.hero_current_xp} / {self.xp_for_next_level}\n"
+            f"Gold: {self.hero_gold}\n"
+            f"World: {self.world_type}"
+        )
 
     def on_text_enter(self, instance):
         """Handle user input on pressing Enter."""
@@ -1309,17 +1325,19 @@ class InGameScreen(Screen):
         self.manager.current = 'main_menu'
 
     def toggle_panel(self, *panel_ids):
-        '''Toggle and untoggle panel on game screen (inventory, stats...)'''
+        '''Toggle and untoggle panel on game screen (inventory, stats, etc.)'''
         for panel_id in panel_ids:
             if panel_id in self.ids:
                 panel = self.ids[panel_id]
-                if panel.opacity == 0:
+                if panel.opacity == 0:  # If the panel is hidden, show it
                     panel.opacity = 1
                     panel.disabled = False
                     for child in panel.children:
                         child.opacity = 1
                         child.disabled = False
-                else:
+                    if panel_id == 'stats_widget':
+                        self.refresh_stats_display()  # Refresh stats when showing stats panel
+                else:  # If the panel is visible, hide it
                     panel.opacity = 0
                     panel.disabled = True
                     for child in panel.children:
