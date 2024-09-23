@@ -34,6 +34,8 @@ import re
 
 
 hero_stats = {}
+# needed to have InGameScreen as a global variable
+global_in_game_screen = None
 
 def load_db_config():
     config_path = 'Program_Files/7_json_files/db_config.json'
@@ -329,7 +331,7 @@ def update_ingame_screen():
         ingame_screen.hero_char_image = str(hero.char_image)
         
         # Update item properties, similar result as previous lines but for items
-        ingame_screen.update_item_properties()
+        ingame_screen.update_item_properties(hero)
 
         print("In-game screen updated successfully.")
     else:
@@ -745,7 +747,7 @@ class CharacterCreation(Screen):
 
 
         self.reset_selections()
-        hero = instantiate_hero(db_config, self.char_name)
+        hero = instantiate_hero(db_config, self.char_name, global_in_game_screen)
         if hero is None:
             print("Failed to instantiate hero.")
         else:
@@ -1111,64 +1113,28 @@ class InGameScreen(Screen):
 
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
+        global global_in_game_screen
+        global_in_game_screen = self  # Update the global reference
         self.messages = []
-        self.create_kivy_properties()
         atexit.register(self.save_character_info_in_database)
-    
-    def create_kivy_properties(self):
-        # Predefine empty kivy properties for up to 64 items
-        # this is a workaround to have the property names existing at startup
-        for i in range(64):
-            setattr(InGameScreen, f"item_{i}_id", NumericProperty(""))
-            setattr(InGameScreen, f"item_{i}_name", StringProperty(""))
-            setattr(InGameScreen, f"item_{i}_type", StringProperty(""))
-            setattr(InGameScreen, f"item_{i}_bonus_type", StringProperty(0))
-            setattr(InGameScreen, f"item_{i}bonus_value", NumericProperty(0))
-            setattr(InGameScreen, f"item_{i}_image_file", StringProperty(""))
-            
+
     def update_background_image(self):
         """Update the background image before entering the in-game screen."""
         # The background_image is passed from the MapSelection screen
         print(f"Preloading background image: {self.background_image}")  # Ensure the image is preloaded
     
-    def update_item_properties(self):
+
+    def update_item_properties(self, hero):
         """
         Dynamically bind item properties to UI elements.
-        This method iterates over the items in the hero's inventory and creates Kivy properties
-        for each item attribute. It then binds these properties to the corresponding UI elements.
+        This method iterates over the attributes of the hero and updates the UI elements accordingly.
         """
-        for i, item in enumerate(hero.items):
-            for key, value in item.items():
-                prop_name = f"item_{i}_{key}"
-                if hasattr(self, prop_name):
-                    print(f"Setting {prop_name} to {value}")
-                    setattr(self, prop_name, str(value) if isinstance(value, (int, float)) else value)
-                    print(self.item_3_name)
-
-    def display_item_buttons(self):
-        """
-        Display buttons for each item with the corresponding name and image path.
-        """
-        item_grid = self.ids.item_grid  # Reference the GridLayout by its id
-        item_grid.clear_widgets()  # Clear any existing widgets
-
-        item_name = getattr(self, "potion-health.png", "")
-        item_image_file = getattr(self, "Program_Files/9_items_96p/potion-health.png", "")
-
-        if item_name:
-            # Create a button for the item
-            button = Button(
-                text="",
-                size_hint=(None, None),
-                size=(96, 96),
-                background_normal=item_image_file
-            )
-
-            # Add the button to the item_grid layout
-            item_grid.add_widget(button)
-
-        # Register save on exit with atexit
-        atexit.register(self.save_character_info_in_database)
+        for attr_name in dir(hero):
+            if attr_name.startswith('item_') and isinstance(getattr(hero, attr_name), (StringProperty, NumericProperty)):
+                prop_value = getattr(hero, attr_name)
+                print(f"Updating {attr_name} to {prop_value}")
+                setattr(self, attr_name, prop_value)
+ 
 
     def get_active_character(self):
         """Retrieve the active character from the database where is_active is True"""
@@ -1279,7 +1245,6 @@ class InGameScreen(Screen):
             "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         )
         self.messages = []
-        self.display_item_buttons()  # Call the method to display item buttons
 
     def refresh_stats_display(self):
         """Fetch the latest stats from the database and update the display."""

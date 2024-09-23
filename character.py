@@ -3,7 +3,7 @@ import psycopg2
 import psycopg2.extras
 from kivy.properties import StringProperty, NumericProperty
 from random import randint
-from item import Item
+from item import Item, ItemButton
 from time import sleep
 from utils import read_json_file
 
@@ -76,7 +76,7 @@ class Character:
 class Hero(Character):
     '''Hero class for player's character's specific data and actions'''
 
-    def __init__(self, db_config, char_name):
+    def __init__(self, db_config, char_name, screen = None):
         '''Initialise the class'''
         super().__init__(db_config, char_name)  # Call the parent class's __init__ method
         self._get_hero(char_name)  # Call the method to get hero data
@@ -131,6 +131,10 @@ class Hero(Character):
             self.dmg = self.base_dmg + self.add_equipment_bonus('equipped_weapon', self.eq_weapon)
             print('\nFetching armor bonus\n')
             self.armor = self.base_armor + self.add_equipment_bonus('equipped_armor', self.eq_armor)
+            self.level = char_data['level']
+            self.xp_for_next_level = char_data['xp_for_next_level']
+            self.current_xp = char_data['current_xp']
+            self.world_type = char_data['world_type']
             char_image_name = f'{self.gender}_{self.species}_{self.char_class}.png'
             self.char_image = os.path.join(char_image_folder, char_image_name)
 
@@ -180,6 +184,57 @@ class Hero(Character):
             # Dynamically create an attribute on the Hero instance
             setattr(self, f'item_{item.item_id}', item)
             print(f'created item: {item.name}')
+            self.create_kivy_properties(item)
+            self.add_item_button(item)
+
+
+    def create_kivy_properties(self, item):
+        '''Create kivy properties for each item attribute'''
+        name = StringProperty(item.name)
+        type = StringProperty(item.item_type)
+        bonus_type = StringProperty(item.bonus_type)
+        bonus_value = NumericProperty(item.bonus_value)
+        image_file = StringProperty(item.image_file)
+
+        setattr(self, f'item_{item.item_id}_name', name)
+        setattr(self, f'item_{item.item_id}_type', type)
+        setattr(self, f'item_{item.item_id}_bonus_type', bonus_type)
+        setattr(self, f'item_{item.item_id}_bonus_value', bonus_value)
+        setattr(self, f'item_{item.item_id}_image_file', image_file)
+
+        # bing item properties to corresponding item attributes
+        name.bind(on_property=self.screen.update_item_properties(self))
+        type.bind(on_property=self.screen.update_item_properties(self))
+        bonus_type.bind(on_property=self.screen.update_item_properties(self))
+        bonus_value.bind(on_property=self.screen.update_item_properties(self))
+        image_file.bind(on_property=self.screen.update_item_properties(self))
+
+
+    def add_item_button(self, item):
+        '''Create a button for each item and add it to the GridLayout,
+        Using the Item class from item.py'''
+        item_button = ItemButton(item=item, hero=self)
+        item_grid = self.root.ids.backpack.ids.item_grid
+        item_grid.add_widget(item_button)
+
+
+    def toggle_equip(self, item):
+        '''Toggle the equipped state of an item and update hero's stats'''
+        if item.item_type == 'Weapon':
+            if self.eq_weapon == item.item_id:
+                self.eq_weapon = None
+                self.dmg -= item.bonus_value
+            else:
+                self.eq_weapon = item.item_id
+                self.dmg += item.bonus_value
+        elif item.item_type == 'Armor':
+            if self.eq_armor == item.item_id:
+                self.eq_armor = None
+                self.armor -= item.bonus_value
+            else:
+                self.eq_armor = item.item_id
+                self.armor += item.bonus_value
+        self.screen.update_item_properties(self)  # Call the method on the screen instance
 
 
     def create_stats_view(self):
@@ -307,10 +362,10 @@ class Enemy(Character):
 
 
 # Character stuff
-def instantiate_hero(db_config, char_name):
+def instantiate_hero(db_config, char_name, screen=None):
     try:
         # Create a new hero object by passing the config and character name
-        hero = Hero(db_config, char_name)
+        hero = Hero(db_config, char_name, screen)
         return hero
     except Exception as e:
         print(f"Error instantiating Hero: {e}")
