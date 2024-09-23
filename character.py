@@ -3,6 +3,7 @@ import psycopg2
 import psycopg2.extras
 from kivy.properties import StringProperty, NumericProperty
 from random import randint
+from item import Item
 from time import sleep
 from utils import read_json_file
 
@@ -21,10 +22,12 @@ class Character:
         # Use a dictionary cursor, so we can extract the char data as a dictionary for readability
         self.cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
+
     def close(self):
         '''close the database connection'''
         self.cursor.close()
         self.conn.close()
+
 
     def print_attributes(self):
         if self.name:
@@ -34,16 +37,18 @@ class Character:
         else:
             print("Character data not initialized properly.")
 
+
     def add_item_image_path(self):
         '''Update the image_file field of each item with the full image path'''
-        if not self.items:
+        if not self.item_list:
             print("No items to update.")
             return
-        for item in self.items:
+        for item in self.item_list:
             if 'image_file' in item:
                 item['image_file'] = os.path.join(item_image_folder, item['image_file'])
             else:
                 print(f"Item {item} does not have an 'image_file' key.")
+
 
     def calc_dmg(self):
         '''randomize the attack damage by applying a percentage modifier to character's dmg stat'''
@@ -115,30 +120,30 @@ class Hero(Character):
             self.hp = char_data['hp']
             self.base_dmg = char_data['damage']
             self.base_armor = char_data['armor']
-            # Save all owned items as a list in self.items
+            # Save all owned items as a list in item_list.items
             # Each (python- and game-)item in this list will be a dictionary containing the item data
-            self.items = char_data['items']
+            self.item_list = char_data['items']
             self.add_item_image_path()
             self.eq_weapon = char_data['equipped_weapon']
             self.eq_armor = char_data['equipped_armor']
             print('\nFetching weapon bonus\n')
             # fetch equipment bonus for weapon and armor and add it to base damage to get final damage
             self.dmg = self.base_dmg + self.add_equipment_bonus('equipped_weapon', self.eq_weapon)
-            
             print('\nFetching armor bonus\n')
             self.armor = self.base_armor + self.add_equipment_bonus('equipped_armor', self.eq_armor)
-            
             char_image_name = f'{self.gender}_{self.species}_{self.char_class}.png'
             self.char_image = os.path.join(char_image_folder, char_image_name)
 
-            # create kivy properties for each item attribute. We'll bind them to the InGameScreen in main
-            self.create_kivy_properties()
+            # Create Item objects and assign them to the hero
+            self.create_items()
+
             self.create_stats_view()
 
         else:
             print("No character data found for this character name.")
             return None
         
+
     def add_equipment_bonus(self, item_type, item_id):
         # fetch the bonus data from equipped items
         # item_type = "equipped_weapon"/"equipped_armor"
@@ -160,21 +165,21 @@ class Hero(Character):
             bonus_value = 0
         return bonus_value
     
-    def create_kivy_properties(self):
-        # Dynamically create Kivy properties for each item attribute
-        for item in (self.items):
-            # fetch the item_id for each item in the dictionary
-            item_id = item['item_id']
 
-            for key, value in item.items():                
-                # create a property name prefix for each item, including relevant item_id
-                prop_name = f"item_{item_id}_{key}"
-                if isinstance(value, str):
-                    setattr(self.__class__, prop_name, StringProperty(value))
-                elif isinstance(value, (int, float)):
-                    setattr(self.__class__, prop_name, NumericProperty(value))
-                print(f"Created property {prop_name} with value {value}")
-        print('Properties created...')
+    def create_items(self):
+        # Create Item objects from the fetched item data
+        for item_data in self.item_list:
+            item = Item(
+                item_id=item_data['item_id'],
+                name=item_data['name'],
+                item_type=item_data['type'],
+                bonus_type=item_data['bonus_type'],
+                bonus_value=item_data['bonus_value'],
+                image_file=item_data['image_file']
+            )
+            # Dynamically create an attribute on the Hero instance
+            setattr(self, f'item_{item.item_id}', item)
+            print(f'created item: {item.name}')
 
 
     def create_stats_view(self):
@@ -214,6 +219,7 @@ class Hero(Character):
             items AS armor ON characters.equipped_armor = armor.item_id;
         '''
         self.cursor.execute(create_view_query)
+
 
     def display_stats_view(self):
         query = '''

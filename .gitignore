@@ -1,5 +1,6 @@
 __pycache__/
 **/key.json
-db_config.json
+**/db_config.json
 Program_Files/7_json_files/db_config.json
 Program_Files/7_json_files/db_config.json
+test.py
