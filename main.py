@@ -1226,7 +1226,6 @@ class InGameScreen(Screen):
             "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         )
         self.messages = []
-        self.display_item_buttons()  # Call the method to display item buttons
 
     def refresh_stats_display(self):
         """Fetch the latest stats from the database and update the display."""
