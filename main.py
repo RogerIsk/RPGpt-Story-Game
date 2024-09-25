@@ -1393,6 +1393,10 @@ class RPGApp(App):  # General GUI options
         self.music_manager.start_music()
 
     def on_stop(self):
+        # Close database connection used in main
+        db_utils.close()
+        # Close database connection from hero object
+        hero.close()
         self.music_manager.stop_music()    
 
 if __name__ == '__main__':
