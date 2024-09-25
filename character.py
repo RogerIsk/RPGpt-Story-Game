@@ -131,6 +131,13 @@ class Hero(Character):
             self.dmg = self.base_dmg + self.add_equipment_bonus('equipped_weapon', self.eq_weapon)
             print('\nFetching armor bonus\n')
             self.armor = self.base_armor + self.add_equipment_bonus('equipped_armor', self.eq_armor)
+            self.level = char_data['level']
+            self.xp_for_next_level = char_data['xp_for_next_level']
+            self.current_xp = char_data['current_xp']
+            self.world_type = char_data['world_type']
+            self.turns = char_data['turns']
+            self.gold = char_data['gold']
+            self.history = char_data['history']
             char_image_name = f'{self.gender}_{self.species}_{self.char_class}.png'
             self.char_image = os.path.join(char_image_folder, char_image_name)
 
@@ -179,7 +186,7 @@ class Hero(Character):
             )
             # Dynamically create an attribute on the Hero instance
             setattr(self, f'item_{item.item_id}', item)
-            print(f'created item: {item.name}')
+            print(f'created item: {item.name}, {item.item_type}, Bonus: {item.bonus_value}')
 
 
     def create_stats_view(self):

@@ -96,7 +96,7 @@ def get_response(messages):
     )
     return response.choices[0].message.content
 
-def rpg_adventure(pitch, chat_screen, hero_stats, world_type):
+def rpg_adventure(pitch, chat_screen,  world_type):
     global initial_instructions_sent, conversation_history
 
     # If this is the first time, construct the initial system message with the locked instructions
@@ -113,9 +113,9 @@ def rpg_adventure(pitch, chat_screen, hero_stats, world_type):
                 The minimum number of full lines is 5. Do NOT go below 5 full lines.
                 Refer to the player as 'you' throughout the story. The player is the center of the narrative, and every interaction must directly address you. This is MANDATORY.
                 You are the Game Master of a role-playing game. The player will interact with the game world as their chosen character with the following stats:
-                Character Details: Name: {hero_stats.get('name', 'Unknown')} Species: {hero_stats.get('species', 'Unknown')} Gender: {hero_stats.get('gender', 'Unknown')}
-                Class: {hero_stats.get('class', 'Unknown')} HP: {hero_stats.get('hp', 'Unknown')} Damage: {hero_stats.get('dmg', 'Unknown')} Gold: {hero_stats.get('gold', 'Unknown')}
-                Armor: {hero_stats.get('armor', 'Unknown')} Level: {hero_stats.get('level', 1)} XP: {hero_stats.get('current_xp', 0)} / {hero_stats.get('xp_for_next_level', 50)}
+                Character Details: Name: {hero.name} Species: {hero.species} Gender: {hero.gender}
+                Class: {hero.char_class} HP: {hero.hp} Damage: {hero.dmg} Gold: {hero.gold}
+                Armor: {hero.armor} Level: {hero.level} XP: {hero.current_xp} / {hero.xp_for_next_level}
                 World Type: {world_type}
 
                 Gameplay Instructions:
@@ -161,17 +161,17 @@ def rpg_adventure(pitch, chat_screen, hero_stats, world_type):
     chat_screen.ids.output_label.text = f"Assistant: {bot_response}"
 
     # Award XP and check for level-ups
-    award_xp(hero_stats, 5)
-    update_stats_display(chat_screen, hero_stats)
+    award_xp(5)
+    update_stats_display(chat_screen)
 
-def update_stats_display(chat_screen, hero_stats):
+def update_stats_display(chat_screen):
     chat_screen.ids.stats_widget.text = (
-        f"Level: {hero_stats['level']}\n"
-        f"XP: {hero_stats['current_xp']}/{hero_stats['xp_for_next_level']} ({(hero_stats['current_xp'] / hero_stats['xp_for_next_level']) * 100:.1f}%)\n"
-        f"HP: {hero_stats['hp']}\n"
-        f"DMG: {hero_stats['dmg']}\n"
-        f"Armor: {hero_stats['armor']}\n"
-        f"Gold: {hero_stats['gold']}"
+        f"Level: {hero.level}\n"
+        f"XP: {hero.current_xp}/{hero.xp_for_next_level} ({(hero.current_xp / hero.xp_for_next_level) * 100:.1f}%)\n"
+        f"HP: {hero.hp}\n"
+        f"DMG: {hero.dmg}\n"
+        f"Armor: {hero.armor}\n"
+        f"Gold: {hero.gold}"
     )
 
 #specifically parse responses like "HP increased to 55."
@@ -221,7 +221,7 @@ def commit_stat_change(stat_var, new_value):
     hero_stats[stat_var] = new_value
 
     # Commit the changes to the database
-    save_stats_to_database(hero_stats, hero_stats['world_type'])
+    save_stats_to_database(hero_stats, hero.world_type)
 
     # Print the message to the terminal
     stat_name = stat_name_map.get(stat_var, stat_var)
@@ -245,9 +245,9 @@ def mark_character_as_active(char_name):
 
 def character_level_up(chat_screen, hero_stats, stat_changes, level_up):
     if level_up:
-        hero_stats['level'] += 1
-        hero_stats['xp_for_next_level'] = int(hero_stats['xp_for_next_level'] * 1.1)
-        chat_screen.ids.output_label.text += f"\nYou leveled up to Level {hero_stats['level']}!"
+        hero.level += 1
+        hero.xp_for_next_level = int(hero.xp_for_next_level * 1.1)
+        chat_screen.ids.output_label.text += f"\nYou leveled up to Level {hero.level}!"
 
     for var_name, new_value in stat_changes.items():
         hero_stats[var_name] = new_value
@@ -270,16 +270,16 @@ def display_stat_change_message(chat_screen, stat_var, new_value):
     message = f"{stat_name} increased to {new_value}" if hero_stats[stat_var] < new_value else f"{stat_name} decreased to {new_value}"
     chat_screen.ids.output_label.text += f"\n{message}"
 
-def save_stats_to_database(hero_stats, world_type):
+def save_stats_to_database(world_type):
     update_query = """
     UPDATE characters
     SET hp = %s, damage = %s, armor = %s, level = %s, xp_for_next_level = %s, current_xp = %s, world_type = %s, gold = %s
     WHERE name = %s
     """
     values = (
-        hero_stats['hp'], hero_stats['dmg'], hero_stats['armor'],
-        hero_stats['level'], hero_stats['xp_for_next_level'], hero_stats['current_xp'],
-        world_type, hero_stats['gold'], hero_stats['name']
+        hero.hp, hero.dmg, hero.armor,
+        hero.level, hero.xp_for_next_level, hero.current_xp,
+        world_type, hero.gold, hero.name
     )
     db_utils.cursor.execute(update_query, values)
     db_utils.conn.commit()
@@ -290,7 +290,7 @@ def log_game_history(hero_stats, bot_response):
     significant_events = extract_significant_events(bot_response)
     if significant_events:
         # Append the event to the history, keep it concise
-        hero_stats['history'] = (hero_stats.get('history', '') + '; ' + significant_events)[:500]  # Limit to 500 chars
+        hero.history = (hero_stats.get('history', '') + '; ' + significant_events)[:500]  # Limit to 500 chars
 
 def extract_significant_events(response):
     # Simplified parsing logic to extract key events
@@ -301,12 +301,12 @@ def extract_significant_events(response):
             events.append(line.strip())
     return ' | '.join(events)
 
-def award_xp(hero_stats, xp_gain):
-    hero_stats['current_xp'] = hero_stats.get('current_xp', 0) + xp_gain
-    while hero_stats['current_xp'] >= hero_stats['xp_for_next_level']:
-        hero_stats['current_xp'] -= hero_stats['xp_for_next_level']
-        hero_stats['level'] += 1
-        hero_stats['xp_for_next_level'] = int(hero_stats['xp_for_next_level'] * 1.1)
+def award_xp(xp_gain):
+    hero.current_xp += xp_gain
+    while hero.current_xp >= hero.xp_for_next_level:
+        hero.current_xp -= hero.xp_for_next_level
+        hero.level += 1
+        hero.xp_for_next_level = int(hero.xp_for_next_level * 1.1)
 
 
 
@@ -718,22 +718,38 @@ class CharacterCreation(Screen):
 
         # Save new character stats to the character database
         insert_query = """
-        INSERT INTO characters (name, species, gender, class, hp, damage, armor, world_type, turns)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO characters (name, species, gender, class, hp, damage, armor, equipped_weapon, equipped_armor, level, world_type, turns, is_active)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING character_id
         """
         char_data = (
             self.char_name, self.selected_species, self.selected_gender, self.selected_class,
-            self.final_hp, self.final_dmg, self.final_armor,
-            self.selected_world_type, 0  # Initial world_type and turns count
+            self.final_hp, self.final_dmg, self.final_armor, 6, 11, 1,
+            self.selected_world_type, 0, True  # Initial world_type and turns count
         )
 
         try:
+            # Print debug information
+            print("Executing query:", insert_query)
+            print("With data:", char_data)
             self.db_utils.cursor.execute(insert_query, char_data)
+            # retrieve saved character's id
+            character_id = self.db_utils.cursor.fetchone()[0]
             self.db_utils.conn.commit()
-            print("Character saved to the database.")
+            print("Character saved to the database with character_id:", character_id)
 
-            # Mark the newly created character as active
-            mark_character_as_active(self.char_name)
+            # Insert starting item entries into the inventory table
+            item_ids = [6, 11]  # Example item IDs to be added to the inventory
+            insert_inventory_query = """
+            INSERT INTO inventory (character_id, item_id)
+            VALUES (%s, %s)
+            """
+            # extract every item_id from the list and insert them in new row with character_id
+            for item_id in item_ids:
+                self.db_utils.cursor.execute(insert_inventory_query, (character_id, item_id))
+            
+            self.db_utils.conn.commit()
+            print("Inventory items added to the database.")
 
         except Exception as e:
             self.db_utils.conn.rollback()
@@ -1135,16 +1151,16 @@ class InGameScreen(Screen):
                 hp, dmg, armor, level, xp_for_next_level, current_xp, world_type, turns, gold, history) = result
 
                 # Convert values to strings and avoid setting empty values
-                self.hero_hp = str(hp) if hp is not None else '50'
-                self.hero_dmg = str(dmg) if dmg is not None else '10'
-                self.hero_armor = str(armor) if armor is not None else '10'
-                self.hero_level = str(level) if level is not None else '1'
-                self.xp_for_next_level = str(xp_for_next_level) if xp_for_next_level is not None else '50'
-                self.hero_current_xp = str(current_xp) if current_xp is not None else '0'
-                self.world_type = str(world_type) if world_type is not None else '' 
-                self.turns_label = str(turns) if turns is not None else '0'
-                self.hero_gold = str(gold) if gold is not None else '50'
-                self.hero_history = history if history is not None else ''
+                self.hero_hp = str(hero.hp) if hero.hp is not None else '50'
+                self.hero_dmg = str(hero.dmg) if hero.dmg is not None else '10'
+                self.hero_armor = str(hero.armor) if hero.armor is not None else '10'
+                self.hero_level = str(hero.level) if hero.level is not None else '1'
+                self.xp_for_next_level = str(hero.xp_for_next_level) if hero.xp_for_next_level is not None else '50'
+                self.hero_current_xp = str(hero.current_xp) if hero.current_xp is not None else '0'
+                self.world_type = str(hero.world_type) if hero.world_type is not None else '' 
+                self.turns_label = str(hero.turns) if hero.turns is not None else '0'
+                self.hero_gold = str(hero.gold) if hero.gold is not None else '50'
+                self.hero_history = hero.history if hero.history is not None else ''
 
             else:
                 print("No active character found.")
@@ -1207,7 +1223,7 @@ class InGameScreen(Screen):
         }
 
         world_type = self.world_type
-        rpg_adventure(pitch, self, hero_stats, world_type)
+        rpg_adventure(pitch, self, world_type)
         self.ids.input_text.bind(on_text_validate=self.on_text_enter)
 
     def stats_in_terminal_button(self):
@@ -1233,14 +1249,14 @@ class InGameScreen(Screen):
 
         # Update the stats_widget label with the latest stats
         self.ids.stats_widget.text = (
-            f"Species: {self.hero_species}\n"
-            f"Class: {self.hero_class}\n"
-            f"Damage: {self.hero_dmg}\n"
-            f"HP: {self.hero_hp}\n"
-            f"Armor: {self.hero_armor}\n"
-            f"Level: {self.hero_level}\n"
-            f"XP: {self.hero_current_xp} / {self.xp_for_next_level}\n"
-            f"Gold: {self.hero_gold}\n"
+            f"Species: {hero.species}\n"
+            f"Class: {hero.char_class}\n"
+            f"Damage: {hero.dmg}\n"
+            f"HP: {hero.hp}\n"
+            f"Armor: {hero.armor}\n"
+            f"Level: {hero.level}\n"
+            f"XP: {hero.current_xp} / {self.xp_for_next_level}\n"
+            f"Gold: {hero.gold}\n"
             f"World: {self.world_type}"
         )
 
@@ -1293,22 +1309,22 @@ class InGameScreen(Screen):
                 print(f"Warning: Panel with id '{panel_id}' not found.")
 
     def update_hero_hp(self, hp_change):
-        self.hero_hp = str(int(self.hero_hp) + hp_change)
+        hero.hp += str(int(hp_change))
         self.update_display()
 
     def update_hero_dmg(self, dmg_change):
-        self.hero_dmg = str(int(self.hero_dmg) + dmg_change)
+        hero.dmg += str(int(dmg_change))
         self.update_display()
 
     def update_hero_armor(self, armor_change):
-        self.hero_armor = str(int(self.hero_armor) + armor_change)
+        hero.dmg += str(int(armor_change))
         self.update_display()
 
     def update_display(self):
         """Update the output label to reflect the current hero stats."""
         self.ids.output_label.text = (
-            f"Welcome, {self.hero_name} the {self.hero_class} {self.hero_species}!\n"
-            f"HP: {self.hero_hp}, DMG: {self.hero_dmg}, ARMOR: {self.hero_armor}\n\n"
+            f"Welcome, {hero.name} the {hero.char_class} {hero.species}!\n"
+            f"HP: {hero.hp}, DMG: {hero.dmg}, ARMOR: {hero.armor}\n\n"
             "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         )
 
