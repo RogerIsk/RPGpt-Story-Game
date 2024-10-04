@@ -1,5 +1,4 @@
 from kivy.properties import ObjectProperty, BooleanProperty, StringProperty, NumericProperty
-from character import Hero, Enemy, instantiate_hero, instantiate_enemy
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, RoundedRectangle
 from utils import read_json_file, DatabaseUtils
@@ -15,11 +14,12 @@ from kivy.uix.popup import Popup
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.lang import Builder
+from random import randint
 from openai import OpenAI
-from combat import combat
 from stringcolor import *
 from kivy.app import App
-from items import Item
+from time import sleep
+import psycopg2.extras
 import threading
 import psycopg2
 import pygame
@@ -32,6 +32,9 @@ import os
 import re
 
 
+item_image_folder = 'Program_Files/9_item_images'
+char_image_folder = 'Program_Files/5_playable_characters'
+press_enter = 'Press ENTER to continue...\n'
 
 hero_stats = {}
 
@@ -238,10 +241,10 @@ def mark_character_as_active(char_name):
         db_utils.cursor.execute("UPDATE characters SET is_active = TRUE WHERE name = %s", (char_name,))
         db_utils.conn.commit()
 
-        print(f"Character '{char_name}' marked as active.")
+        print(f"[CharacterCreation]   Character '{char_name}' marked as active.")
     except Exception as e:
         db_utils.conn.rollback()
-        print(f"Error marking character as active: {e}")
+        print(f"[CharacterCreation]   Error marking character as active: {e}")
 
 def character_level_up(chat_screen, hero_stats, stat_changes, level_up):
     if level_up:
@@ -310,30 +313,7 @@ def award_xp(hero_stats, xp_gain):
 
 
 
-# General methods to use in kivy app ===========================================================================
-def update_ingame_screen():
-    global hero
 
-    if hero is not None:
-        # Get the current app instance and in-game screen
-        app = App.get_running_app()
-        ingame_screen = app.root.get_screen('ingame')
-
-        # Assign hero stats to the in-game screen
-        ingame_screen.hero_name = hero.name
-        ingame_screen.hero_species = hero.species
-        ingame_screen.hero_char_class = hero.char_class
-        ingame_screen.hero_hp = str(hero.hp)
-        ingame_screen.hero_dmg = str(hero.dmg)
-        ingame_screen.hero_armor = str(hero.armor)
-        ingame_screen.hero_char_image = str(hero.char_image)
-        
-        # Update item properties, similar result as previous lines but for items
-        ingame_screen.update_item_properties()
-
-        print("In-game screen updated successfully.")
-    else:
-        print("Error: Hero object is None. Cannot update in-game screen.")
 
 
 # kivy visual stuff ===========================================================================
@@ -465,7 +445,7 @@ class CharacterCreation(Screen):
             with open('Program_Files/7_json_files/random_character_names.json', 'r') as file:
                 return json.load(file)
         except FileNotFoundError:
-            print("names.json file not found.")
+            print("[CharacterCreation]   names.json file not found.")
             return {}
 
     def on_kv_post(self, base_widget):
@@ -713,7 +693,6 @@ class CharacterCreation(Screen):
         
     def validate_selection(self):
         global hero
-        print("Creating character with the selected options...")
 
         # Ensure selected_world_type is not None
         if self.selected_world_type is None:
@@ -733,24 +712,18 @@ class CharacterCreation(Screen):
         try:
             self.db_utils.cursor.execute(insert_query, char_data)
             self.db_utils.conn.commit()
-            print("Character saved to the database.")
+            print("[CharacterCreation]   Character saved to the database.")
 
             # Mark the newly created character as active
             mark_character_as_active(self.char_name)
-
+        
         except Exception as e:
-            self.db_utils.conn.rollback()
-            print(f"Error saving character to the database: {e}")
+            pass
 
-
-
+        # Reset the selections after saving
         self.reset_selections()
-        hero = instantiate_hero(db_config, self.char_name)
-        if hero is None:
-            print("Failed to instantiate hero.")
-        else:
-            print(f'\nHERO INSTANTIATED: {hero.name}\n')
-        update_ingame_screen()
+
+        # Navigate to the map selection screen
         self.manager.current = 'map_selection'
 
     def on_kv_post(self, base_widget):
@@ -874,9 +847,6 @@ class CharacterCreation(Screen):
             f"ARMOR:  [color=#d3d3d3]{self.final_armor}[/color]"
         )
 
-
-import os
-
 class MapSelection(Screen):
     map_1 = ObjectProperty(None)
     map_2 = ObjectProperty(None)
@@ -906,7 +876,7 @@ class MapSelection(Screen):
             "Game of Thrones": f"{base_path}/6_got_background.jpg",
             "Classic Medieval": f"{base_path}/7_medieval_background.png",
             "Fantasy": f"{base_path}/8_fantasy_background.jpg",
-            "Dark Fantasy\n - Hard": f"{base_path}/9_dark_fantasy_background.png"
+            "Dark Fantasy\n - Hard Mode": f"{base_path}/9_dark_fantasy_background.png"
         }
 
         self.background_image = world_backgrounds.get(self.selected_world_type, "Program_Files/3_world_selection_images/background_images/world_selection_background.png")
@@ -916,15 +886,15 @@ class MapSelection(Screen):
         base_path = "Program_Files/4_in_game_images/background_images"
         
         ingame_backgrounds = {
-            "Anime": f"{base_path}/1_anime_modern_japan_background.png",
-            "Cyberpunk": f"{base_path}/2_cyberpunk_background.png",
+            "Anime": f"{base_path}/1_anime_modern_japan_background.jpeg",
+            "Cyberpunk": f"{base_path}/2_cyberpunk_background.jpeg",
             "Post-Apocalyptic\n Zombies": f"{base_path}/3_zombie_apocalypse_background.png",
-            "Post-Apocalyptic\n Fallout": f"{base_path}/4_fallout_apocalypse_background.png",
+            "Post-Apocalyptic\n Fallout": f"{base_path}/4_fallout_apocalypse_background.jpg",
             "Feudal Japan": f"{base_path}/5_feudal_japan_background.png",
-            "Game of Thrones": f"{base_path}/6_got_background.png",
+            "Game of Thrones": f"{base_path}/6_got_background.jpg",
             "Classic Medieval": f"{base_path}/7_medieval_background.png",
-            "Fantasy": f"{base_path}/8_fantasy_background.png",
-            "Dark Fantasy\n - Hard": f"{base_path}/9_dark_fantasy_background.png"
+            "Fantasy": f"{base_path}/8_fantasy_background.jpg",
+            "Dark Fantasy\n - Hard Mode": f"{base_path}/9_dark_fantasy_background.png"
         }
 
         # Get the additional image for the selected world type
@@ -932,13 +902,13 @@ class MapSelection(Screen):
 
         if ingame_image:
             if os.path.exists(ingame_image):
-                print(f"Preloading in-game image for next screen: {ingame_image}")
+                print(f"[MapSelection]        Background image preloaded: {ingame_image}")
                 self.preloaded_ingame_image = ingame_image
                 # Preload the in-game image into memory
                 preloaded_image = Image(source=ingame_image)
                 preloaded_image.texture  # Ensures the image is preloaded into memory
             else:
-                print(f"Warning: In-game image file not found: {ingame_image}")
+                print(f"[MapSelection]        Warning: In-game image file not found: {ingame_image}")
 
     def update_map_image(self, toggle_button, gif_source, image_widget, label_widget, world_type):
         """Update the image source and label visibility when a toggle button is selected or deselected."""
@@ -986,7 +956,7 @@ class MapSelection(Screen):
         elif self.map_8.state == 'down':
             self.selected_world_type = "Fantasy"
         elif self.map_9.state == 'down':
-            self.selected_world_type = "Dark Fantasy\n - Hard"
+            self.selected_world_type = "Dark Fantasy\n - Hard Mode"
 
     def on_start_story(self):
         """Fetch the active character names from the database, save the selected world type, and proceed to the game."""
@@ -1009,7 +979,7 @@ class MapSelection(Screen):
             # Reset map selection and background after starting the story
             self.reset_current_selection()
         else:
-            print("Error: No active characters found in the database.")
+            print("[MapSelection]        Error: No active characters found in the database.")
 
     def get_active_characters_from_db(self):
         """Query the database to get all active characters' names."""
@@ -1022,13 +992,13 @@ class MapSelection(Screen):
             if results:
                 # Extract all character names from the query result
                 character_names = [result[0] for result in results]
-                print(f"Active character names retrieved: {character_names}")
+                print(f"[MapSelection]        Active character name retrieved: {character_names}")
                 return character_names
             else:
-                print("No active characters found in the database.")
+                print("[MapSelection]        No active characters found in the database.")
                 return None
         except Exception as e:
-            print(f"Error fetching character names from the database: {e}")
+            print(f"[MapSelection]        Error fetching character names from the database: {e}")
             return None
 
     def save_world_type_to_database(self, hero_name, world_type):
@@ -1043,10 +1013,10 @@ class MapSelection(Screen):
         try:
             db_utils.cursor.execute(update_query, values)
             db_utils.conn.commit()
-            print(f"World type '{world_type}' saved for character '{hero_name}'.")
+            print(f"[MapSelection]        World type '{world_type}' saved for character '{hero_name}'.")
         except Exception as e:
             db_utils.conn.rollback()
-            print(f"Error saving world type: {e}")
+            print(f"[MapSelection]        Error saving world type: {e}")
 
     def random_select_map(self):
         """Randomly select one of the map toggle buttons."""
@@ -1087,37 +1057,47 @@ class MapSelection(Screen):
         # Reset the background image to the default background
         self.background_image = "Program_Files/3_world_selection_images/background_images/world_selection_background.png"
 
-
 class InGameScreen(Screen):
     world_type = StringProperty("")
-    # create empty kivy properties at startup
-    # The actual values will be added after reading character and items data from db
+    # Kivy properties to store character data and display stats
     hero_name = StringProperty("")
     hero_species = StringProperty("")
-    hero_char_class = StringProperty("")
+    hero_class = StringProperty("")
     hero_hp = StringProperty("")
     hero_dmg = StringProperty("")
     hero_armor = StringProperty("")
-    hero_class = StringProperty("")
-    hero_level = StringProperty("")  # Add hero level as StringProperty
-    hero_xp_for_next_level = StringProperty("")  # Add hero XP as StringProperty
-    hero_current_xp = StringProperty("")  # Add XP to next level as StringProperty
+    hero_level = StringProperty("")
+    hero_xp_for_next_level = StringProperty("")
+    hero_current_xp = StringProperty("")
     hero_gold = StringProperty("")
     turns_label = StringProperty("")
     hero_history = StringProperty("")
     hero_char_image = StringProperty("")
     background_image = StringProperty("Program_Files/4_in_game_images/background_images/in_game_background.png")  # Default background
 
+    selected_gender = StringProperty("")
+    selected_species = StringProperty("")
+    selected_class = StringProperty("")
 
     def __init__(self, **kwargs):
         super(InGameScreen, self).__init__(**kwargs)
         self.messages = []
         self.create_kivy_properties()
         atexit.register(self.save_character_info_in_database)
-    
+
+    def update_hero_image(self):
+        """Update the hero character image based on hero's gender, species, and class from the database."""
+        if self.hero_name and self.hero_species and self.hero_class and self.selected_gender:
+            # Create the image name based on hero's selected gender, species, and class
+            image_name = f'{self.selected_gender}_{self.hero_species}_{self.hero_class}.png'
+            # Update the image source dynamically
+            self.hero_char_image = f'Program_Files/5_playable_characters/{image_name}'
+        else:
+            # Fallback to a default image if character info is incomplete
+            self.hero_char_image = 'Program_Files/5_playable_characters/character_0.png'
+
     def create_kivy_properties(self):
-        # Predefine empty kivy properties for up to 64 items
-        # this is a workaround to have the property names existing at startup
+        # Predefine empty Kivy properties for up to 64 items
         for i in range(64):
             setattr(InGameScreen, f"item_{i}_id", NumericProperty(""))
             setattr(InGameScreen, f"item_{i}_name", StringProperty(""))
@@ -1125,35 +1105,22 @@ class InGameScreen(Screen):
             setattr(InGameScreen, f"item_{i}_bonus_type", StringProperty(0))
             setattr(InGameScreen, f"item_{i}bonus_value", NumericProperty(0))
             setattr(InGameScreen, f"item_{i}_image_file", StringProperty(""))
-            
-    def update_background_image(self):
-        """Update the background image before entering the in-game screen."""
-        # The background_image is passed from the MapSelection screen
-        print(f"Preloading background image: {self.background_image}")  # Ensure the image is preloaded
-    
+
     def update_item_properties(self):
-        """
-        Dynamically bind item properties to UI elements.
-        This method iterates over the items in the hero's inventory and creates Kivy properties
-        for each item attribute. It then binds these properties to the corresponding UI elements.
-        """
+        """Dynamically bind item properties to UI elements."""
         for i, item in enumerate(hero.items):
             for key, value in item.items():
                 prop_name = f"item_{i}_{key}"
                 if hasattr(self, prop_name):
-                    print(f"Setting {prop_name} to {value}")
                     setattr(self, prop_name, str(value) if isinstance(value, (int, float)) else value)
-                    print(self.item_3_name)
 
     def display_item_buttons(self):
-        """
-        Display buttons for each item with the corresponding name and image path.
-        """
+        """Display buttons for each item with the corresponding name and image path."""
         item_grid = self.ids.item_grid  # Reference the GridLayout by its id
         item_grid.clear_widgets()  # Clear any existing widgets
 
-        item_name = getattr(self, "potion-health.png", "")
-        item_image_file = getattr(self, "Program_Files/9_items_96p/potion-health.png", "")
+        item_name = getattr(self, "potion_health.png", "")
+        item_image_file = getattr(self, "Program_Files/9_item_images/potion_health.png", "")
 
         if item_name:
             # Create a button for the item
@@ -1171,12 +1138,12 @@ class InGameScreen(Screen):
         atexit.register(self.save_character_info_in_database)
 
     def get_active_character(self):
-        """Retrieve the active character from the database where is_active is True"""
+        """Retrieve the active character from the database where is_active is True."""
         try:
             conn = psycopg2.connect(**db_config)
             cur = conn.cursor()
             query = """
-            SELECT name, species, class, hp, damage, armor, level, xp_for_next_level, current_xp, world_type, turns, gold, history
+            SELECT name, gender, species, class, hp, damage, armor, level, xp_for_next_level, current_xp, world_type, turns, gold, history
             FROM characters
             WHERE is_active = TRUE;
             """
@@ -1184,15 +1151,15 @@ class InGameScreen(Screen):
             result = cur.fetchone()
 
             if result:
-                (self.hero_name, self.hero_species, self.hero_class,
+                (self.hero_name, self.selected_gender, self.hero_species, self.hero_class,
                 hp, dmg, armor, level, xp_for_next_level, current_xp, world_type, turns, gold, history) = result
 
-                # Convert values to strings and avoid setting empty values
+                # Populate the hero properties
                 self.hero_hp = str(hp) if hp is not None else '50'
                 self.hero_dmg = str(dmg) if dmg is not None else '10'
                 self.hero_armor = str(armor) if armor is not None else '10'
                 self.hero_level = str(level) if level is not None else '1'
-                self.xp_for_next_level = str(xp_for_next_level) if xp_for_next_level is not None else '50'
+                self.hero_xp_for_next_level = str(xp_for_next_level) if xp_for_next_level is not None else '50'
                 self.hero_current_xp = str(current_xp) if current_xp is not None else '0'
                 self.world_type = str(world_type) if world_type is not None else '' 
                 self.turns_label = str(turns) if turns is not None else '0'
@@ -1200,25 +1167,25 @@ class InGameScreen(Screen):
                 self.hero_history = history if history is not None else ''
 
             else:
-                print("No active character found.")
+                print("[InGameScreen]        No active character found.")
             cur.close()
             conn.close()
         except psycopg2.Error as e:
-            print(f"Database error occurred: {e}")
-    
+            print(f"[InGameScreen]        Database error occurred: {e}")
+
     def save_character_info_in_database(self):
         """Save current character data to the database before exiting."""
         try:
             conn = psycopg2.connect(**db_config)
             cur = conn.cursor()
 
-            # Ensure numeric values are not empty, defaulting to 0 if they are
+            # Ensure numeric values are not empty
             hero_hp = int(self.hero_hp) if self.hero_hp.isdigit() else 0
             hero_dmg = int(self.hero_dmg) if self.hero_dmg.isdigit() else 0
             hero_armor = int(self.hero_armor) if self.hero_armor.isdigit() else 0
-            hero_level = int(self.hero_level) if self.hero_level.isdigit() else 1  # default to level 1
-            xp_for_next_level = int(self.xp_for_next_level) if self.xp_for_next_level.isdigit() else 0
-            hero_current_xp = int(self.hero_current_xp) if self.hero_current_xp.isdigit() else 50  # default to 50
+            hero_level = int(self.hero_level) if self.hero_level.isdigit() else 1
+            xp_for_next_level = int(self.hero_xp_for_next_level) if self.hero_xp_for_next_level.isdigit() else 0
+            hero_current_xp = int(self.hero_current_xp) if self.hero_current_xp.isdigit() else 50
             turns_label = int(self.turns_label) if self.turns_label.isdigit() else 0
             hero_gold = int(self.hero_gold) if self.hero_gold.isdigit() else 50
 
@@ -1229,47 +1196,28 @@ class InGameScreen(Screen):
             WHERE name = %s AND is_active = TRUE;
             """
             cur.execute(query, (
-                hero_hp, hero_dmg, hero_armor, hero_level, 
+                hero_hp, hero_dmg, hero_armor, hero_level,
                 xp_for_next_level, hero_current_xp, self.world_type, self.hero_history, turns_label, hero_gold, self.hero_name
             ))
 
             conn.commit()
             cur.close()
             conn.close()
-            print("Character information saved successfully!")
+            print("[InGameScreen]        Character information saved successfully!")
         except psycopg2.Error as e:
-            print(f"Error saving character data: {e}")
+            print(f"[InGameScreen]        Error saving character data: {e}")
 
-    def on_pitch_enter(self, instance):
-        global hero_stats
-        pitch = self.ids.input_text.text.strip()
-
-        # Initialize hero_stats with all necessary keys and fallback default values
-        hero_stats = {
-            'name': self.hero_name,
-            'species': self.hero_species,
-            'class': self.hero_class,
-            'hp': int(self.hero_hp) if self.hero_hp.isdigit() else 100,  # Fallback to 100 HP if invalid
-            'dmg': int(self.hero_dmg) if self.hero_dmg.isdigit() else 10,
-            'armor': int(self.hero_armor) if self.hero_armor.isdigit() else 5,
-            'level': int(self.hero_level) if self.hero_level.isdigit() else 1,
-            'xp_for_next_level': int(self.hero_xp_for_next_level) if self.hero_xp_for_next_level.isdigit() else 50,
-            'current_xp': int(self.hero_current_xp) if self.hero_current_xp.isdigit() else 0,
-            'gold': int(self.hero_gold) if self.hero_gold.isdigit() else 50,
-            'world_type': self.world_type
-        }
-
-        world_type = self.world_type
-        rpg_adventure(pitch, self, hero_stats, world_type)
-        self.ids.input_text.bind(on_text_validate=self.on_text_enter)
-
-    def stats_in_terminal_button(self):
-        hero.display_stats_view()
+    def toggle_panel(self, panel_id):
+        """Toggle the visibility of panels (e.g., stats_widget or backpack)."""
+        if panel_id == 'stats_widget':
+            self.update_hero_image()  # Update character image when viewing stats
+        panel = self.ids[panel_id]
+        panel.opacity = 1 if panel.disabled else 0
+        panel.disabled = not panel.disabled
 
     def on_enter(self, *args):
         """When the screen is entered, fetch the active character and update the display."""
         self.get_active_character()  # Load the active character from the database
-        self.update_background_image()  # Update the background image based on the world type
         self.refresh_stats_display()  # Refresh the stats display with the latest data
 
         # Print initial stats and prompt to start the game
@@ -1279,7 +1227,7 @@ class InGameScreen(Screen):
             "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
         )
         self.messages = []
-        self.display_item_buttons()  # Call the method to display item buttons
+        self.display_item_buttons()  # Display item buttons in the UI
 
     def refresh_stats_display(self):
         """Fetch the latest stats from the database and update the display."""
@@ -1293,81 +1241,10 @@ class InGameScreen(Screen):
             f"HP: {self.hero_hp}\n"
             f"Armor: {self.hero_armor}\n"
             f"Level: {self.hero_level}\n"
-            f"XP: {self.hero_current_xp} / {self.xp_for_next_level}\n"
+            f"XP: {self.hero_current_xp} / {self.hero_xp_for_next_level}\n"
             f"Gold: {self.hero_gold}\n"
             f"World: {self.world_type}"
         )
-
-    def on_text_enter(self, instance):
-        """Handle user input on pressing Enter."""
-        global hero_stats
-        user_input = self.ids.input_text.text
-        self.ids.input_text.text = ''
-        self.ids.output_label.text += f"\n{user_input}"
-
-        if not self.messages:
-            if user_input == "1":
-                self.ids.output_label.text = "Enter a short pitch for your adventure or leave blank:"
-                self.ids.input_text.bind(on_text_validate=self.on_pitch_enter)
-            elif user_input == "2":
-                self.manager.current = 'main_menu'
-            elif user_input == "3":
-                self.exit_app(self)  # Exit app
-            else:
-                self.ids.output_label.text += ""
-        else:
-            self.messages.append({"role": "user", "content": user_input})
-            response = get_response(self.messages)
-            self.messages.append({"role": "assistant", "content": response})
-            self.ids.output_label.text = f"Assistant: {response}"
-
-    def go_back_to_menu(self, instance):  # Functionality of the 'back' button
-        self.manager.current = 'main_menu'
-
-    def toggle_panel(self, *panel_ids):
-        '''Toggle and untoggle panel on game screen (inventory, stats, etc.)'''
-        for panel_id in panel_ids:
-            if panel_id in self.ids:
-                panel = self.ids[panel_id]
-                if panel.opacity == 0:  # If the panel is hidden, show it
-                    panel.opacity = 1
-                    panel.disabled = False
-                    for child in panel.children:
-                        child.opacity = 1
-                        child.disabled = False
-                    if panel_id == 'stats_widget':
-                        self.refresh_stats_display()  # Refresh stats when showing stats panel
-                else:  # If the panel is visible, hide it
-                    panel.opacity = 0
-                    panel.disabled = True
-                    for child in panel.children:
-                        child.opacity = 0
-                        child.disabled = True
-            else:
-                print(f"Warning: Panel with id '{panel_id}' not found.")
-
-    def update_hero_hp(self, hp_change):
-        self.hero_hp = str(int(self.hero_hp) + hp_change)
-        self.update_display()
-
-    def update_hero_dmg(self, dmg_change):
-        self.hero_dmg = str(int(self.hero_dmg) + dmg_change)
-        self.update_display()
-
-    def update_hero_armor(self, armor_change):
-        self.hero_armor = str(int(self.hero_armor) + armor_change)
-        self.update_display()
-
-    def update_display(self):
-        """Update the output label to reflect the current hero stats."""
-        self.ids.output_label.text = (
-            f"Welcome, {self.hero_name} the {self.hero_class} {self.hero_species}!\n"
-            f"HP: {self.hero_hp}, DMG: {self.hero_dmg}, ARMOR: {self.hero_armor}\n\n"
-            "1. Start an adventure\n2. Back to main menu\n3. Exit\n\n Enter your choice [number]"
-        )
-
-    def load_character_info_from_database(self):  # 'Load Game' button functionality
-        pass 
 
     def on_leave(self, *args):
         """Save the character information when leaving the InGameScreen."""
@@ -1379,7 +1256,41 @@ class InGameScreen(Screen):
         self.save_character_info_in_database()
         App.get_running_app().stop()
 
+image_folder = "Program_Files/9_item_images"
 
+class Item:
+    '''used to create an object for every item in the game'''
+    items = {}  # Class-level dictionary to store all item objects
+
+    def __init__(self, item_id, name, type, bonus_type, bonus_value, image_file):
+        self.item_id = item_id
+        self.name = name
+        self.type = type
+        self.bonus_type = bonus_type
+        self.bonus_value = bonus_value
+        self.image_file = image_file
+        self.image_path = self.get_image_path(image_folder)
+        # Add the item object to the class-level dictionary
+        Item.items[item_id] = self
+
+    def get_image_path(self, image_folder):
+        '''add full image path to items (including directory)'''
+        return os.path.join(image_folder, self.image_file)
+
+    @staticmethod
+    def fetch_all_items(db_config):
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT item_id, name, type, bonus_type, bonus_value, image_file
+            FROM items
+        """)
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        # Create Item objects and store them in the class-level dictionary
+        for result in results:
+            Item(*result)
 
 
 
@@ -1402,11 +1313,11 @@ class MusicManager:
     def _play_music(self):
         """Play the music in a loop."""
         try:
-            pygame.mixer.music.load("Program_Files/music/Medieval Theme.mp3")
+            pygame.mixer.music.load("Program_Files/10_soundtracks/Medieval Theme.mp3")
             pygame.mixer.music.set_volume(0.2)
             pygame.mixer.music.play(-1)  # -1 means loop indefinitely
         except pygame.error as e:
-            print(f"Error playing music: {e}")
+            print(f"[MusicManager] Error playing music: {e}")
 
     def stop_music(self):
         """Stop the music and shut down pygame mixer."""

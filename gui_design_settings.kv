@@ -425,7 +425,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/3_post_apocalyptic_zombies_active.gif', map_3_image, map_3_label, "Post-Apocalyptic Zombies")
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/3_post_apocalyptic_zombies_active.gif', map_3_image, map_3_label, "Post-Apocalyptic\n Zombies")
                     Label:
                         id: map_3_label
                         text: 'Post-Apocalyptic Zombies'
@@ -449,7 +449,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/4_post_apocalyptic_fallout_active.gif', map_4_image, map_4_label, "Post-Apocalyptic Fallout")
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/4_post_apocalyptic_fallout_active.gif', map_4_image, map_4_label, "Post-Apocalyptic\n Fallout")
                     Label:
                         id: map_4_label
                         text: 'Post-Apocalyptic Fallout'
@@ -545,7 +545,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/8_fantasy_active.gif', map_8_image, map_8_label, "Dark Fantasy")
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/8_fantasy_active.gif', map_8_image, map_8_label, "Fantasy")
                     Label:
                         id: map_8_label
                         text: 'Fantasy'
@@ -569,7 +569,7 @@ ScreenManager:
                         group: 'maps'
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/9_dark_fantasy_hard_mode_active.gif', map_9_image, map_9_label, "Dark Fantasy - Hard Mode")
+                        on_state: root.update_map_image(self, 'Program_Files/3_world_selection_images/9_dark_fantasy_hard_mode_active.gif', map_9_image, map_9_label, "Dark Fantasy\n - Hard Mode")
                     Label:
                         id: map_9_label
                         text: 'Dark Fantasy - Hard Mode'
@@ -630,10 +630,11 @@ ScreenManager:
     hero_hp: ""
     hero_armor: ""
     hero_level: ""
-    xp_for_next_level: ""
+    hero_xp_for_next_level: ""
     hero_current_xp: ""
     hero_gold: ""
     world_type: ""
+    hero_char_image: ""  # Store the character's image path dynamically
 
     BoxLayout:
         orientation: 'vertical'
@@ -757,7 +758,6 @@ ScreenManager:
                 padding: (10, 5, 10, 5)
                 on_text_validate: root.on_text_enter(self)
 
-                    
     # Stats panel (initially hidden)
     FloatLayout:
         id: stats_widget
@@ -794,26 +794,14 @@ ScreenManager:
             # BoxLayout for the stats
             BoxLayout:
                 orientation: 'vertical'
-                padding: [15, 15, 0, 0]
+                padding: [15, 35, 0, 0]
                 size_hint: None, None
                 width: 230
                 height: self.minimum_height
                 pos_hint: {'top': 1}  # Align to top
-                Button:
-                    text: 'View stats in terminal'
-                    pos_hint: {'left': 0, 'top': 0} 
-                    size_hint: (None, None)
-                    width: 150
-                    height:30
-                    font_size: 14
-                    color: [0.8, 0.8, 0.8, 1]
-                    background_color: [0, 0, 0, 0]
-                    background_normal: ''
-                    padding: [40, 0, 0, 0]
-                    on_press: root.stats_in_terminal_button()  # Call the function when pressed
                 # Label for stats
                 Label:
-                    text: '[b]Species:[/b] ' + root.hero_species + '[b]\n\nClass:[/b] ' + root.hero_class + '\n\n[b]Damage:[/b] [color=FF0000]' + root.hero_dmg + '[/color]' + '\n\n[b]HP:[/b] [color=00FF00]' + root.hero_hp + '[/color]' + '\n\n[b]Armor:[/b] [color=D3D3D3]' + root.hero_armor + '[/color]' + '\n\n[b]Level:[/b] ' + root.hero_level + '\n\n[b]XP:[/b] ' + root.hero_current_xp + ' / ' + root.xp_for_next_level + '\n\n[b]Gold:[/b] [color=FFD700]' + root.hero_gold + '[/color]' + '\n\n[b]World:[/b]\n ' + root.world_type
+                    text: '[b]Species:[/b] ' + root.hero_species + '[b]\n\nClass:[/b] ' + root.hero_class + '\n\n[b]Damage:[/b] [color=FF0000]' + root.hero_dmg + '[/color]' + '\n\n[b]HP:[/b] [color=00FF00]' + root.hero_hp + '[/color]' + '\n\n[b]Armor:[/b] [color=D3D3D3]' + root.hero_armor + '[/color]' + '\n\n[b]Level:[/b] ' + root.hero_level + '\n\n[b]XP:[/b] ' + root.hero_current_xp + ' / ' + root.hero_xp_for_next_level + '\n\n[b]Gold:[/b] [color=FFD700]' + root.hero_gold + '[/color]' + '\n\n[b]World:[/b]\n ' + root.world_type
                     markup: True
                     color: (1, 1, 1, 1)
                     font_size: 24
@@ -823,14 +811,13 @@ ScreenManager:
                     pos_hint: {'top': 0.8}  # Center horizontally and align below the title
                     padding: [30]
             
-
             # BoxLayout for the character picture
             BoxLayout:
                 size_hint: 1, None  # Take all available space in width
                 height: self.minimum_height
-                spos_hint: {'top': 1}  # Align to top
+                pos_hint: {'top': 0.9}  # Align to top
                 Image:
-                    source: root.hero_char_image
+                    source: root.hero_char_image  # Dynamically use the character image path
                     size_hint: None, None
                     size: 333, 512  # Set the size of the image
                     pos_hint: {'center_x': 0.5}  # Center horizontally
@@ -850,7 +837,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/9_items_96p/item-slot.png'
+                        source: 'Program_Files/9_item_images/item_slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image to 96x96 pixels
 
@@ -858,7 +845,7 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/9_items_96p/item-slot.png'
+                        source: 'Program_Files/9_item_images/item_slot.png'
                         size_hint: None, None
                         size: 104, 104  # Set the size of the image
 
@@ -866,12 +853,10 @@ ScreenManager:
                     size_hint: None, None
                     size: 104, 104  # Set the size of the container
                     Image:
-                        source: 'Program_Files/9_items_96p/item-slot.png'
+                        source: 'Program_Files/9_item_images/item_slot.png'
                         size_hint: None, None
-                        size: 104, 104  # Set the size of the image                    
+                        size: 104, 104  # Set the size of the image
 
-        
-    
     # Backpack panel (initially hidden)
     FloatLayout:  
         id: backpack
@@ -907,11 +892,12 @@ ScreenManager:
             # Grid Layout for item buttons
             GridLayout:
                 id: item_grid
-                cols: 4 # Set the number of columns to 4
+                cols: 4  # Set the number of columns to 4
                 size_hint: None, None
                 size: self.minimum_size
                 spacing: 12  # Add spacing between the items
                 padding: [12]  # Add padding to the left
+
 
 
 <HoverButton@Button>:
