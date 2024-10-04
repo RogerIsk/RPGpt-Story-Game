@@ -1,5 +1,5 @@
 from kivy.properties import ObjectProperty, BooleanProperty, StringProperty, NumericProperty
-from character import Hero, Enemy, instantiate_hero, instantiate_enemy
+from character import Hero, Enemy, g, instantiate_enemy
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, RoundedRectangle
 from utils import read_json_file, DatabaseUtils
@@ -302,6 +302,7 @@ def extract_significant_events(response):
     return ' | '.join(events)
 
 def award_xp(xp_gain):
+    xp_gain = int(xp_gain)  # Convert xp_gain to an integer
     hero.current_xp += xp_gain
     while hero.current_xp >= hero.xp_for_next_level:
         hero.current_xp -= hero.xp_for_next_level

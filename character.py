@@ -78,6 +78,9 @@ class Hero(Character):
 
     def __init__(self, db_config, char_name):
         '''Initialise the class'''
+        self.current_xp = 0  # Initialize to 0
+        self.xp_for_next_level = 50  # Example starting value
+        self.level = 1
         super().__init__(db_config, char_name)  # Call the parent class's __init__ method
         self._get_hero(char_name)  # Call the method to get hero data
 
